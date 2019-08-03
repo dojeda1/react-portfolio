@@ -1,0 +1,248 @@
+import React, { Component } from "react";
+import MealPlannerMockup from "../../images/meal-planner/meal-planner-mockup.png"
+import MealPlannerImg1 from "../../images/meal-planner/meal-planner-search.jpg"
+import MealPlannerImg2 from "../../images/meal-planner/meal-planner-fav.jpg"
+import MealPlannerImg3 from "../../images/meal-planner/meal-planner-cal.jpg"
+
+class Portfolio extends Component {
+    state = {
+        currentProject: {},
+        currentList: [],
+        allProjects: [
+            {
+                title: "Meal Planner",
+                mockup: MealPlannerMockup,
+                img1: MealPlannerImg1,
+                img2: MealPlannerImg2,
+                img3: MealPlannerImg3,
+                visit: "https://stephanfalcon.github.io/PlusUltraProject/",
+                code: "https://github.com/stephanfalcon/PlusUltraProject",
+                sum: "Using the Spoonacular API, Meal Planner allows you to look up recipes with optional dietary restrictions and save them to your favorites. You can view recipe cards to see a meal's ingredients and instructions. From the Calendar page, you can choose any recipe from your favorites, add it to a meal period on your weekly calendar, and save the plan for later. Both the favorites and the weekly meal plan are stored using Firebase's realtime database.",
+                list: ["HTML", "CSS", "JavaScript", "jQuery", "Materialize", "Firebase", "Spoonacular API", "Heal Thru Words API"]
+            }, {
+                title: "Wizard Words",
+                mockup: "./assets/images/wizard-words/wizard-words-mockup.png",
+                img1: "./assets/images/wizard-words/wizard-words-guess.jpg",
+                img2: "./assets/images/wizard-words/wizard-words-lose.jpg",
+                img3: "./assets/images/wizard-words/wizard-words-win.jpg",
+                visit: "https://dojeda1.github.io/Word-Guess-Game/",
+                code: "https://github.com/dojeda1/Word-Guess-Game",
+                sum: "This version of the traditional Hangman game is fashioned after the wizarding world of Harry Potter. The game displays what letters you have previously guessed, how many guesses you have left, as well as your wins and losses. The design was inspired by the Marauder's Map and uses jQuery for a number of cool fade-in and fade-out animations.",
+                list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
+            }, {
+                title: "Sci-fi RPG",
+                mockup: "./assets/images/scifi-rpg/scifi-rpg-mockup.png",
+                img1: "./assets/images/scifi-rpg/scifi-rpg-lose.jpg",
+                img2: "./assets/images/scifi-rpg/scifi-rpg-win.jpg",
+                img3: "./assets/images/scifi-rpg/scifi-rpg-fight.jpg",
+                visit: "https://dojeda1.github.io/Space-RPG-Game/",
+                code: "https://github.com/dojeda1/Space-RPG-Game",
+                sum: "Choose one of 4 classic Sci-fi characters to play as and try to defeat all of the remaining opponents. Each character has different health, strength, and leveling up stats and you must choose defenders in particular orders to obtain victory.",
+                list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
+            }, {
+                title: "Trial of Socrates",
+                mockup: "./assets/images/socrates/socrates-mockup.png",
+                img1: "./assets/images/socrates/socrates-prompt.jpg",
+                img2: "./assets/images/socrates/socrates-results.jpg",
+                img3: "./assets/images/socrates/socrates-choices.jpg",
+                visit: "https://dojeda1.github.io/Socrates-Game/",
+                code: "https://github.com/dojeda1/Socrates-Game",
+                sum: "This is a text based adventure game inspired by the ancient tale of when Socrates was sentenced to death by a jury of his fellow Athenians. Playing as the philosopher himself, you make branching choices powered by IF/ELSE functions in JavaScript that lead to alternate endings. The goal is to find the historical ending or simply explore alternate timelines. ",
+                list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
+            }, {
+                title: "Trivia Game",
+                mockup: "./assets/images/trivia-game/trivia-mockup.png",
+                img1: "./assets/images/trivia-game/trivia-start.jpg",
+                img2: "./assets/images/trivia-game/trivia-correct.jpg",
+                img3: "./assets/images/trivia-game/trivia-results.jpg",
+                visit: "https://dojeda1.github.io/TriviaGame/",
+                code: "https://github.com/dojeda1/TriviaGame",
+                sum: "Test your knowledge of both the metric and imperial units of measurement. Each question is timed and will move onto the next if left unanswered. After each question, a fun GIF is briefly displayed according to whether or not you were correct. At the end of the game, the number of right, wrong, and unanswered responses is displayed along side your overall score. Your high scores are also shown at the bottom of the results page.",
+                list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
+            }, {
+                title: "Fur Butlr",
+                mockup: "./assets/images/fur-butlr/fur-butlr-mockup.png",
+                img1: "./assets/images/fur-butlr/fur-butlr-results.jpg",
+                img2: "./assets/images/fur-butlr/fur-butlr-update.jpg",
+                img3: "./assets/images/fur-butlr/fur-butlr-profile.jpg",
+                visit: "https://fur-butlr-app.herokuapp.com/",
+                code: "https://github.com/ApexPanda/FurButler",
+                sum: "A place where pet owners can meet each other and search for pet services like walkers, groomers or sitters. Fur Butlr lets you create a profile, login in, edit your page, and show off your pets.",
+                list: ["HTML", "CSS", "JavaScript", "jQuery", "Materialize", "MySQL", "Node.js", "Sequelize"]
+            }, {
+                title: "Bug Memory",
+                mockup: "./assets/images/bug-memory/bug-memory-mockup.png",
+                img1: "./assets/images/bug-memory/bug-memory-win.jpg",
+                img2: "./assets/images/bug-memory/bug-memory-lose.jpg",
+                img3: "./assets/images/bug-memory/bug-memory-cards.jpg",
+                visit: "https://memory-game-react-click.herokuapp.com/",
+                code: "https://github.com/dojeda1/memory-game",
+                sum: "Test your memory by selecting every bug card without choosing the same one twice. Each time one is chosen, the game will shuffle the cards and display them in a random order using REACT. If you select the same bug twice, you lose!",
+                list: ["HTML", "CSS", "JavaScript", "Bootstrap", "React.js", "Node.js"]
+            }, {
+                title: "Book Finder",
+                mockup: "./assets/images/book-finder/book-finder-mockup.png",
+                img1: "./assets/images/book-finder/book-finder-home.jpg",
+                img2: "./assets/images/book-finder/book-finder-results.jpg",
+                img3: "./assets/images/book-finder/book-finder-saved.jpg",
+                visit: "https://google-books-mern.herokuapp.com/",
+                code: "https://github.com/dojeda1/book-search",
+                sum: "Search through a large database of books with the help of the Google Books API. User inputs the title of a book and results are displayed below. They can then visit the google URL, save the book in a MongoDB database for later, or delete it from saved books.",
+                list: ["HTML", "CSS", "JavaScript", "React.js", "MongoDB", "Mongoose", "Google Books API"]
+            }
+        ]
+    }
+
+    componentDidMount() {
+        this.setState({ currentProject: this.state.allProjects[0], currentList: this.state.allProjects[0].list })
+    }
+    render() {
+
+        return (
+
+            <div id="portfolio" className="scrollspy">
+
+                <div className=" row grey darken-4 z-depth-1">
+
+                    <div className="col s12 center-align">
+                        <h4 className="dom-green1-text font1">Portfolio</h4>
+                    </div>
+                </div>
+
+                <div className="container">
+                    <div className="row">
+                        <div className="col s12">
+                            <h5 className="dom-green1-text font2">Project Summary</h5>
+                            <div className="divider" />
+                        </div>
+                    </div>
+
+                    <div className="row">
+
+                        <div className="col m12 l8">
+                            <h5 id="p-title" className="font1"></h5>
+                            <img id="p-mockup" src={this.state.currentProject.mockup} alt="" />
+
+                            <br />
+                            <div className="row">
+                                <div className="col s12 left-align">
+                                    <a id="p-visit-btn" href={this.state.currentProject.visit} target="blank">
+                                        <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" name="action">
+                                            Visit<i className="material-icons right">public</i>
+                                        </button>
+                                    </a>
+
+                                    <a id="p-code-btn" href={this.state.currentProject.code} target="blank">
+                                        <button className="btn portfolio-btn waves-effect waves-light dom-green1-dark font2" type="button" name="action">
+                                            Code<i className="material-icons right">code</i>
+                                        </button>
+                                    </a>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div className="col m12 l4">
+                            <div className="row">
+                                <div className="col s12 m8 l12">
+                                    <h6 className="font1 dom-green1-text">- About the Project -</h6>
+                                    <p id="p-about">{this.state.currentProject.sum}</p>
+                                </div>
+                                <div className="col s12 m4 l12">
+                                    <h6 className="font1 dom-green1-text">- Made With -</h6>
+                                    <ul id="p-list" className="grey-text">
+                                        {(this.state.currentList).map(function (item, index) {
+                                            return <li key={index}>{item}</li>
+                                        })}
+                                    </ul>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div id="info-pics" className="row">
+
+                        <div id="move" className="col s12 m4">
+                            <div className="col s12">
+                                <div className="row"><img id="p-img-1" src={this.state.currentProject.img1} className="z-depth-2 materialboxed" /></div>
+                            </div>
+
+                            <div className="col s12">
+                                <div className="row"><img id="p-img-2" src={this.state.currentProject.img2} className="z-depth-2 materialboxed" /></div>
+                            </div>
+
+                        </div>
+
+                        <div className="col s12 m8"><img id="p-img-3" src={this.state.currentProject.img3} className="z-depth-2 materialboxed" /></div>
+                    </div>
+
+                    <div className="row">
+                    </div>
+
+                    <div className="spacer" />
+
+                    {/* Selection carousel */}
+
+                    <div className="row">
+                        <div className="col s12">
+                            <h5 className="dom-green1-text font2 center-align">Select a Project</h5>
+                            <div className="divider" />
+                        </div>
+
+                    </div>
+                    <div className="carousel center-align">
+
+                        <a className="carousel-item" data-project-id="mealPlanner">
+                            <img className="paint-pic" src="./assets/images/meal-planner/meal-planner-paint.png" />
+                            <h6 className="black-text font2">Meal Planner</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="wizardWords">
+                            <img className="paint-pic" src="./assets/images/wizard-words/wizard-words-paint.png" />
+                            <h6 className="black-text font2">Wizard Words</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="scifiRpg">
+                            <img className="paint-pic" src="./assets/images/scifi-rpg/scifi-rpg-paint.png" />
+                            <h6 className="black-text font2">Sci-fi RPG</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="socrates">
+                            <img className="paint-pic" src="./assets/images/socrates/socrates-paint.png" />
+                            <h6 className="black-text font2">Trial of Socrates</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="trivia">
+                            <img className="paint-pic" src="./assets/images/trivia-game/trivia-paint.png" />
+                            <h6 className="black-text font2">Trivia Game</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="furButlr"
+                        ><img className="paint-pic" src="./assets/images/fur-butlr/fur-butlr-paint.png" />
+                            <h6 className="black-text font2">Fur Butlr</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="bugMemory">
+                            <img className="paint-pic" src="./assets/images/bug-memory/bug-memory-paint.png" />
+                            <h6 className="black-text font2">Bug Memory</h6>
+                        </a>
+
+                        <a className="carousel-item" data-project-id="bookFinder">
+                            <img className="paint-pic" src="./assets/images/book-finder/book-finder-paint.png" />
+                            <h6 className="black-text font2">Book Finder</h6>
+                        </a>
+
+                    </div>
+
+                    <div className="spacer" />
+
+                </div>
+            </div>
+        );
+    }
+}
+
+export default Portfolio;
