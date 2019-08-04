@@ -92,11 +92,11 @@ class About extends Component {
 
                             <div className="row">
                                 <div className="col s3">
-                                    <img className="tool-pic bulge" src={NodeLogo} alt="Node Logo" onClick={this.handleRotate} />
+                                    <img className="tool-pic bulge" src={ReactLogo} alt="React Logo" onClick={this.handleRotate} />
                                 </div>
 
                                 <div className="col s3">
-                                    <img className="tool-pic bulge" src={ReactLogo} alt="React Logo" onClick={this.handleRotate} />
+                                    <img className="tool-pic bulge" src={NodeLogo} alt="Node Logo" onClick={this.handleRotate} />
                                 </div>
 
                                 <div className="col s3">

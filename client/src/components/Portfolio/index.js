@@ -1,8 +1,29 @@
 import React, { Component } from "react";
+import M from 'materialize-css';
+
 import MealPlannerMockup from "../../images/meal-planner/meal-planner-mockup.png"
+import MealPlannerPaint from "../../images/meal-planner/meal-planner-paint.png"
 import MealPlannerImg1 from "../../images/meal-planner/meal-planner-search.jpg"
 import MealPlannerImg2 from "../../images/meal-planner/meal-planner-fav.jpg"
 import MealPlannerImg3 from "../../images/meal-planner/meal-planner-cal.jpg"
+
+import WizardWordsMockup from "../../images/wizard-words/wizard-words-mockup.png"
+import WizardWordsPaint from "../../images/wizard-words/wizard-words-paint.png"
+import WizardWordsImg1 from "../../images/wizard-words/wizard-words-guess.jpg"
+import WizardWordsImg2 from "../../images/wizard-words/wizard-words-lose.jpg"
+import WizardWordsImg3 from "../../images/wizard-words/wizard-words-win.jpg"
+
+import ScifiRpgMockup from "../../images/scifi-rpg/scifi-rpg-mockup.png"
+import ScifiRpgPaint from "../../images/scifi-rpg/scifi-rpg-paint.png"
+import ScifiRpgImg1 from "../../images/scifi-rpg/scifi-rpg-lose.jpg"
+import ScifiRpgImg2 from "../../images/scifi-rpg/scifi-rpg-win.jpg"
+import ScifiRpgImg3 from "../../images/scifi-rpg/scifi-rpg-fight.jpg"
+
+import SocratesMockup from "../../images/socrates/socrates-mockup.png"
+import SocratesPaint from "../../images/socrates/socrates-paint.png"
+import SocratesImg1 from "../../images/socrates/socrates-prompt.jpg"
+import SocratesImg2 from "../../images/socrates/socrates-results.jpg"
+import SocratesImg3 from "../../images/socrates/socrates-choices.jpg"
 
 class Portfolio extends Component {
     state = {
@@ -12,6 +33,7 @@ class Portfolio extends Component {
             {
                 title: "Meal Planner",
                 mockup: MealPlannerMockup,
+                paint: MealPlannerPaint,
                 img1: MealPlannerImg1,
                 img2: MealPlannerImg2,
                 img3: MealPlannerImg3,
@@ -21,30 +43,33 @@ class Portfolio extends Component {
                 list: ["HTML", "CSS", "JavaScript", "jQuery", "Materialize", "Firebase", "Spoonacular API", "Heal Thru Words API"]
             }, {
                 title: "Wizard Words",
-                mockup: "./assets/images/wizard-words/wizard-words-mockup.png",
-                img1: "./assets/images/wizard-words/wizard-words-guess.jpg",
-                img2: "./assets/images/wizard-words/wizard-words-lose.jpg",
-                img3: "./assets/images/wizard-words/wizard-words-win.jpg",
+                mockup: WizardWordsMockup,
+                paint: WizardWordsPaint,
+                img1: WizardWordsImg1,
+                img2: WizardWordsImg2,
+                img3: WizardWordsImg3,
                 visit: "https://dojeda1.github.io/Word-Guess-Game/",
                 code: "https://github.com/dojeda1/Word-Guess-Game",
                 sum: "This version of the traditional Hangman game is fashioned after the wizarding world of Harry Potter. The game displays what letters you have previously guessed, how many guesses you have left, as well as your wins and losses. The design was inspired by the Marauder's Map and uses jQuery for a number of cool fade-in and fade-out animations.",
                 list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
             }, {
                 title: "Sci-fi RPG",
-                mockup: "./assets/images/scifi-rpg/scifi-rpg-mockup.png",
-                img1: "./assets/images/scifi-rpg/scifi-rpg-lose.jpg",
-                img2: "./assets/images/scifi-rpg/scifi-rpg-win.jpg",
-                img3: "./assets/images/scifi-rpg/scifi-rpg-fight.jpg",
+                mockup: ScifiRpgMockup,
+                paint: ScifiRpgPaint,
+                img1: ScifiRpgImg1,
+                img2: ScifiRpgImg2,
+                img3: ScifiRpgImg3,
                 visit: "https://dojeda1.github.io/Space-RPG-Game/",
                 code: "https://github.com/dojeda1/Space-RPG-Game",
                 sum: "Choose one of 4 classic Sci-fi characters to play as and try to defeat all of the remaining opponents. Each character has different health, strength, and leveling up stats and you must choose defenders in particular orders to obtain victory.",
                 list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
             }, {
                 title: "Trial of Socrates",
-                mockup: "./assets/images/socrates/socrates-mockup.png",
-                img1: "./assets/images/socrates/socrates-prompt.jpg",
-                img2: "./assets/images/socrates/socrates-results.jpg",
-                img3: "./assets/images/socrates/socrates-choices.jpg",
+                mockup: SocratesMockup,
+                paint: SocratesPaint,
+                img1: SocratesImg1,
+                img2: SocratesImg2,
+                img3: SocratesImg3,
                 visit: "https://dojeda1.github.io/Socrates-Game/",
                 code: "https://github.com/dojeda1/Socrates-Game",
                 sum: "This is a text based adventure game inspired by the ancient tale of when Socrates was sentenced to death by a jury of his fellow Athenians. Playing as the philosopher himself, you make branching choices powered by IF/ELSE functions in JavaScript that lead to alternate endings. The goal is to find the historical ending or simply explore alternate timelines. ",
@@ -95,7 +120,17 @@ class Portfolio extends Component {
 
     componentDidMount() {
         this.setState({ currentProject: this.state.allProjects[0], currentList: this.state.allProjects[0].list })
+        // M.AutoInit();
     }
+
+    handleSelect = (event) => {
+
+        let tag = event.currentTarget.dataset.tag;
+        console.log(tag);
+        this.setState({ currentProject: this.state.allProjects[tag], currentList: this.state.allProjects[tag].list })
+
+    }
+
     render() {
 
         return (
@@ -151,9 +186,7 @@ class Portfolio extends Component {
                                 <div className="col s12 m4 l12">
                                     <h6 className="font1 dom-green1-text">- Made With -</h6>
                                     <ul id="p-list" className="grey-text">
-                                        {(this.state.currentList).map(function (item, index) {
-                                            return <li key={index}>{item}</li>
-                                        })}
+                                        {(this.state.currentList).join(", ")}
                                     </ul>
                                 </div>
 
@@ -195,45 +228,12 @@ class Portfolio extends Component {
                     </div>
                     <div className="carousel center-align">
 
-                        <a className="carousel-item" data-project-id="mealPlanner">
-                            <img className="paint-pic" src="./assets/images/meal-planner/meal-planner-paint.png" />
-                            <h6 className="black-text font2">Meal Planner</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="wizardWords">
-                            <img className="paint-pic" src="./assets/images/wizard-words/wizard-words-paint.png" />
-                            <h6 className="black-text font2">Wizard Words</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="scifiRpg">
-                            <img className="paint-pic" src="./assets/images/scifi-rpg/scifi-rpg-paint.png" />
-                            <h6 className="black-text font2">Sci-fi RPG</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="socrates">
-                            <img className="paint-pic" src="./assets/images/socrates/socrates-paint.png" />
-                            <h6 className="black-text font2">Trial of Socrates</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="trivia">
-                            <img className="paint-pic" src="./assets/images/trivia-game/trivia-paint.png" />
-                            <h6 className="black-text font2">Trivia Game</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="furButlr"
-                        ><img className="paint-pic" src="./assets/images/fur-butlr/fur-butlr-paint.png" />
-                            <h6 className="black-text font2">Fur Butlr</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="bugMemory">
-                            <img className="paint-pic" src="./assets/images/bug-memory/bug-memory-paint.png" />
-                            <h6 className="black-text font2">Bug Memory</h6>
-                        </a>
-
-                        <a className="carousel-item" data-project-id="bookFinder">
-                            <img className="paint-pic" src="./assets/images/book-finder/book-finder-paint.png" />
-                            <h6 className="black-text font2">Book Finder</h6>
-                        </a>
+                        {this.state.allProjects.map((project, index) => (
+                            <a key={index} className="carousel-item" data-tag={index} onClick={this.handleSelect}>
+                                <img className="paint-pic" src={project.paint} />
+                                <h6 className="black-text font2">{project.title}</h6>
+                            </a>
+                        ))}
 
                     </div>
 

@@ -226,8 +226,11 @@ nav {
   background-color: #8dc63f;
 }
 
-.paint-pic:hover {
+.carousel-item {
   cursor: pointer;
+}
+
+.paint-pic:hover {
   animation: rise .3s;
   animation-iteration-count: 1;
   transform: translate(0px, -5px);
