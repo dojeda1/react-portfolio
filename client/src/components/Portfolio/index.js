@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import M from 'materialize-css';
+// import M from 'materialize-css';
 
 import MealPlannerMockup from "../../images/meal-planner/meal-planner-mockup.png"
 import MealPlannerPaint from "../../images/meal-planner/meal-planner-paint.png"
@@ -24,6 +24,30 @@ import SocratesPaint from "../../images/socrates/socrates-paint.png"
 import SocratesImg1 from "../../images/socrates/socrates-prompt.jpg"
 import SocratesImg2 from "../../images/socrates/socrates-results.jpg"
 import SocratesImg3 from "../../images/socrates/socrates-choices.jpg"
+
+import TriviaMockup from "../../images/trivia-game/trivia-mockup.png"
+import TriviaPaint from "../../images/trivia-game/trivia-paint.png"
+import TriviaImg1 from "../../images/trivia-game/trivia-results.jpg"
+import TriviaImg2 from "../../images/trivia-game/trivia-start.jpg"
+import TriviaImg3 from "../../images/trivia-game/trivia-results.jpg"
+
+import FurButlrMockup from "../../images/fur-butlr/fur-butlr-mockup.png"
+import FurButlrPaint from "../../images/fur-butlr/fur-butlr-paint.png"
+import FurButlrImg1 from "../../images/fur-butlr/fur-butlr-results.jpg"
+import FurButlrImg2 from "../../images/fur-butlr/fur-butlr-update.jpg"
+import FurButlrImg3 from "../../images/fur-butlr/fur-butlr-profile.jpg"
+
+import BugMemoryMockup from "../../images/bug-memory/bug-memory-mockup.png"
+import BugMemoryPaint from "../../images/bug-memory/bug-memory-paint.png"
+import BugMemoryImg1 from "../../images/bug-memory/bug-memory-win.jpg"
+import BugMemoryImg2 from "../../images/bug-memory/bug-memory-lose.jpg"
+import BugMemoryImg3 from "../../images/bug-memory/bug-memory-cards.jpg"
+
+import BookFinderMockup from "../../images/book-finder/book-finder-mockup.png"
+import BookFinderPaint from "../../images/book-finder/book-finder-paint.png"
+import BookFinderImg1 from "../../images/book-finder/book-finder-home.jpg"
+import BookFinderImg2 from "../../images/book-finder/book-finder-results.jpg"
+import BookFinderImg3 from "../../images/book-finder/book-finder-saved.jpg"
 
 class Portfolio extends Component {
     state = {
@@ -76,40 +100,44 @@ class Portfolio extends Component {
                 list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
             }, {
                 title: "Trivia Game",
-                mockup: "./assets/images/trivia-game/trivia-mockup.png",
-                img1: "./assets/images/trivia-game/trivia-start.jpg",
-                img2: "./assets/images/trivia-game/trivia-correct.jpg",
-                img3: "./assets/images/trivia-game/trivia-results.jpg",
+                mockup: TriviaMockup,
+                paint: TriviaPaint,
+                img1: TriviaImg1,
+                img2: TriviaImg2,
+                img3: TriviaImg3,
                 visit: "https://dojeda1.github.io/TriviaGame/",
                 code: "https://github.com/dojeda1/TriviaGame",
                 sum: "Test your knowledge of both the metric and imperial units of measurement. Each question is timed and will move onto the next if left unanswered. After each question, a fun GIF is briefly displayed according to whether or not you were correct. At the end of the game, the number of right, wrong, and unanswered responses is displayed along side your overall score. Your high scores are also shown at the bottom of the results page.",
                 list: ["HTML", "CSS", "JavaScript", "jQuery", "Bootstrap"]
             }, {
                 title: "Fur Butlr",
-                mockup: "./assets/images/fur-butlr/fur-butlr-mockup.png",
-                img1: "./assets/images/fur-butlr/fur-butlr-results.jpg",
-                img2: "./assets/images/fur-butlr/fur-butlr-update.jpg",
-                img3: "./assets/images/fur-butlr/fur-butlr-profile.jpg",
+                mockup: FurButlrMockup,
+                paint: FurButlrPaint,
+                img1: FurButlrImg1,
+                img2: FurButlrImg2,
+                img3: FurButlrImg3,
                 visit: "https://fur-butlr-app.herokuapp.com/",
                 code: "https://github.com/ApexPanda/FurButler",
                 sum: "A place where pet owners can meet each other and search for pet services like walkers, groomers or sitters. Fur Butlr lets you create a profile, login in, edit your page, and show off your pets.",
                 list: ["HTML", "CSS", "JavaScript", "jQuery", "Materialize", "MySQL", "Node.js", "Sequelize"]
             }, {
                 title: "Bug Memory",
-                mockup: "./assets/images/bug-memory/bug-memory-mockup.png",
-                img1: "./assets/images/bug-memory/bug-memory-win.jpg",
-                img2: "./assets/images/bug-memory/bug-memory-lose.jpg",
-                img3: "./assets/images/bug-memory/bug-memory-cards.jpg",
+                mockup: BugMemoryMockup,
+                paint: BugMemoryPaint,
+                img1: BugMemoryImg1,
+                img2: BugMemoryImg2,
+                img3: BugMemoryImg3,
                 visit: "https://memory-game-react-click.herokuapp.com/",
                 code: "https://github.com/dojeda1/memory-game",
                 sum: "Test your memory by selecting every bug card without choosing the same one twice. Each time one is chosen, the game will shuffle the cards and display them in a random order using REACT. If you select the same bug twice, you lose!",
                 list: ["HTML", "CSS", "JavaScript", "Bootstrap", "React.js", "Node.js"]
             }, {
                 title: "Book Finder",
-                mockup: "./assets/images/book-finder/book-finder-mockup.png",
-                img1: "./assets/images/book-finder/book-finder-home.jpg",
-                img2: "./assets/images/book-finder/book-finder-results.jpg",
-                img3: "./assets/images/book-finder/book-finder-saved.jpg",
+                mockup: BookFinderMockup,
+                paint: BookFinderPaint,
+                img1: BookFinderImg1,
+                img2: BookFinderImg2,
+                img3: BookFinderImg3,
                 visit: "https://google-books-mern.herokuapp.com/",
                 code: "https://github.com/dojeda1/book-search",
                 sum: "Search through a large database of books with the help of the Google Books API. User inputs the title of a book and results are displayed below. They can then visit the google URL, save the book in a MongoDB database for later, or delete it from saved books.",
@@ -155,8 +183,8 @@ class Portfolio extends Component {
                     <div className="row">
 
                         <div className="col m12 l8">
-                            <h5 id="p-title" className="font1"></h5>
-                            <img id="p-mockup" src={this.state.currentProject.mockup} alt="" />
+                            <h5 id="p-title" className="font1">{this.state.currentProject.title}</h5>
+                            <img id="p-mockup" src={this.state.currentProject.mockup} alt="Mockup" />
 
                             <br />
                             <div className="row">
@@ -200,16 +228,16 @@ class Portfolio extends Component {
 
                         <div id="move" className="col s12 m4">
                             <div className="col s12">
-                                <div className="row"><img id="p-img-1" src={this.state.currentProject.img1} className="z-depth-2 materialboxed" /></div>
+                                <div className="row"><img id="p-img-1" src={this.state.currentProject.img1} alt="Screenshot 1" className="z-depth-2 materialboxed" /></div>
                             </div>
 
                             <div className="col s12">
-                                <div className="row"><img id="p-img-2" src={this.state.currentProject.img2} className="z-depth-2 materialboxed" /></div>
+                                <div className="row"><img id="p-img-2" src={this.state.currentProject.img2} alt="Screenshot 2" className="z-depth-2 materialboxed" /></div>
                             </div>
 
                         </div>
 
-                        <div className="col s12 m8"><img id="p-img-3" src={this.state.currentProject.img3} className="z-depth-2 materialboxed" /></div>
+                        <div className="col s12 m8"><img id="p-img-3" src={this.state.currentProject.img3} alt="Screenshot 3" className="z-depth-2 materialboxed" /></div>
                     </div>
 
                     <div className="row">
@@ -229,10 +257,10 @@ class Portfolio extends Component {
                     <div className="carousel center-align">
 
                         {this.state.allProjects.map((project, index) => (
-                            <a key={index} className="carousel-item" data-tag={index} onClick={this.handleSelect}>
-                                <img className="paint-pic" src={project.paint} />
+                            <button key={index} className="carousel-item" data-tag={index} onClick={this.handleSelect}>
+                                <img className="paint-pic" src={project.paint} alt="Project" />
                                 <h6 className="black-text font2">{project.title}</h6>
-                            </a>
+                            </button>
                         ))}
 
                     </div>

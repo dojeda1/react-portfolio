@@ -13,7 +13,7 @@ function Parallax() {
             <div className="container">
                 <div className="row">
                     <div className="col s12 white-text">
-                        <img className="logo-pic" src={DLogoWhite} />
+                        <img className="logo-pic" src={DLogoWhite} alt="D Logo" />
                         <h1 className="white-text font2">DOMINIC OJEDA</h1>
                         <h5 className="font1">Full Stack Web Developer</h5>
                     </div>
@@ -37,7 +37,7 @@ function Parallax() {
             </div>
 
             <div className="parallax">
-                <img id="para-pic" src={TreeBG} />
+                <img id="para-pic" src={TreeBG} alt="" />
             </div>
 
         </div>

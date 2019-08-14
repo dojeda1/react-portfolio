@@ -172,6 +172,7 @@ nav {
   border-right: 5px solid #27aae1;
   color: #27aae1 !important;
   border-left: none;
+  cursor: pointer;
 }
 
 /* Logo link styles */
@@ -212,6 +213,15 @@ nav {
 
 .carousel {
   height: 300px;
+}
+
+.carousel button {
+  background-color: none;
+  background: none;
+  border: none;
+  border-style: none;
+  border-color: none;
+  border-image: none;
 }
 
 .carousel .indicators .indicator-item {
@@ -273,29 +283,34 @@ nav {
 }
 
 /* label focus color */
-.input-field input:focus+label {
+#contact-form .input-field input:focus+label {
   color: #27aae1 !important;
 }
 
 /* label underline focus color */
-.input-field input:focus {
+#contact-form .input-field input:focus {
   border-bottom: 1px solid #27aae1 !important;
   box-shadow: 0 1px 0 0 #27aae1 !important;
 }
 
 /* label focus color */
-.input-field textarea:focus+label {
+#contact-form .input-field textarea{
+  height: 200px !important;
+}
+
+/* label focus color */
+#contact-form .input-field textarea:focus+label {
   color: #27aae1 !important;
 }
 
 /* label underline focus color */
-.input-field textarea:focus {
+#contact-form .input-field textarea:focus {
   border-bottom: 1px solid #27aae1 !important;
   box-shadow: 0 1px 0 0 #27aae1 !important;
-  height: 200px !important;
+  /* height: 200px !important; */
 
-  animation: extend 1s;
-  animation-iteration-count: 1;
+  /* animation: extend 1s; */
+  /* animation-iteration-count: 1; */
 }
 
 /* Media query changes */
@@ -319,7 +334,65 @@ nav {
   opacity: .8 !important;
 }
 
-#para-pic {}
+.page-footer {
+  margin-bottom: -21px;
+}
+
+.footer-img {
+  max-width: 30px;
+  width: 10vw;
+  margin: 0px 10px;
+}
+
+.game-container {
+  width: calc(100% - 60px);
+  height: 100vh;
+  background-color: #212121;
+  position: fixed;
+  z-index: 2;
+  overflow: hidden;
+
+  animation: slide-out 2s;
+  animation-iteration-count: 1;
+}
+
+.no-overflow {
+  height:  100vh;
+  overflow: hidden;
+}
+
+/* Game Styles */
+
+#game-form .form-input{
+  color: white !important;
+}
+
+#game-form .input-field input:focus+label {
+  color: #27aae1 !important;
+}
+
+#game-form .input-field input:focus {
+  border-bottom: 1px solid #27aae1 !important;
+  box-shadow: 0 1px 0 0 #27aae1 !important;
+  color: white;
+}
+
+#game-form .input-field textarea{
+  height: 200px !important;
+}
+
+#game-form .input-field textarea:focus+label {
+  color: #27aae1 !important;
+}
+
+#game-form .input-field textarea:focus {
+  border-bottom: 1px solid #27aae1 !important;
+  box-shadow: 0 1px 0 0 #27aae1 !important;
+  /* height: 200px !important; */
+
+  /* animation: extend 1s; */
+  /* animation-iteration-count: 1; */
+}
 
 @media only screen and (min-width: 600px) {
 
@@ -353,6 +426,7 @@ nav {
   #move {
     padding-right: 18px;
   }
+
 }
 
 @keyframes grow {
@@ -423,5 +497,15 @@ nav {
 
   to {
     transform: rotate(359deg) scale(1.1)
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%
   }
 }

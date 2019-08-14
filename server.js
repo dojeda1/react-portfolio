@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const PORT = process.env.PORT || 3001;
+const nodemailer = require('nodemailer');
 const app = express();
 
 // Define middleware here
@@ -12,7 +13,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Define API routes here
-
+app.post('/api/form'), (req, res) => {
+  console.log(req.body);
+}
 // Send every other request to the React app
 // Define any API routes before this runs
 app.get("*", (req, res) => {
