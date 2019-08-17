@@ -6,8 +6,19 @@
         "maxMp": 0,
         "strength": 5,
         "speed": 12,
-        "xp": 10,
+        "xp": 1000,
         "inventory": [],
         "gold": 10
+    },
+    {
+        "name": "Wolf",
+        "type": "common",
+        "maxHp": 32,
+        "maxMp": 0,
+        "strength": 7,
+        "speed": 15,
+        "xp": 12,
+        "inventory": [],
+        "gold": 12
     }
 ]

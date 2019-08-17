@@ -1,0 +1,32 @@
+{
+    "name": "",
+    "race": "",
+    "class": "",
+    "special1": "",
+    "special2": "",
+    "strength": 4,
+    "defense": 2,
+    "luck": 3,
+    "speed": 2,
+    "maxHp": 20,
+    "hp": 20,
+    "maxMp": 4,
+    "mp": 4,
+    "level": 1,
+    "xp": 0,
+    "nextLevel": 50,
+    "inventory": [
+        "Health Potion"
+    ],
+    "gold": 100,
+    "goldCount": 0,
+    "killCount": 0,
+    "dungeonCount": 0,
+    "isDead": false,
+    "isBerserk": false,
+    "berserkCount": 0,
+    "baseAtkHold": 0,
+    "totalKills": 0,
+    "totalDungeons": 0,
+    "totalGold": 0
+}
