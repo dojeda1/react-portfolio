@@ -18,7 +18,7 @@
     "inventory": [
         "Health Potion"
     ],
-    "gold": 100,
+    "gold": 0,
     "goldCount": 0,
     "killCount": 0,
     "dungeonCount": 0,

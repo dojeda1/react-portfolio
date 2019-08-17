@@ -256,13 +256,24 @@ class Game extends Component {
                 message: "Staying the night will cost " + cost + " gold.",
                 messageSub: "Do you accept?",
             })
+            this.changePlayStates("town", "inn", "accept");
         } else {
             this.setState({
-                message: "Staying the night will cost " + cost + " gold, but your HP and MP are already full.",
-                messageSub: "Do you want to stay anyway?",
+                message: "You are already at full Health and Mana."
+            })
+            this.changePlayStates("town", "select where", null);
+        }
+    }
+    selectSafeTripCheck = () => {
+        const safeTripCheck = this.randNum(1, 10 + Math.floor(this.state.player.luck / 3));
+        if (safeTripCheck === 1) {
+            this.monsterEncounter("You were ambushed!!!");
+        } else {
+            this.selectToTown();
+            this.setState({
+                message: "You arrived to town safely."
             })
         }
-        this.changePlayStates("town", "inn", "accept");
     }
     selectYesInn = () => {
         const cost = 10 + (this.state.player.level - 2) * 2;
@@ -287,8 +298,7 @@ class Game extends Component {
         this.monsterEncounter();
     }
     //encounters
-    monsterEncounter = () => {
-
+    monsterEncounter = (alternateMessage) => {
 
         let floorNum = 0;
         let rangeNum = 0;
@@ -302,8 +312,8 @@ class Game extends Component {
             rangeNum = playerLevel;
         }
 
-        let monNum = this.randNum(floorNum, rangeNum)
-        console.log(monNum);
+        let monNum = this.randNum(floorNum, rangeNum);
+        const message = alternateMessage || "You encountered " + this.aOrAn(monsters1[monNum].name) + " " + monsters1[monNum].name + ".";
 
         this.setState({
             currentEnemy: {
@@ -322,7 +332,7 @@ class Game extends Component {
             },
             task: "fight",
             step: "select move",
-            message: "You encountered " + this.aOrAn(monsters1[monNum].name) + " " + monsters1[monNum].name + "."
+            message: message
         });
     };
     // Combat Functions
@@ -399,6 +409,19 @@ class Game extends Component {
             console.log("actual level: " + this.state.player.level);
             this.levelUpCheck(this.state.player);
         };
+    };
+    selectRun = () => {
+        const player = this.state.player
+        console.log(player.gold)
+        const lostGold = this.randNum(0, Math.floor(player.gold / 2));
+        console.log(lostGold)
+        player.gold -= lostGold;
+        const lostHp = this.randNum(0, 3);
+        player.hp -= lostHp;
+        this.setState({
+            message: "You lost " + lostGold + " gold and " + lostHp + " HP."
+        });
+        this.selectToWild();
     }
     dropGold = () => {
         const amount = this.randNum(0, this.state.currentEnemy.gold);
@@ -433,7 +456,7 @@ class Game extends Component {
                                 <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.newGame}>
                                     New Game
                                 </button>
-                                <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.loadGame}>
+                                <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2 disabled" type="button" onClick={this.loadGame}>
                                     Load Game
                                 </button>
                             </div>
@@ -489,7 +512,7 @@ class Game extends Component {
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectExploreWild}>
                                     Explore Wild
                                         </button>
-                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTown}>
+                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectSafeTripCheck}>
                                     Go to town
                                         </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
@@ -542,7 +565,7 @@ class Game extends Component {
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                     Use Item
                                         </button>
-                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToWild}>
+                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectRun}>
                                     <i className="material-icons left">arrow_back</i>Run
                                         </button>
                             </div>
