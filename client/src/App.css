@@ -391,13 +391,13 @@ nav {
 }
 
 .game-choice-btn {
-  color: #8dc63f;
+  color: white;
   display: block;
 }
 
 .game-choice-btn:hover{
-  color: white;
-  background-color: #8dc63f;
+  color: #27aae1;
+  background-color: transparent;
 }
 
 @media only screen and (min-width: 600px) {

@@ -1,0 +1,13 @@
+[
+    {
+        "name": "Slime",
+        "type": "common",
+        "maxHp": 20,
+        "maxMp": 0,
+        "strength": 5,
+        "speed": 12,
+        "xp": 10,
+        "inventory": [],
+        "gold": 10
+    }
+]

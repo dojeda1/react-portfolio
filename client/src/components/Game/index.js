@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import monsters1 from "./monsters1.json";
 class Game extends Component {
 
     state = {
@@ -32,6 +32,11 @@ class Game extends Component {
             isBerserk: false,
             berserkCount: 0,
             baseAtkHold: 0,
+
+            totalKills: 0,
+            totalDungeons: 0,
+            totalGold: 0
+
         },
         gamePlayStates: {
             isInTown: false,
@@ -41,7 +46,23 @@ class Game extends Component {
             isSelling: false,
             isInDungeon: false,
             isInTavern: false
-        }
+        },
+        currentEnemy: {
+            name: "",
+            type: "common",
+            maxHp: 0,
+            hp: 0,
+            maxMp: 0,
+            mp: 0,
+            strength: 0,
+            speed: 0,
+            xp: 0,
+            inventory: [],
+            gold: 0,
+            isDead: false
+        },
+        monsters1,
+
     }
     componentDidMount() {
         this.setState({ message: "Choose an Option." })
@@ -62,6 +83,17 @@ class Game extends Component {
     }
     randNum = (x, y) => {
         return Math.floor(Math.random() * y) + x
+    }
+    aOrAn = (word) => {
+        var firstLetter = word.charAt(0);
+        var anA = "";
+        if (firstLetter === "A" || firstLetter === "E" || firstLetter === "I" || firstLetter === "O" || firstLetter === "U") {
+            anA = "an";
+            return anA
+        } else {
+            anA = "a";
+            return anA
+        }
     }
     handleCheck = () => {
         console.log(this.state.player);
@@ -253,12 +285,6 @@ class Game extends Component {
     //encounters
     monsterEncounter = () => {
 
-        this.setState({ 
-            gamePlayStates: {
-                ...this.state.gamePlayStates,
-                isFighting: true
-            },
-        })
 
         let floorNum = 0;
         let rangeNum = 0;
@@ -274,145 +300,211 @@ class Game extends Component {
 
         let monNum = this.randNum(floorNum, rangeNum)
         console.log(monNum);
-        //  name, maxHp, maxMp, strength, speed, xp, gold, invArr
-        // currentEnemy.name = monsters[monNum].name;
-        // currentEnemy.type = monsters[monNum].type;
-        // currentEnemy.maxHp = monsters[monNum].maxHp;
-        // currentEnemy.hp = monsters[monNum].hp;
-        // currentEnemy.maxMp = monsters[monNum].maxMp;
-        // currentEnemy.mp = monsters[monNum].mp;
-        // currentEnemy.strength = monsters[monNum].strength;
-        // currentEnemy.xp = monsters[monNum].xp;
-        // currentEnemy.inventory = Array.from(monsters[monNum].inventory);
-        // currentEnemy.gold = monsters[monNum].gold;
-        // currentEnemy.isDead = monsters[monNum].isDead;
+
+        this.setState({
+            currentEnemy: {
+                ...this.state.currentEnemy,
+                name: monsters1[monNum].name,
+                type: monsters1[monNum].type,
+                maxHp: monsters1[monNum].maxHp,
+                hp: monsters1[monNum].maxHp,
+                maxMp: monsters1[monNum].maxMp,
+                mp: monsters1[monNum].maxMp,
+                strength: monsters1[monNum].strength,
+                xp: monsters1[monNum].xp,
+                inventory: monsters1[monNum].inventory,
+                gold: monsters1[monNum].gold,
+                isDead: false
+            },
+            gamePlayStates: {
+                ...this.state.gamePlayStates,
+                isFighting: true
+            },
+            message: "You encountered " + this.aOrAn(monsters1[monNum].name) + " " + monsters1[monNum].name + "."
+        });
+    };
+    // Combat Functions
+    selectAttack = () => {
+        this.attack(this.state.player, this.state.currentEnemy);
+        this.enemyDeathCheck(this.state.currentEnemy);
+        this.gameOverCheck();
     }
-    render() {
-        return (
-            <div className="game-container" >
-                <div className="container white-text">
-                    <div className="row">
-                        <h3 className="font2 center-align">FANTASY RPG</h3>
-                        <p>{this.state.message}</p>
-                        {this.state.currentTask === "new or load" ?
+    attack = function (attacker, defender) {
+        const luckCheck = defender.speed - attacker.luck;
+        const criticalCheck = this.randNum(1, luckCheck);
+        if (criticalCheck !== 1) {
+
+            defender.hp -= attacker.strength;
+            console.log(defender.hp)
+        } else {
+            let criticalStrength = attacker.strength + Math.floor(attacker.strength / 2);
+            defender.hp -= criticalStrength;
+            console.log(defender.hp)
+        }
+        console.log("after:" + defender.hp);
+        this.setState({
+            defender: {
+                ...this.state.defender,
+                hp: defender.hp
+            },
+        });
+        // attacker.berserkCheck();
+    }
+    enemyDeathCheck = (enemy) => {
+        if (enemy.hp <= 0) {
+            this.setState({
+                gamePlayStates: {
+                    ...this.state.gamePlayStates,
+                    isFighting: false,
+                },
+                player: {
+                    ...this.state.player,
+                    totalKills: this.state.player.totalKills++
+                },
+                message: "You defeated " + enemy.name + "."
+            });
+            console.log(this.state.player.totalKills)
+    } else {
+    this.attack(enemy, this.state.player);
+}
+    }
+gameOverCheck = () => {
+    if (this.state.player.hp <= 0) {
+        this.changePlayStates(false, false, false, false, false, false)
+        this.setState({
+            message: "You have died... Game over."
+        });
+    }
+}
+render() {
+    return (
+        <div className="game-container" >
+            <div className="container white-text">
+                <div className="row">
+                    <h3 className="font2 center-align">FANTASY RPG</h3>
+                    <p>{this.state.message}</p>
+                    {this.state.gamePlayStates.isFighting ?
+                        <p className="dom-green2-text font1"><i className="material-icons left">adb</i>{this.state.currentEnemy.name} | HP: {this.state.currentEnemy.hp}/ {this.state.currentEnemy.maxHp} | ATK: {this.state.currentEnemy.strength}</p>
+                        : null}
+                    <div>
+                        <p className="dom-blue-text font1"><i className="material-icons left">person</i>{this.state.player.name} | HP: {this.state.player.hp}/ {this.state.player.maxHp} | MP: {this.state.player.mp}/ {this.state.player.maxMp} | XP: {this.state.player.xp}/ {this.state.player.nextLevel} | ${this.state.player.gold}</p>
+                        {/* <button className="btn portfolio-btn waves-effect waves-light dom-green2 font2" type="button" onClick={this.handleCheck}>
+                                Check stats
+                                </button> */}
+                    </div>
+                    {this.state.currentTask === "new or load" ?
+                        <div>
+                            <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.newGame}>
+                                New Game
+                                </button>
+                            <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.loadGame}>
+                                Load Game
+                                </button>
+                        </div>
+                        : this.state.currentTask === "input name" ?
                             <div>
-                                <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.newGame}>
-                                    New Game
-                                </button>
-                                <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.loadGame}>
-                                    Load Game
-                                </button>
+                                <form id="game-form" onSubmit={this.handleName}>
+                                    <div className="row">
+                                        <div className="input-field col s12">
+                                            <input type="text" className="form-input" name="inputName" value={this.state.inputName} onChange={this.handleInputChange} />
+                                            <label htmlFor="inputName" className="font1">Name</label>
+                                        </div>
+                                    </div>
+
+                                    <div className="row">
+                                        <div className="col m12">
+                                            <button
+                                                className="btn contact-btn small waves-effect waves-light dom-blue font2 right"
+                                                type="submit" name="action" value="Send">Enter</button>
+                                        </div>
+                                    </div>
+                                </form>
+
                             </div>
-                            : this.state.currentTask === "input name" ?
+                            : this.state.currentTask === "select race" ?
                                 <div>
-                                    <form id="game-form" onSubmit={this.handleName}>
-                                        <div className="row">
-                                            <div className="input-field col s12">
-                                                <input type="text" className="form-input" name="inputName" value={this.state.inputName} onChange={this.handleInputChange} />
-                                                <label htmlFor="inputName" className="font1">Name</label>
-                                            </div>
-                                        </div>
-
-                                        <div className="row">
-                                            <div className="col m12">
-                                                <button
-                                                    className="btn contact-btn small waves-effect waves-light dom-blue font2 right"
-                                                    type="submit" name="action" value="Send">Enter</button>
-                                            </div>
-                                        </div>
-                                    </form>
-
+                                    <button className="btn btn-flat game-choice-btn font2" value="Human" onClick={this.selectRace}>
+                                        Human
+                                </button>
+                                    <button className="btn btn-flat game-choice-btn font2" value="Elf" onClick={this.selectRace}>
+                                        Elf
+                                </button>
+                                    <button className="btn btn-flat game-choice-btn font2" value="Dwarf" onClick={this.selectRace}>
+                                        Dwarf
+                                </button>
                                 </div>
-                                : this.state.currentTask === "select race" ?
+                                : this.state.currentTask === "select class" ?
                                     <div>
-                                        <button className="btn btn-flat game-choice-btn font2" value="Human" onClick={this.selectRace}>
-                                            Human
+                                        <button className="btn btn-flat game-choice-btn font2" value="Warrior" onClick={this.selectClass}>
+                                            Warrior
                                 </button>
-                                        <button className="btn btn-flat game-choice-btn font2" value="Elf" onClick={this.selectRace}>
-                                            Elf
+                                        <button className="btn btn-flat game-choice-btn font2" value="Mage" onClick={this.selectClass}>
+                                            Mage
                                 </button>
-                                        <button className="btn btn-flat game-choice-btn font2" value="Dwarf" onClick={this.selectRace}>
-                                            Dwarf
+                                        <button className="btn btn-flat game-choice-btn font2" value="Rogue" onClick={this.selectClass}>
+                                            Rogue
                                 </button>
                                     </div>
-                                    : this.state.currentTask === "select class" ?
-                                        <div>
-                                            <button className="btn btn-flat game-choice-btn font2" value="Warrior" onClick={this.selectClass}>
-                                                Warrior
-                                </button>
-                                            <button className="btn btn-flat game-choice-btn font2" value="Mage" onClick={this.selectClass}>
-                                                Mage
-                                </button>
-                                            <button className="btn btn-flat game-choice-btn font2" value="Rogue" onClick={this.selectClass}>
-                                                Rogue
-                                </button>
-                                        </div>
-                                        : null}
+                                    : null}
 
-                        {this.state.gamePlayStates.isExploring && !this.state.gamePlayStates.isFighting ?
-                            <div>
-                                <p>Where to next?</p>
-                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectExploreWild}>
-                                    Explore Wild
+                    {this.state.gamePlayStates.isExploring && !this.state.gamePlayStates.isFighting ?
+                        <div>
+                            <p>Where to next?</p>
+                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectExploreWild}>
+                                Explore Wild
                                         </button>
-                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTown}>
-                                    Go to town
+                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTown}>
+                                Go to town
+                                        </button>
+                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
+                                Use Item
+                                        </button>
+                        </div>
+                        : this.state.gamePlayStates.isInTown ?
+                            <div>
+                                <p>What next?</p>
+                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToInn}>
+                                    Stay at Inn
+                                        </button>
+                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTavern}>
+                                    Visit Tavern
+                                        </button>
+                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToShop}>
+                                    Go to Shop
                                         </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                     Use Item
                                         </button>
+                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToWild}>
+                                    <i className="material-icons left">arrow_back</i>Leave Town
+                                        </button>
                             </div>
-                            : this.state.gamePlayStates.isInTown ?
+                            : this.state.gamePlayStates.isFighting ?
                                 <div>
                                     <p>What next?</p>
-                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToInn}>
-                                        Stay at Inn
+                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
+                                        Attack
                                         </button>
-                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTavern}>
-                                        Visit Tavern
-                                        </button>
-                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToShop}>
-                                        Go to Shop
-                                        </button>
+                                    <button className="btn btn-flat game-choice-btn font2 disabled" onClick={this.selectToTavern}>
+                                        {this.state.player.special1}
+                                    </button>
+                                    <button className="btn btn-flat game-choice-btn font2 disabled" onClick={this.selectToShop}>
+                                        {this.state.player.special2}
+                                    </button>
                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                         Use Item
                                         </button>
                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToWild}>
-                                        <i className="material-icons left">arrow_back</i>Leave Town
+                                        <i className="material-icons left">arrow_back</i>Run
                                         </button>
                                 </div>
-                                : this.state.gamePlayStates.isFighting ?
-                                    <div>
-                                        <p>What next?</p>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
-                                            Attack
-                                        </button>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTavern}>
-                                            {this.state.player.special1}
-                                        </button>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToShop}>
-                                            {this.state.player.special2}
-                                        </button>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
-                                            Use Item
-                                        </button>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToWild}>
-                                            <i className="material-icons left">arrow_back</i>Run
-                                        </button>
-                                    </div>
-                                    : null}
-
-                        <div>
-                            <p className="dom-blue-text font1"><i className="material-icons left">person</i>{this.state.player.name} | HP: {this.state.player.hp}/ {this.state.player.maxHp} | MP: {this.state.player.mp}/ {this.state.player.maxMp} | XP: {this.state.player.xp}/ {this.state.player.nextLevel} | ${this.state.player.gold}</p>
-                            {/* <button className="btn portfolio-btn waves-effect waves-light dom-green2 font2" type="button" onClick={this.handleCheck}>
-                                Check stats
-                                </button> */}
-                        </div>
-                    </div>
+                                : null}
 
                 </div>
+
             </div>
-        );
-    }
+        </div>
+    );
+}
 }
 export default Game;
