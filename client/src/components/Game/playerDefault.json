@@ -8,6 +8,7 @@
     "special2Cost": 0,
     "strength": 4,
     "defense": 2,
+    "mana": 4,
     "luck": 30,
     "speed": 2,
     "maxHp": 20,
@@ -15,7 +16,7 @@
     "maxMp": 4,
     "mp": 4,
     "level": 1,
-    "xp": 0,
+    "xp": 1000,
     "nextLevel": 50,
     "inventory": [
         "Health Potion"
