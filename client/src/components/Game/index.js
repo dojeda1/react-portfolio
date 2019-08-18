@@ -4,8 +4,11 @@ import monsters1 from "./monsters1.json";
 class Game extends Component {
 
     state = {
-        message: "",
+        messages: "",
         messageSub: "",
+        xpResult: 0,
+        goldResult: 0,
+        itemResult: [],
         location: "title screen",
         task: "new or load",
         step: null,
@@ -180,6 +183,8 @@ class Game extends Component {
         let luckA
         let special1A
         let special2A
+        let special1CostA
+        let special2CostA
         switch (event.target.value) {
 
             case "Warrior":
@@ -193,6 +198,8 @@ class Game extends Component {
                 luckA = 0
                 special1A = "Axe Strike"
                 special2A = "Berserk"
+                special1CostA = 6
+                special2CostA = 8
                 break;
 
             case "Mage":
@@ -206,6 +213,8 @@ class Game extends Component {
                 luckA = 1
                 special1A = "Fireball"
                 special2A = "Heal"
+                special1CostA = 6
+                special2CostA = 10
                 break;
 
             case "Rogue":
@@ -219,6 +228,8 @@ class Game extends Component {
                 luckA = 2
                 special1A = "Dagger Slash"
                 special2A = "Steal"
+                special1CostA = 6
+                special2CostA = 5
                 break;
 
             default: console.log("error");
@@ -236,7 +247,9 @@ class Game extends Component {
                 speed: this.state.player.speed + speedA,
                 luck: this.state.player.luck + luckA,
                 special1: this.state.player.special1 + special1A,
-                special2: this.state.player.special2 + special2A
+                special2: this.state.player.special2 + special2A,
+                special1Cost: special1CostA,
+                special2Cost: special2CostA
             },
             message: "Your adventure Begins..."
         })
@@ -295,7 +308,20 @@ class Game extends Component {
         this.selectToTown();
     }
     selectExploreWild = () => {
-        this.monsterEncounter();
+        const exploreCheck = this.randNum(1, 10)
+        if (exploreCheck === 1) {
+            this.chestEncounter();
+            // } else if (battleCheck === 2) {            
+            //     this.dungeonEncounter();
+        } else {
+            this.monsterEncounter();
+        }
+    }
+    selectNext = () => {
+        this.setState({
+            task: "select where",
+            step: null
+        });
     }
     //encounters
     monsterEncounter = (alternateMessage) => {
@@ -335,6 +361,43 @@ class Game extends Component {
             message: message
         });
     };
+    chestEncounter = () => {
+        this.setState({
+            task: "chest",
+            step: "accept",
+            message: "You found a chest!"
+        })
+    }
+    selectYesChest = () => {
+        const player = this.state.player;
+        const openCheck = this.randNum(1, 5);
+        if (openCheck !== 1) {
+            const goldNum = this.randNum(10, 30);
+            player.gold += goldNum;
+            player.totalGold += goldNum;
+            this.setState({
+                task: "select where",
+                step: null,
+                message: "You opened it!"
+            });
+            // for (i = 0; i < 2; i++) {
+            //     var itemNum = randNum(0, chestInventory.length)
+            //     var item = chestInventory[itemNum];
+            //     player.inventory.push(chestInventory[itemNum]);
+            //     removeItem(item, chestInventory);
+
+
+            //     var anA = aOrAn(item)
+
+            //     console.log("You got " + anA + " " + item + ".");
+
+            // }
+
+        } else {
+
+            this.monsterEncounter();
+        }
+    }
     // Combat Functions
     selectAttack = () => {
         this.attack(this.state.player, this.state.currentEnemy);
@@ -361,10 +424,9 @@ class Game extends Component {
     enemyDeathCheck = (player, enemy) => {
         if (enemy.hp <= 0) {
             player.totalKills++;
-            console.log("hoodini")
             this.setState({
-                task: "select where",
-                step: null,
+                task: "fight",
+                step: "results",
                 message: "You killed " + enemy.name + "!"
             });
             this.gainXp(enemy.xp, this.state.player);
@@ -376,17 +438,23 @@ class Game extends Component {
     }
     gameOverCheck = () => {
         if (this.state.player.hp <= 0) {
-            this.changePlayStates("title screen", "new or load")
+            this.changePlayStates("title screen", "game over")
             this.setState({
-                player: playerDefault,
                 message: "You have died... Game over."
             });
         }
+    };
+    selectReset = () => {
+        this.changePlayStates("title screen", "new or load");
+        this.setState({
+            player: playerDefault,
+            message: "Start again?"
+        });
     }
     gainXp = (xpNum, player) => {
         player.xp += xpNum;
         this.setState({
-            message: "You gained " + xpNum + " XP."
+            xpResult: xpNum
         })
         this.levelUpCheck(this.state.player);
     };
@@ -422,6 +490,7 @@ class Game extends Component {
             message: "You lost " + lostGold + " gold and " + lostHp + " HP."
         });
         this.selectToWild();
+        this.gameOverCheck();
     }
     dropGold = () => {
         const amount = this.randNum(0, this.state.currentEnemy.gold);
@@ -431,12 +500,74 @@ class Game extends Component {
                 gold: this.state.player.gold + amount,
                 totalGold: this.state.player.gold + amount,
             },
-            message: this.state.currentEnemy.name + " dropped " + amount + " gold."
+            goldResult: amount
         });
     };
     //town functions
     Select
     render() {
+        let playerStyle;
+        if (this.state.player.hp > 0) {
+            playerStyle = "dom-blue-text font1"
+        } else {
+            playerStyle = "grey-text font1"
+        }
+        let playerHpStyle;
+        if (this.state.player.hp > (this.state.player.maxHp * 0.25)) {
+            playerHpStyle = "dom-blue-text"
+        } else if (this.state.player.hp > 0) {
+            playerHpStyle = "red-text"
+        } else {
+            playerHpStyle = "grey-text"
+        }
+        let playerMpStyle;
+        if (this.state.player.mp > (this.state.player.maxMp * 0.25)) {
+            playerMpStyle = "dom-blue-text"
+        } else if (this.state.player.mp > 0) {
+            playerMpStyle = "red-text"
+        } else {
+            playerMpStyle = "grey-text"
+        }
+        let playerXpStyle;
+        if (this.state.player.xp > 0) {
+            playerXpStyle = "dom-blue-text"
+        } else {
+            playerXpStyle = "grey-text"
+        }
+        let playerGoldStyle;
+        if (this.state.player.gold > 10) {
+            playerGoldStyle = "dom-blue-text"
+        } else if (this.state.player.gold > 0) {
+            playerGoldStyle = "red-text"
+        } else {
+            playerGoldStyle = "grey-text"
+        }
+
+        let enemyStyle;
+        if (this.state.currentEnemy.hp > 0) {
+            enemyStyle = "dom-green2-text font1"
+        } else {
+            enemyStyle = "grey-text font1"
+        }
+
+        let specialBtnStyle1;
+        if (this.state.player.level < 2) {
+            specialBtnStyle1 = "hide"
+        } else if (this.state.currentEnemy.mp > this.state.currentEnemy.special1Cost) {
+            specialBtnStyle1 = "btn btn-flat game-choice-btn font2"
+        } else {
+            specialBtnStyle1 = "btn btn-flat game-choice-btn font2 disabled"
+        }
+
+        let specialBtnStyle2;
+        if (this.state.player.level < 6) {
+            specialBtnStyle2 = "hide"
+        } else if (this.state.currentEnemy.mp > this.state.currentEnemy.special1Cost) {
+            specialBtnStyle2 = "btn btn-flat game-choice-btn font2"
+        } else {
+            specialBtnStyle2 = "btn btn-flat game-choice-btn font2 disabled"
+        }
+
         return (
             <div className="game-container" >
                 <div className="container white-text">
@@ -444,19 +575,42 @@ class Game extends Component {
                         <h3 className="font2 center-align">FANTASY RPG</h3>
                         <p>{this.state.message}</p>
                         {this.state.task === "fight" ?
-                            <p className="dom-green2-text font1"><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}<span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
+                            <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}<span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
                             : null}
+                        {this.state.task === "fight" && this.state.step === "results" ?
+                            <div>
+                                <p>You gained {this.state.xpResult} XP.</p>
+                                <p>{this.state.currentEnemy.name} dropped {this.state.goldResult} gold.</p>
+                            </div>
+                            : this.state.task === "chest" && this.state.task === "results" ?
+                                <div>
+                                    <p>Chest contained {this.state.goldResult} gold.</p>
+                                </div>
+                                : this.state.location === "title screen" && this.state.task === "game over" ?
+                                    <div>
+                                        <p>Monsters Killed: {this.state.player.totalKills}</p>
+                                        <p>Gold Collected: {this.state.player.totalGold}</p>
+                                        <p>Dungeons Completed: {this.state.player.totalDungeons}</p>
+                                    </div>
+                                    : null}
+
                         {this.state.location !== "title screen" ?
                             <div>
-                                <p className="dom-blue-text font1"><i className="material-icons left">person</i>{this.state.player.name}<span className="white-text"> | </span>HP: {this.state.player.hp}/{this.state.player.maxHp}<span className="white-text"> | </span>MP: {this.state.player.mp}/{this.state.player.maxMp}<span className="white-text"> | </span>XP: {this.state.player.xp}/{this.state.player.nextLevel}<span className="white-text"> | </span>${this.state.player.gold}</p>
+                                <p className={playerStyle}>
+                                    <i className="material-icons left">person</i>{this.state.player.name}<span className="white-text"> | </span>
+                                    <span className={playerHpStyle}>HP: {this.state.player.hp}/{this.state.player.maxHp}</span><span className="white-text"> | </span>
+                                    <span className={playerMpStyle}>MP: {this.state.player.mp}/{this.state.player.maxMp}</span><span className="white-text"> | </span>
+                                    <span className={playerXpStyle}>XP: {this.state.player.xp}/{this.state.player.nextLevel}</span><span className="white-text"> | </span>
+                                    <span className={playerGoldStyle}>${this.state.player.gold}</span>
+                                </p>
                             </div>
                             : null}
                         {this.state.location === "title screen" && this.state.task === "new or load" ?
                             <div>
-                                <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2" type="button" onClick={this.newGame}>
+                                <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.newGame}>
                                     New Game
                                 </button>
-                                <button className="btn portfolio-btn waves-effect waves-light dom-green1 font2 disabled" type="button" onClick={this.loadGame}>
+                                <button className="btn btn-flat game-blue-btn font2 disabled" type="button" onClick={this.loadGame}>
                                     Load Game
                                 </button>
                             </div>
@@ -473,7 +627,7 @@ class Game extends Component {
                                         <div className="row">
                                             <div className="col m12">
                                                 <button
-                                                    className="btn contact-btn small waves-effect waves-light dom-blue font2 right"
+                                                    className="btn btn-flat game-blue-btn font2"
                                                     type="submit" name="action" value="Send">Enter</button>
                                             </div>
                                         </div>
@@ -541,10 +695,10 @@ class Game extends Component {
                                 : this.state.location === "town" && this.state.task === "inn" && this.state.step === "accept" ?
                                     <div>
                                         <p>{this.state.messageSub}</p>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectYesInn}>
+                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesInn}>
                                             Yes
                                         </button>
-                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTown}>
+                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectToTown}>
                                             No
                                         </button>
                                     </div>
@@ -556,11 +710,11 @@ class Game extends Component {
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
                                     Attack
                                         </button>
-                                <button className="btn btn-flat game-choice-btn font2 disabled" onClick={this.selectSpecial1}>
-                                    {this.state.player.special1}
+                                <button className={specialBtnStyle1} onClick={this.selectSpecial1}>
+                                    {this.state.player.special1} - {this.state.player.special1Cost} MP
                                 </button>
-                                <button className="btn btn-flat game-choice-btn font2 disabled" onClick={this.selectSpecial2}>
-                                    {this.state.player.special2}
+                                <button className={specialBtnStyle2} onClick={this.selectSpecial2}>
+                                    {this.state.player.special2} - {this.state.player.special2Cost} MP
                                 </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                     Use Item
@@ -569,7 +723,33 @@ class Game extends Component {
                                     <i className="material-icons left">arrow_back</i>Run
                                         </button>
                             </div>
-                            : null}
+                            : this.state.task === "fight" && this.state.step === "results" ?
+                                <div>
+                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
+                                        Next
+                                        </button>
+                                </div>
+                                : this.state.task === "chest" && this.state.step === "results" ?
+                                    <div>
+                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
+                                            Next
+                                        </button>
+                                    </div>
+                                    : this.state.task === "chest" && this.state.step === "accept" ?
+                                        <div>
+                                            <p>Do you wish to open it?</p>
+                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesChest}>
+                                                Yes
+                                            </button>
+                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
+                                                No
+                                            </button>
+                                        </div>
+                                        : this.state.location === "title screen" && this.state.task === "game over" ?
+                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
+                                                End
+                                        </button>
+                                            : null}
 
                     </div>
                     <button className="btn btn-flat dom-green2-text font2" type="button" onClick={this.handleCheck}>

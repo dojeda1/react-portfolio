@@ -400,6 +400,16 @@ nav {
   background-color: transparent;
 }
 
+.game-blue-btn {
+  color: white;
+  margin-right: 10px;
+  background-color: #27aae1;
+}
+.game-blue-btn:hover{
+  color: #27aae1;
+  background-color: white;
+}
+
 @media only screen and (min-width: 600px) {
 
   #top-nav,
