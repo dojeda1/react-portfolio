@@ -599,8 +599,8 @@ class Game extends Component {
         let luckCheck = (attacker.luck - defender.luck) + 10;
         if (luckCheck > 95) {
             luckCheck = 95;
-        } else if (luckCheck < 10) {
-            luckCheck = 10;
+        } else if (luckCheck < 5) {
+            luckCheck = 5;
         }
         console.log("rand/target: " + criticalCheck + "/" + luckCheck)
         if (criticalCheck >= luckCheck) {
@@ -618,17 +618,19 @@ class Game extends Component {
         // attacker.berserkCheck();
     }
     special = function (attacker, defender, name, cost) {
+        let attackMessage;
+        let damage;
+        let criticalCheck;
+        let luckCheck
 
         switch (name) {
             case "Axe Strike":
-                let attackMessage;
-                let damage;
-                const criticalCheck = this.randNum(1, 100);
-                let luckCheck = (attacker.luck - defender.luck) + 10;
+                criticalCheck = this.randNum(1, 100);
+                luckCheck = (attacker.luck - defender.luck) + 10;
                 if (luckCheck > 95) {
                     luckCheck = 95;
-                } else if (luckCheck < 10) {
-                    luckCheck = 10;
+                } else if (luckCheck < 5) {
+                    luckCheck = 5;
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
@@ -646,9 +648,30 @@ class Game extends Component {
                 });
                 // attacker.berserkCheck();
                 break;
-            case 2:
 
-                console.log("Case 2");
+            case "Fireball":
+                criticalCheck = this.randNum(1, 100);
+                luckCheck = (attacker.luck - defender.luck) + 10;
+                if (luckCheck > 95) {
+                    luckCheck = 95;
+                } else if (luckCheck < 5) {
+                    luckCheck = 5;
+                }
+                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
+                if (criticalCheck >= luckCheck) {
+                    damage = attacker.mana + Math.floor(attacker.mana / 2);
+                    attackMessage = "Fire did " + damage + " damage.";
+                } else {
+                    console.log("critical hit!")
+                    damage = attacker.mana * 2;
+                    attackMessage = "Critical hit! Fire did " + damage + " damage.";
+                }
+                defender.hp -= damage;
+                attacker.mp -= cost;
+                this.setState({
+                    message: attackMessage
+                });
+                // attacker.berserkCheck();
                 break;
             case 3:
 
@@ -703,10 +726,11 @@ class Game extends Component {
             player.strength += 2;
             player.defense += 1;
             player.speed += 1;
+            player.mana += 2;
             player.luck += 1;
             player.maxHp += 5;
             player.hp = player.maxHp;
-            player.maxMp += 3;
+            player.maxMp += 2;
             player.mp = player.maxMp;
 
             this.setState({
