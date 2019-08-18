@@ -6,6 +6,7 @@
         "maxMp": 0,
         "strength": 10,
         "speed": 20,
+        "luck": 4,
         "xp": 20,
         "inventory": [],
         "gold": 20
@@ -17,6 +18,7 @@
         "maxMp": 0,
         "strength": 15,
         "speed": 15,
+        "luck": 6,
         "xp": 25,
         "inventory": [],
         "gold": 25
@@ -28,6 +30,7 @@
         "maxMp": 0,
         "strength": 17,
         "speed": 15,
+        "luck": 7,
         "xp": 25,
         "inventory": [],
         "gold": 25

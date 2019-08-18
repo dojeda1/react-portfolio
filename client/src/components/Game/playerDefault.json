@@ -8,7 +8,7 @@
     "special2Cost": 0,
     "strength": 4,
     "defense": 2,
-    "luck": 3,
+    "luck": 30,
     "speed": 2,
     "maxHp": 20,
     "hp": 20,

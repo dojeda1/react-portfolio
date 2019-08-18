@@ -7,7 +7,7 @@ import monsters3 from "./monsters3.json";
 class Game extends Component {
 
     state = {
-        messages: "",
+        message: "",
         messageSub: "",
         xpResult: 0,
         goldResult: 0,
@@ -17,6 +17,7 @@ class Game extends Component {
         task: "new or load",
         step: null,
         inputName: "",
+        movingForward: false,
         player: playerDefault,
         currentEnemy: {
             name: "",
@@ -325,10 +326,20 @@ class Game extends Component {
         }
     }
     selectNext = () => {
-        this.setState({
-            task: "select where",
-            step: null
-        });
+        if (this.state.movingForward === true) {
+            this.setState({
+                movingForward: false,
+                region: regions[this.state.region.index],
+                task: "select where",
+                step: null,
+                message: "You have reached the " + regions[this.state.region.index].name + "."
+            });
+        } else {
+            this.setState({
+                task: "select where",
+                step: null
+            });
+        }
     }
     selectBack = () => {
         if (this.state.task === "select where") {
@@ -343,14 +354,20 @@ class Game extends Component {
     }
     selectTravelForward = () => {
         this.setState({
+            movingForward: true,
+        });
+        this.viciousEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked.");
+    }
+    travelForwardSuccess = () => {
+        this.setState({
             region: regions[this.state.region.index],
-            message: "You traveled to the next region."
-        })
+            movingForward: false,
+        });
     }
     selectTravelBackward = () => {
         this.setState({
             region: regions[this.state.region.index - 2],
-            message: "You traveled to the previous region."
+            message: "You traveled back to the " + regions[this.state.region.index - 2].name + "."
         })
     }
     //encounters
@@ -383,7 +400,7 @@ class Game extends Component {
             default:
             // code block
         };
-        console.log(monsterArray)
+        console.log(monsterArray);
         if (playerLevel <= regionLevel) {
             rangeNum = 1;
             console.log("A:" + rangeNum);
@@ -410,9 +427,81 @@ class Game extends Component {
                 maxMp: monsterArray[monNum].maxMp,
                 mp: monsterArray[monNum].maxMp,
                 strength: monsterArray[monNum].strength,
+                luck: monsterArray[monNum].luck,
                 xp: monsterArray[monNum].xp,
                 inventory: monsterArray[monNum].inventory,
                 gold: monsterArray[monNum].gold,
+                isDead: false
+            },
+            task: "fight",
+            step: "select move",
+            message: message
+        });
+    };
+    viciousEncounter = (alternateMessage) => {
+
+        let rangeNum = 0;
+        let playerLevel = this.state.player.level;
+
+        const regionIndex = this.state.region.index;
+        console.log("RI:" + regionIndex)
+        const regionLevel = this.state.region.level;
+        const regionTarget = this.state.region.targetLevel;
+
+        let monsterArray;
+
+        switch (regionIndex) {
+            case 1:
+                monsterArray = monsters1;
+                console.log("Case 1");
+                break;
+            case 2:
+                monsterArray = monsters2;
+                console.log("Case 2");
+                break;
+            case 3:
+                monsterArray = monsters3;
+                console.log("Case 3");
+                break;
+
+            default:
+            // code block
+        };
+        console.log(monsterArray)
+        console.log("forward: " + this.state.movingForward);
+        if (this.state.movingForward === true) {
+            rangeNum = monsterArray.length;
+            console.log("F:" + rangeNum);
+        } else if (playerLevel <= regionLevel) {
+            rangeNum = 1;
+            console.log("A:" + rangeNum);
+
+        } else if (playerLevel > regionLevel && playerLevel < regionTarget) {
+            rangeNum = Math.ceil(monsterArray.length * (playerLevel / regionTarget));
+            console.log("B:" + rangeNum);
+
+        } else {
+            rangeNum = monsterArray.length;
+            console.log("C:" + rangeNum);
+
+        };
+        let monNum = this.randNum(0, rangeNum);
+        const message = alternateMessage || "You encountered a Vicious " + monsterArray[monNum].name + ".";
+
+        this.setState({
+            currentEnemy: {
+                ...this.state.currentEnemy,
+                name: "Vicious " + monsterArray[monNum].name,
+                type: "vicious",
+                maxHp: monsterArray[monNum].maxHp + 5,
+                hp: monsterArray[monNum].maxHp + 5,
+                maxMp: monsterArray[monNum].maxMp + 5,
+                mp: monsterArray[monNum].maxMp + 5,
+                strength: monsterArray[monNum].strength + 5,
+                luck: monsterArray[monNum].luck,
+                xp: monsterArray[monNum].xp + 10,
+                inventory: monsterArray[monNum].inventory,
+                gold: monsterArray[monNum].gold = 30,
                 isDead: false
             },
             task: "fight",
@@ -485,19 +574,31 @@ class Game extends Component {
         this.gameOverCheck();
     }
     attack = function (attacker, defender) {
-        const luckCheck = defender.speed - attacker.luck;
-        const criticalCheck = this.randNum(1, luckCheck);
-        if (criticalCheck !== 1) {
-            defender.hp -= attacker.strength;
-        } else {
-            let criticalStrength = attacker.strength + Math.floor(attacker.strength / 2);
-            defender.hp -= criticalStrength;
+        let attackMessage;
+        let damage;
+        const criticalCheck = this.randNum(1, 100);
+        let luckCheck = (attacker.luck - defender.luck) + 10;
+        if (luckCheck > 95) {
+            luckCheck = 95;
+        } else if (luckCheck < 10) {
+            luckCheck = 10;
         }
+        console.log("rand/target: " + criticalCheck + "/" + luckCheck)
+        if (criticalCheck >= luckCheck) {
+            damage = attacker.strength;
+            attackMessage = attacker.name + " did " + damage + " damage.";
+        } else {
+            console.log("critical hit!")
+            damage = attacker.strength + Math.floor(attacker.strength / 2);
+            attackMessage = "Critical hit! " + attacker.name + " did " + damage + " damage!";
+        }
+        defender.hp -= damage;
         this.setState({
             defender: {
                 ...this.state.defender,
-                hp: defender.hp
+                hp: defender.hp,
             },
+            message: attackMessage
         });
         // attacker.berserkCheck();
     }
@@ -567,6 +668,7 @@ class Game extends Component {
         const lostHp = this.randNum(0, 3);
         player.hp -= lostHp;
         this.setState({
+            movingForward: false,
             message: "You lost " + lostGold + " gold and " + lostHp + " HP."
         });
         this.selectToWild();
@@ -823,10 +925,10 @@ class Game extends Component {
                                     Attack
                                         </button>
                                 <button className={specialBtnStyle1} onClick={this.selectSpecial1}>
-                                    {this.state.player.special1} - {this.state.player.special1Cost} MP
+                                    {this.state.player.special1} - <span className="font1 fontSmall">{this.state.player.special1Cost} MP</span>
                                 </button>
                                 <button className={specialBtnStyle2} onClick={this.selectSpecial2}>
-                                    {this.state.player.special2} - {this.state.player.special2Cost} MP
+                                    {this.state.player.special2} - <span className="font1 fontSmall">{this.state.player.special2Cost} MP</span>
                                 </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                     Use Item
