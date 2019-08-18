@@ -269,7 +269,7 @@ class Game extends Component {
         if (this.state.player.hp < this.state.player.maxHp || this.state.player.mp < this.state.player.maxMp) {
             this.setState({
                 message: "Staying the night will cost " + cost + " gold.",
-                messageSub: "Do you accept?",
+                messageSub: "Pay for the room?",
             })
             this.changePlayStates("town", "inn", "accept");
         } else {
@@ -411,6 +411,28 @@ class Game extends Component {
             message: "You found a chest!"
         })
     }
+    mimicEncounter = () => {
+        const regionLevel = this.state.region.level;
+        this.setState({
+            currentEnemy: {
+                ...this.state.currentEnemy,
+                name: "Mimic",
+                type: "mimic",
+                maxHp: (regionLevel * 5) + 20,
+                hp: (regionLevel * 5) + 20,
+                maxMp: 10,
+                mp: 10,
+                strength: regionLevel * 2 + 2,
+                xp: regionLevel * 5 + 5,
+                inventory: [],
+                gold: 60,
+                isDead: false
+            },
+            task: "fight",
+            step: "select move",
+            message: "You were tricked by a Mimic!"
+        });
+    }
     selectYesChest = () => {
         const player = this.state.player;
         const openCheck = this.randNum(1, 5);
@@ -419,9 +441,9 @@ class Game extends Component {
             player.gold += goldNum;
             player.totalGold += goldNum;
             this.setState({
-                task: "select where",
-                step: null,
-                message: "You opened it!"
+                step: "results",
+                message: "You opened it!",
+                goldResult: goldNum
             });
             // for (i = 0; i < 2; i++) {
             //     var itemNum = randNum(0, chestInventory.length)
@@ -437,8 +459,7 @@ class Game extends Component {
             // }
 
         } else {
-
-            this.monsterEncounter();
+            this.mimicEncounter();
         }
     }
     // Combat Functions
@@ -634,7 +655,7 @@ class Game extends Component {
                                 <p>You gained {this.state.xpResult} XP.</p>
                                 <p>{this.state.currentEnemy.name} dropped {this.state.goldResult} gold.</p>
                             </div>
-                            : this.state.task === "chest" && this.state.task === "results" ?
+                            : this.state.task === "chest" && this.state.step === "results" ?
                                 <div>
                                     <p>Chest contained {this.state.goldResult} gold.</p>
                                 </div>

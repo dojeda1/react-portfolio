@@ -401,13 +401,13 @@ nav {
 }
 
 .game-blue-btn {
-  color: white;
+  color: #27aae1;
   margin-right: 10px;
-  background-color: #27aae1;
+  background-color: transparent;
 }
 .game-blue-btn:hover{
-  color: #27aae1;
-  background-color: white;
+  color: white;
+  background-color: #27aae1;
 }
 
 @media only screen and (min-width: 600px) {
