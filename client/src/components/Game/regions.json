@@ -1,0 +1,20 @@
+[
+    {
+        "index": 1,
+        "name": "Plains",
+        "level": 1,
+        "targetLevel": 4
+    },
+    {
+        "index": 2,
+        "name": "Forest",
+        "level": 4,
+        "targetLevel": 8
+    },
+    {
+        "index": 3,
+        "name": "Mountains",
+        "level": 8,
+        "targetLevel": 12
+    }
+]

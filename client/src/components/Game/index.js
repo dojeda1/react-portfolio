@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import playerDefault from "./playerDefault.json";
+import regions from "./regions.json";
 import monsters1 from "./monsters1.json";
+import monsters2 from "./monsters2.json";
+import monsters3 from "./monsters3.json";
 class Game extends Component {
 
     state = {
@@ -9,6 +12,7 @@ class Game extends Component {
         xpResult: 0,
         goldResult: 0,
         itemResult: [],
+        region: regions[0],
         location: "title screen",
         task: "new or load",
         step: null,
@@ -27,9 +31,7 @@ class Game extends Component {
             inventory: [],
             gold: 0,
             isDead: false
-        },
-        monsters1,
-
+        }
     }
     componentDidMount() {
         this.setState({ message: "Choose an Option." })
@@ -323,37 +325,78 @@ class Game extends Component {
             step: null
         });
     }
+    selectTravelForward = () => {
+        this.setState({
+            region: regions[this.state.region.index],
+            message: "You traveled to the next region."
+        })
+    }
+    selectTravelBackward = () => {
+        this.setState({
+            region: regions[this.state.region.index - 2],
+            message: "You traveled to the previous region."
+        })
+    }
     //encounters
     monsterEncounter = (alternateMessage) => {
 
-        let floorNum = 0;
         let rangeNum = 0;
-        let playerLevel = this.state.player.level
+        let playerLevel = this.state.player.level;
 
-        if (playerLevel >= 5) {
-            floorNum = playerLevel - 5;
-            rangeNum = 5;
+        const regionIndex = this.state.region.index;
+        console.log("RI:" + regionIndex)
+        const regionLevel = this.state.region.level;
+        const regionTarget = this.state.region.targetLevel;
+
+        let monsterArray;
+
+        switch (regionIndex) {
+            case 1:
+                monsterArray = monsters1;
+                console.log("Case 1");
+                break;
+            case 2:
+                monsterArray = monsters2;
+                console.log("Case 2");
+                break;
+            case 3:
+                monsterArray = monsters3;
+                console.log("Case 3");
+                break;
+
+            default:
+            // code block
+        };
+        console.log(monsterArray)
+        if (playerLevel <= regionLevel) {
+            rangeNum = 1;
+            console.log("A:" + rangeNum);
+
+        } else if (playerLevel > regionLevel && playerLevel < regionTarget) {
+            rangeNum = Math.ceil(monsterArray.length * (playerLevel / regionTarget));
+            console.log("B:" + rangeNum);
+
         } else {
-            floorNum = 0;
-            rangeNum = playerLevel;
-        }
+            rangeNum = monsterArray.length;
+            console.log("C:" + rangeNum);
 
-        let monNum = this.randNum(floorNum, rangeNum);
-        const message = alternateMessage || "You encountered " + this.aOrAn(monsters1[monNum].name) + " " + monsters1[monNum].name + ".";
+        };
+        let monNum = this.randNum(0, rangeNum);
+        const message = alternateMessage || "You encountered " + this.aOrAn(monsterArray[monNum].name) + " " + monsterArray[monNum].name + ".";
 
         this.setState({
             currentEnemy: {
                 ...this.state.currentEnemy,
-                name: monsters1[monNum].name,
-                type: monsters1[monNum].type,
-                maxHp: monsters1[monNum].maxHp,
-                hp: monsters1[monNum].maxHp,
-                maxMp: monsters1[monNum].maxMp,
-                mp: monsters1[monNum].maxMp,
-                strength: monsters1[monNum].strength,
-                xp: monsters1[monNum].xp,
-                inventory: monsters1[monNum].inventory,
-                gold: monsters1[monNum].gold,
+                name: monsterArray[monNum].name,
+                type: monsterArray[monNum].type,
+                maxHp: monsterArray[monNum].maxHp,
+                hp: monsterArray[monNum].maxHp,
+                maxMp: monsterArray[monNum].maxMp,
+                mp: monsterArray[monNum].maxMp,
+                strength: monsterArray[monNum].strength,
+                xp: monsterArray[monNum].xp,
+                inventory: monsterArray[monNum].inventory,
+                gold: monsterArray[monNum].gold,
                 isDead: false
             },
             task: "fight",
@@ -549,11 +592,19 @@ class Game extends Component {
         } else {
             enemyStyle = "grey-text font1"
         }
+        let enemyHpStyle;
+        if (this.state.currentEnemy.hp > (this.state.currentEnemy.maxMp * 0.25)) {
+            enemyHpStyle = "dom-green2-text font1"
+        } else if (this.state.currentEnemy.hp > 0) {
+            enemyHpStyle = "red-text font1"
+        } else {
+            enemyHpStyle = "grey-text font1"
+        }
 
         let specialBtnStyle1;
         if (this.state.player.level < 2) {
             specialBtnStyle1 = "hide"
-        } else if (this.state.currentEnemy.mp > this.state.currentEnemy.special1Cost) {
+        } else if (this.state.player.mp > this.state.player.special1Cost) {
             specialBtnStyle1 = "btn btn-flat game-choice-btn font2"
         } else {
             specialBtnStyle1 = "btn btn-flat game-choice-btn font2 disabled"
@@ -562,7 +613,7 @@ class Game extends Component {
         let specialBtnStyle2;
         if (this.state.player.level < 6) {
             specialBtnStyle2 = "hide"
-        } else if (this.state.currentEnemy.mp > this.state.currentEnemy.special1Cost) {
+        } else if (this.state.player.mp > this.state.player.special1Cost) {
             specialBtnStyle2 = "btn btn-flat game-choice-btn font2"
         } else {
             specialBtnStyle2 = "btn btn-flat game-choice-btn font2 disabled"
@@ -573,9 +624,10 @@ class Game extends Component {
                 <div className="container white-text">
                     <div className="row">
                         <h3 className="font2 center-align">FANTASY RPG</h3>
+                        <p className="font1 center-align">- {this.state.region.name} -</p>
                         <p>{this.state.message}</p>
                         {this.state.task === "fight" ?
-                            <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}<span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
+                            <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
                             : null}
                         {this.state.task === "fight" && this.state.step === "results" ?
                             <div>
@@ -703,7 +755,26 @@ class Game extends Component {
                                         </button>
                                     </div>
                                     : null}
-
+                        {this.state.location === "wild" && this.state.task === "select where" && this.state.region.index === 1 ?
+                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectTravelForward}>
+                                Travel Onward
+                            </button>
+                            : this.state.location === "wild" && this.state.task === "select where" && this.state.region.index > 1 && this.state.region.index < regions.length ?
+                                <div>
+                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectTravelForward}>
+                                        Travel Onward
+                                    </button>
+                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectTravelBackward}>
+                                        Head Back
+                                    </button>
+                                </div>
+                                : this.state.location === "wild" && this.state.task === "select where" && this.state.region.index > 1 && this.state.region.index === regions.length ?
+                                    <div>
+                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectTravelBackward}>
+                                            Head Back
+                                        </button>
+                                    </div>
+                                    : null}
                         {this.state.task === "fight" && this.state.step === "select move" ?
                             <div>
                                 <p>What next?</p>
