@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Health Potion",
+        "qty": 1,
+        "buy": 10,
+        "sell": 5
+    },
+    {
+        "name": "Mana Potion",
+        "qty": 1,
+        "buy": 10,
+        "sell": 5
+    }
+]

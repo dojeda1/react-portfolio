@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import playerDefault from "./playerDefault.json";
 import regions from "./regions.json";
+
 import monsters1 from "./monsters1.json";
 import monsters2 from "./monsters2.json";
 import monsters3 from "./monsters3.json";
+
+import items1 from "./items1.json";
 class Game extends Component {
 
     state = {
@@ -61,6 +64,21 @@ class Game extends Component {
     }
     handleCheck = () => {
         console.log(this.state.player);
+    }
+    addItem = (array, item) => {
+        let inInventory = false;
+        array.forEach(element => {
+            if (item.name === element.name) {
+                inInventory = true;
+                element.qty++
+            } else {
+                console.log("no");
+            }
+        });
+        if (inInventory === false) {
+            array.push(item);
+        }
+        console.log(array);
     }
     //Start Game Functions
     loadGame = () => {
@@ -266,6 +284,9 @@ class Game extends Component {
             },
             message: "Your adventure Begins..."
         })
+        this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items1[1]);
         this.selectToWild();
     }
     selectUseItem = () => {
@@ -1021,7 +1042,7 @@ class Game extends Component {
                                     <p>Select an item?</p>
                                     {this.state.player.inventory.map((item, index) => (
                                         <button key={index} className="btn btn-flat game-choice-btn font2" onClick={this.selectItem}>
-                                            {item}
+                                            {item.name}<span className="font1 fontSmall"> x {item.qty}</span>
                                         </button>
                                     ))}
                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
@@ -1078,10 +1099,10 @@ class Game extends Component {
                                     Attack
                                         </button>
                                 <button className={specialBtnStyle1} onClick={this.selectSpecial1}>
-                                    {this.state.player.special1} - <span className="font1 fontSmall">{this.state.player.special1Cost} MP</span>
+                                    {this.state.player.special1}<span className="font1 fontSmall"> - {this.state.player.special1Cost} MP</span>
                                 </button>
                                 <button className={specialBtnStyle2} onClick={this.selectSpecial2}>
-                                    {this.state.player.special2} - <span className="font1 fontSmall">{this.state.player.special2Cost} MP</span>
+                                    {this.state.player.special2}<span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
                                 </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                     Use Item
