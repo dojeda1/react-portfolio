@@ -78,6 +78,20 @@ class Game extends Component {
         if (inInventory === false) {
             array.push(item);
         }
+        function compare(a, b) {
+            const orderA = a.order;
+            const orderB = b.order;
+
+            let comparison = 0;
+            if (orderA > orderB) {
+                comparison = 1;
+            } else if (orderA < orderB) {
+                comparison = -1;
+            }
+            return comparison;
+        }
+
+        array.sort(compare);
         console.log(array);
     }
     removeItem = (array, item) => {
@@ -300,6 +314,8 @@ class Game extends Component {
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items1[1]);
+        this.addItem(this.state.player.inventory, items1[2]);
         this.selectToWild();
     }
     selectUseItem = () => {

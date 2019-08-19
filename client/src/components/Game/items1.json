@@ -1,14 +1,23 @@
 [
     {
         "name": "Health Potion",
+        "order": 1,
         "qty": 1,
         "buy": 10,
         "sell": 5
     },
     {
         "name": "Mana Potion",
+        "order": 2,
         "qty": 1,
         "buy": 10,
         "sell": 5
+    },
+    {
+        "name": "Old Hat",
+        "order": 3,
+        "qty": 1,
+        "buy": 100,
+        "sell": 50
     }
 ]
