@@ -259,8 +259,8 @@ class Game extends Component {
                 manaA: this.state.player.mana + manaA,
                 speed: this.state.player.speed + speedA,
                 luck: this.state.player.luck + luckA,
-                special1: this.state.player.special1 + special1A,
-                special2: this.state.player.special2 + special2A,
+                special1: special1A,
+                special2: special2A,
                 special1Cost: special1CostA,
                 special2Cost: special2CostA
             },
@@ -583,13 +583,33 @@ class Game extends Component {
         this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
         this.gameOverCheck();
     }
-    selectSpecial = (event) => {
-        const specialName = event.target.value;
-        const specialCost = event.target.getAttribute('data-cost');
+    selectSpecial1 = () => {
+        const specialName = this.state.player.special1;
+        const specialCost = this.state.player.special1Cost;
         console.log(specialName + " " + specialCost);
-        this.special(this.state.player, this.state.currentEnemy, specialName, specialCost);
-        this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
-        this.gameOverCheck();
+        if (specialName === "Heal" && this.state.player.hp >= this.state.player.maxHp) {
+            this.setState({
+                message: "You are already at full health."
+            });
+        } else {
+            this.special(this.state.player, this.state.currentEnemy, specialName, specialCost);
+            this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
+            this.gameOverCheck();
+        }
+    }
+    selectSpecial2 = () => {
+        const specialName = this.state.player.special2;
+        const specialCost = this.state.player.special2Cost;
+        console.log(specialName + " " + specialCost);
+        if (specialName === "Heal" && this.state.player.hp >= this.state.player.maxHp) {
+            this.setState({
+                message: "You are already at full health."
+            });
+        } else {
+            this.special(this.state.player, this.state.currentEnemy, specialName, specialCost);
+            this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
+            this.gameOverCheck();
+        }
     }
 
     attack = function (attacker, defender) {
@@ -665,6 +685,59 @@ class Game extends Component {
                     console.log("critical hit!")
                     damage = attacker.mana * 2;
                     attackMessage = "Critical hit! Fire did " + damage + " damage.";
+                }
+                defender.hp -= damage;
+                attacker.mp -= cost;
+                this.setState({
+                    message: attackMessage
+                });
+                // attacker.berserkCheck();
+                break;
+
+            case "Heal":
+                criticalCheck = this.randNum(1, 100);
+                luckCheck = (attacker.luck - defender.luck) + 10;
+                if (luckCheck > 95) {
+                    luckCheck = 95;
+                } else if (luckCheck < 5) {
+                    luckCheck = 5;
+                }
+                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
+                if (criticalCheck >= luckCheck) {
+                    damage = Math.floor(attacker.maxHp * 0.75);
+                    attackMessage = attacker.name + " recovered" + damage + " hp.";
+                } else {
+                    console.log("critical hit!")
+                    damage = Math.floor(attacker.maxHp);
+                    attackMessage = "Wow! " + attacker.name + " recovered" + damage + " hp.";
+                }
+                attacker.hp += damage;
+                if (attacker.hp > attacker.maxHp) {
+                    attacker.hp = attacker.maxHp;
+                }
+                attacker.mp -= cost;
+                this.setState({
+                    message: attackMessage
+                });
+                // attacker.berserkCheck();
+                break;
+
+            case "Dagger Slash":
+                criticalCheck = this.randNum(1, 100);
+                luckCheck = (attacker.luck - defender.luck) + 10;
+                if (luckCheck > 95) {
+                    luckCheck = 95;
+                } else if (luckCheck < 5) {
+                    luckCheck = 5;
+                }
+                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
+                if (criticalCheck >= luckCheck) {
+                    damage = attacker.strength + Math.floor(attacker.strength / 2);
+                    attackMessage = "Dagger did " + damage + " damage.";
+                } else {
+                    console.log("critical hit!")
+                    damage = attacker.mana * 2;
+                    attackMessage = "Critical hit! Dagger did " + damage + " damage.";
                 }
                 defender.hp -= damage;
                 attacker.mp -= cost;
@@ -1004,10 +1077,10 @@ class Game extends Component {
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
                                     Attack
                                         </button>
-                                <button className={specialBtnStyle1} value={this.state.player.special1} data-cost={this.state.player.special1Cost} onClick={this.selectSpecial}>
+                                <button className={specialBtnStyle1} onClick={this.selectSpecial1}>
                                     {this.state.player.special1} - <span className="font1 fontSmall">{this.state.player.special1Cost} MP</span>
                                 </button>
-                                <button className={specialBtnStyle2} value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
+                                <button className={specialBtnStyle2} onClick={this.selectSpecial2}>
                                     {this.state.player.special2} - <span className="font1 fontSmall">{this.state.player.special2Cost} MP</span>
                                 </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
