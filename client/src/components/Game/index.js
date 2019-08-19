@@ -80,6 +80,21 @@ class Game extends Component {
         }
         console.log(array);
     }
+    removeItem = (array, item) => {
+        array.forEach((element, i) => {
+            if (item.name === element.name) {
+                element.qty--
+            } else {
+                console.log("no");
+            }
+            if (element.qty <= 0) {
+                console.log("item zeroed out.")
+                array.splice(i, 1);
+            }
+        })
+        console.log(array);
+    };
+
     //Start Game Functions
     loadGame = () => {
         console.log("Loaded Character.");
@@ -285,8 +300,6 @@ class Game extends Component {
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items1[1]);
         this.selectToWild();
     }
     selectUseItem = () => {
