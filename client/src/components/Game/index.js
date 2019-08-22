@@ -327,18 +327,6 @@ class Game extends Component {
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items1[1]);
-        this.addItem(this.state.player.inventory, items1[1]);
-        this.addItem(this.state.player.inventory, items1[2]);
-        this.addItem(this.state.player.inventory, items2[0]);
-        this.addItem(this.state.player.inventory, items2[0]);
-        this.addItem(this.state.player.inventory, items2[0]);
-        this.addItem(this.state.player.inventory, items2[1]);
-        this.addItem(this.state.player.inventory, items2[1]);
-        this.addItem(this.state.player.inventory, items2[1]);
-        this.addItem(this.state.player.inventory, items2[1]);
         this.selectToWild();
     }
     selectUseItem = () => {
@@ -526,6 +514,18 @@ class Game extends Component {
                 infoText5: "",
                 infoText6: ""
             });
+        } else if (this.state.task === "chest") {
+            this.setState({
+                task: "select where",
+                step: null,
+                message: "You decided against it.",
+                infoText1: "",
+                infoText2: "",
+                infoText3: "",
+                infoText4: "",
+                infoText5: "",
+                infoText6: ""
+            });
         } else {
             this.setState({
                 task: "select where",
@@ -613,7 +613,7 @@ class Game extends Component {
         };
         let monNum = this.randNum(0, rangeNum);
         const message = alternateMessage || "You encountered " + this.aOrAn(monsterArray[monNum].name) + " " + monsterArray[monNum].name + ".";
-
+        console.log("message: " + message)
         this.setState({
             currentEnemy: {
                 ...this.state.currentEnemy,
@@ -775,6 +775,7 @@ class Game extends Component {
             this.setState({
                 task: "fight",
                 step: "results",
+                message: enemy.name + " defeated.",
                 infoText2: "You killed " + enemy.name + "!"
             });
             this.gainXp(enemy.xp, player);
@@ -954,8 +955,9 @@ class Game extends Component {
     gameOverCheck = () => {
         if (this.state.player.hp <= 0) {
             this.setState({
-                message: "You have died... Game over.",
-                step: "game over"
+                message: "Game over.",
+                step: "game over",
+                infoText3: this.state.currentEnemy.name + " killed you."
             });
         }
     };
@@ -1044,7 +1046,9 @@ class Game extends Component {
             playerHpStyle = "grey-text"
         }
         let playerMpStyle;
-        if (this.state.player.mp <= 0) {
+        if (this.state.player.hp <= 0) {
+            playerMpStyle = "grey-text"
+        } else if (this.state.player.mp <= 0) {
             playerMpStyle = "grey-text"
         } else if (this.state.player.mp > 0 && this.state.player.mp < (this.state.player.maxMp * 0.25)) {
             playerMpStyle = "red-text"
