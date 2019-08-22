@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Greater Health Potion",
+        "order": 1,
+        "qty": 1,
+        "buy": 18,
+        "sell": 9,
+        "info": "Recovers 75% of max HP."
+    },
+    {
+        "name": "Greater Mana Potion",
+        "order": 3,
+        "qty": 1,
+        "buy": 18,
+        "sell": 9,
+        "info": "Recovers 75% of max MP."
+    },
+    {
+        "name": "Old Boot",
+        "order": 5,
+        "qty": 1,
+        "buy": 100,
+        "sell": 50,
+        "info": "An old, but ugly boot."
+    }
+]

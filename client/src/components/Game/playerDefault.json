@@ -14,7 +14,7 @@
     "maxHp": 20,
     "hp": 20,
     "maxMp": 4,
-    "mp": 4,
+    "mp": 0,
     "level": 1,
     "xp": 1000,
     "nextLevel": 50,
