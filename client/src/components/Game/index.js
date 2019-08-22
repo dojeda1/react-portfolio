@@ -15,6 +15,12 @@ class Game extends Component {
     state = {
         message: "",
         messageSub: "",
+        infoText1: "",
+        infoText2: "",
+        infoText3: "",
+        infoText4: "",
+        infoText5: "",
+        infoText6: "",
         xpResult: 0,
         goldResult: 0,
         itemResult: [],
@@ -327,6 +333,12 @@ class Game extends Component {
         this.addItem(this.state.player.inventory, items1[1]);
         this.addItem(this.state.player.inventory, items1[2]);
         this.addItem(this.state.player.inventory, items2[0]);
+        this.addItem(this.state.player.inventory, items2[0]);
+        this.addItem(this.state.player.inventory, items2[0]);
+        this.addItem(this.state.player.inventory, items2[1]);
+        this.addItem(this.state.player.inventory, items2[1]);
+        this.addItem(this.state.player.inventory, items2[1]);
+        this.addItem(this.state.player.inventory, items2[1]);
         this.selectToWild();
     }
     selectUseItem = () => {
@@ -379,7 +391,7 @@ class Game extends Component {
                 }
                 this.setState({
                     user: user,
-                    message: user.name + " recovered " + amount + " hp."
+                    infoText1: user.name + " recovered " + amount + " hp."
                 }, () => this.removeItem(user.inventory, user.inventory[index]))
                 if (this.state.task === "fight") {
                     this.enemyTurn(this.state.player, this.state.currentEnemy);
@@ -394,7 +406,7 @@ class Game extends Component {
                 }
                 this.setState({
                     user: user,
-                    message: user.name + " recovered " + amount + " hp."
+                    infoText1: user.name + " recovered " + amount + " hp."
                 }, () => this.removeItem(user.inventory, user.inventory[index]))
                 if (this.state.task === "fight") {
                     this.enemyTurn(this.state.player, this.state.currentEnemy);
@@ -409,7 +421,22 @@ class Game extends Component {
                 }
                 this.setState({
                     user: user,
-                    message: user.name + " recovered " + amount + " mp."
+                    infoText1: user.name + " recovered " + amount + " mp."
+                }, () => this.removeItem(user.inventory, user.inventory[index]))
+                if (this.state.task === "fight") {
+                    this.enemyTurn(this.state.player, this.state.currentEnemy);
+                }
+                break;
+
+            case "Greater Mana Potion":
+                amount = Math.floor(user.maxMp * 0.75);
+                user.mp += amount;
+                if (user.mp > user.maxMp) {
+                    user.mp = user.maxMp
+                }
+                this.setState({
+                    user: user,
+                    infoText1: user.name + " recovered " + amount + " mp."
                 }, () => this.removeItem(user.inventory, user.inventory[index]))
                 if (this.state.task === "fight") {
                     this.enemyTurn(this.state.player, this.state.currentEnemy);
@@ -491,11 +518,23 @@ class Game extends Component {
                 region: regions[this.state.region.index],
                 task: "select where",
                 step: null,
-                message: "You have reached the " + regions[this.state.region.index].name + "."
+                message: "You have reached the " + regions[this.state.region.index].name + ".",
+                infoText1: "",
+                infoText2: "",
+                infoText3: "",
+                infoText4: "",
+                infoText5: "",
+                infoText6: ""
             });
         } else {
             this.setState({
                 task: "select where",
+                infoText1: "",
+                infoText2: "",
+                infoText3: "",
+                infoText4: "",
+                infoText5: "",
+                infoText6: "",
                 step: null
             });
         }
@@ -736,7 +775,7 @@ class Game extends Component {
             this.setState({
                 task: "fight",
                 step: "results",
-                message: "You killed " + enemy.name + "!"
+                infoText2: "You killed " + enemy.name + "!"
             });
             this.gainXp(enemy.xp, player);
             this.dropGold();
@@ -782,9 +821,15 @@ class Game extends Component {
             attackMessage = "Critical hit! " + attacker.name + " did " + damage + " damage.";
         }
         defender.hp -= damage;
-        this.setState({
-            message: attackMessage
-        }, () => this.gameOverCheck());
+        if (attacker.name === this.state.player.name) {
+            this.setState({
+                infoText1: attackMessage
+            }, () => this.gameOverCheck());
+        } else {
+            this.setState({
+                infoText2: attackMessage
+            }, () => this.gameOverCheck());
+        }
         // attacker.berserkCheck();
     }
     special = function (attacker, defender, name, cost) {
@@ -814,7 +859,7 @@ class Game extends Component {
                 defender.hp -= damage;
                 attacker.mp -= cost;
                 this.setState({
-                    message: attackMessage
+                    infoText1: attackMessage
                 });
                 // attacker.berserkCheck();
                 break;
@@ -839,7 +884,7 @@ class Game extends Component {
                 defender.hp -= damage;
                 attacker.mp -= cost;
                 this.setState({
-                    message: attackMessage
+                    infoText2: attackMessage
                 });
                 // attacker.berserkCheck();
                 break;
@@ -867,7 +912,7 @@ class Game extends Component {
                 }
                 attacker.mp -= cost;
                 this.setState({
-                    message: attackMessage
+                    infoText1: attackMessage
                 });
                 // attacker.berserkCheck();
                 break;
@@ -892,7 +937,7 @@ class Game extends Component {
                 defender.hp -= damage;
                 attacker.mp -= cost;
                 this.setState({
-                    message: attackMessage
+                    infoText1: attackMessage
                 });
                 // attacker.berserkCheck();
                 break;
@@ -924,7 +969,8 @@ class Game extends Component {
     gainXp = (xpNum, player) => {
         player.xp += xpNum;
         this.setState({
-            xpResult: xpNum
+            xpResult: xpNum,
+            infoText4: "You gained " + xpNum + " XP."
         }, () => this.levelUpCheck(this.state.player))
     };
     levelUpCheck = (player) => {
@@ -942,7 +988,7 @@ class Game extends Component {
             player.mp = player.maxMp;
 
             this.setState({
-                message: "You are now lv." + this.state.player.level + "!!!"
+                infoText6: "You are now lv. " + this.state.player.level + "!!!"
             });
             console.log("actual level: " + this.state.player.level);
             this.levelUpCheck(this.state.player);
@@ -958,7 +1004,13 @@ class Game extends Component {
         player.hp -= lostHp;
         this.setState({
             movingForward: false,
-            message: "You lost " + lostGold + " gold and " + lostHp + " HP."
+            message: "You lost " + lostGold + " gold and " + lostHp + " HP.",
+            infoText1: "",
+            infoText2: "",
+            infoText3: "",
+            infoText4: "",
+            infoText5: "",
+            infoText6: ""
         });
         this.gameOverCheck();
         this.selectToWild();
@@ -971,6 +1023,7 @@ class Game extends Component {
                 gold: this.state.player.gold + amount,
                 totalGold: this.state.player.gold + amount,
             },
+            infoText3: this.state.currentEnemy.name + " dropped " + amount + " gold.",
             goldResult: amount
         });
     };
@@ -991,7 +1044,7 @@ class Game extends Component {
             playerHpStyle = "grey-text"
         }
         let playerMpStyle;
-        if (this.state.player.hp <= 0) {
+        if (this.state.player.mp <= 0) {
             playerMpStyle = "grey-text"
         } else if (this.state.player.mp > 0 && this.state.player.mp < (this.state.player.maxMp * 0.25)) {
             playerMpStyle = "red-text"
@@ -1031,7 +1084,7 @@ class Game extends Component {
         let specialBtnStyle1;
         if (this.state.player.level < 2) {
             specialBtnStyle1 = "hide"
-        } else if (this.state.player.mp > this.state.player.special1Cost) {
+        } else if (this.state.player.mp >= this.state.player.special1Cost) {
             specialBtnStyle1 = "btn btn-flat game-choice-btn font2"
         } else {
             specialBtnStyle1 = "btn btn-flat game-choice-btn font2 disabled"
@@ -1040,7 +1093,7 @@ class Game extends Component {
         let specialBtnStyle2;
         if (this.state.player.level < 6) {
             specialBtnStyle2 = "hide"
-        } else if (this.state.player.mp > this.state.player.special1Cost) {
+        } else if (this.state.player.mp >= this.state.player.special2Cost) {
             specialBtnStyle2 = "btn btn-flat game-choice-btn font2"
         } else {
             specialBtnStyle2 = "btn btn-flat game-choice-btn font2 disabled"
@@ -1052,7 +1105,7 @@ class Game extends Component {
                     <div className="row">
                         <h3 className="font2 center-align">FANTASY RPG</h3>
                         <p className="font1 center-align">- {this.state.region.name} -</p>
-                        <p>{this.state.message}</p>
+                        <h5>{this.state.message}</h5>
                         {this.state.task === "fight" ?
                             <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
                             : null}
@@ -1067,12 +1120,17 @@ class Game extends Component {
                                 </p>
                             </div>
                             : null}
-                        {this.state.task === "fight" && this.state.step === "results" ?
-                            <div>
-                                <p>You gained {this.state.xpResult} XP.</p>
-                                <p>{this.state.currentEnemy.name} dropped {this.state.goldResult} gold.</p>
+                        {this.state.task === "fight" ?
+                            <div className="game-info">
+                                <p>{this.state.infoText1}</p>
+                                <p>{this.state.infoText2}</p>
+                                <p>{this.state.infoText3}</p>
+                                <p>{this.state.infoText4}</p>
+                                <p>{this.state.infoText5}</p>
+                                <p>{this.state.infoText6}</p>
                             </div>
-                            : this.state.task === "chest" && this.state.step === "results" ?
+                            : null}
+                        {this.state.task === "chest" && this.state.step === "results" ?
                                 <div>
                                     <p>Chest contained {this.state.goldResult} gold.</p>
                                 </div>
@@ -1205,7 +1263,6 @@ class Game extends Component {
                                 <i className="material-icons right">arrow_forward</i>Travel Onward
                             </button>
                             : null}
-
                         {this.state.task === "fight" && this.state.step === "select move" ?
                             <div>
                                 <p>What next?</p>
