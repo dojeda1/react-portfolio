@@ -1,9 +1,15 @@
 import React, { Component } from "react";
 import playerDefault from "./playerDefault.json";
 import regions from "./regions.json";
+
 import monsters1 from "./monsters1.json";
 import monsters2 from "./monsters2.json";
 import monsters3 from "./monsters3.json";
+
+import items1 from "./items1.json";
+import items2 from "./items2.json";
+// this.setState({ something: true }, () => console.log(this.state))
+
 class Game extends Component {
 
     state = {
@@ -62,6 +68,54 @@ class Game extends Component {
     handleCheck = () => {
         console.log(this.state.player);
     }
+    addItem = (array, item) => {
+        let inInventory = false;
+        array.forEach(element => {
+            if (item.name === element.name) {
+                inInventory = true;
+                element.qty++
+            } else {
+                console.log("no");
+            }
+        });
+        if (inInventory === false) {
+            array.push(item);
+        }
+        function compare(a, b) {
+            const orderA = a.order;
+            const orderB = b.order;
+
+            let comparison = 0;
+            if (orderA > orderB) {
+                comparison = 1;
+            } else if (orderA < orderB) {
+                comparison = -1;
+            }
+            return comparison;
+        }
+
+        array.sort(compare);
+        console.log(array);
+    }
+    removeItem = (array, item) => {
+        array.forEach((element, i) => {
+            if (item.name === element.name) {
+                element.qty--
+            } else {
+                console.log("no");
+            }
+            if (element.qty <= 0) {
+                console.log("item zeroed out.")
+                array.splice(i, 1);
+            }
+        })
+        this.setState({
+            player: this.state.player,
+            currentEnemy: this.state.currentEnemy,
+        })
+        console.log(array);
+    };
+
     //Start Game Functions
     loadGame = () => {
         console.log("Loaded Character.");
@@ -266,12 +320,111 @@ class Game extends Component {
             },
             message: "Your adventure Begins..."
         })
+        this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items1[1]);
+        this.addItem(this.state.player.inventory, items1[1]);
+        this.addItem(this.state.player.inventory, items1[2]);
+        this.addItem(this.state.player.inventory, items2[0]);
         this.selectToWild();
     }
     selectUseItem = () => {
         this.setState({
-            step: "use item"
+            step: "use item",
+            subMessage: "Select an item."
         })
+    }
+    selectItem = (event) => {
+        const index = event.target.getAttribute("data-index");
+        const name = event.target.value
+        if (this.state.task === "fight" || this.state.task === "select where") {
+            if (name.includes("Health Potion") && this.state.player.hp >= this.state.player.maxHp) {
+                this.setState({
+                    message: "You are already at full Health."
+                })
+            } else if (name.includes("Mana Potion") && this.state.player.mp >= this.state.player.maxMp) {
+                this.setState({
+                    message: "You are already at full Mana."
+                })
+            } else {
+                this.activateItem(this.state.player, this.state.currentEnemy, name, index);
+            }
+        } else if (this.state.task === "shop" && this.state.step === "buy") {
+            this.buyItem()
+        } else if (this.state.task === "shop" && this.state.step === "sell") {
+            this.sellItem()
+        }
+    }
+    showItemInfo = (event) => {
+        const info = event.target.getAttribute("data-info")
+        this.setState({
+            subMessage: info
+        })
+    }
+    showSelectItem = () => {
+        this.setState({
+            subMessage: "Select an Item."
+        })
+    }
+    activateItem = (user, opponent, name, index) => {
+        console.log("item: " + name + index)
+        let amount;
+        switch (name) {
+            case "Health Potion":
+                amount = Math.floor(user.maxHp * 0.5);
+                user.hp += amount;
+                if (user.hp > user.maxHp) {
+                    user.hp = user.maxHp
+                }
+                this.setState({
+                    user: user,
+                    message: user.name + " recovered " + amount + " hp."
+                }, () => this.removeItem(user.inventory, user.inventory[index]))
+                if (this.state.task === "fight") {
+                    this.enemyTurn(this.state.player, this.state.currentEnemy);
+                }
+                break;
+
+            case "Greater Health Potion":
+                amount = Math.floor(user.maxHp * 0.75);
+                user.hp += amount;
+                if (user.hp > user.maxHp) {
+                    user.hp = user.maxHp
+                }
+                this.setState({
+                    user: user,
+                    message: user.name + " recovered " + amount + " hp."
+                }, () => this.removeItem(user.inventory, user.inventory[index]))
+                if (this.state.task === "fight") {
+                    this.enemyTurn(this.state.player, this.state.currentEnemy);
+                }
+                break;
+
+            case "Mana Potion":
+                amount = Math.floor(user.maxMp * 0.5);
+                user.mp += amount;
+                if (user.mp > user.maxMp) {
+                    user.mp = user.maxMp
+                }
+                this.setState({
+                    user: user,
+                    message: user.name + " recovered " + amount + " mp."
+                }, () => this.removeItem(user.inventory, user.inventory[index]))
+                if (this.state.task === "fight") {
+                    this.enemyTurn(this.state.player, this.state.currentEnemy);
+                }
+                break;
+
+            case "Old Hat":
+                this.setState({
+                    message: "It looks good on you..."
+                })
+                break;
+
+            default:
+            // Nothing
+        }
     }
     //to place functions
     selectToWild = () => {
@@ -286,13 +439,11 @@ class Game extends Component {
             this.setState({
                 message: "Staying the night will cost " + cost + " gold.",
                 messageSub: "Pay for the room?",
-            })
-            this.changePlayStates("town", "inn", "accept");
+            }, () => this.changePlayStates("town", "inn", "accept"))
         } else {
             this.setState({
                 message: "You are already at full Health and Mana."
-            })
-            this.changePlayStates("town", "select where", null);
+            }, () => this.changePlayStates("town", "select where", null))
         }
     }
     selectSafeTripCheck = () => {
@@ -300,10 +451,9 @@ class Game extends Component {
         if (safeTripCheck === 1) {
             this.monsterEncounter("You were ambushed!!!");
         } else {
-            this.selectToTown();
             this.setState({
                 message: "You arrived to town safely."
-            })
+            }, () => this.selectToTown())
         }
     }
     selectYesInn = () => {
@@ -317,13 +467,12 @@ class Game extends Component {
                     mp: this.state.player.maxMp,
                 },
                 message: "You feel well rested."
-            });
+            }, () => this.selectToTown());
         } else {
             this.setState({
                 message: "You can't afford to stay here."
-            })
+            }, () => this.selectToTown())
         }
-        this.selectToTown();
     }
     selectExploreWild = () => {
         const exploreCheck = this.randNum(1, 10)
@@ -365,8 +514,7 @@ class Game extends Component {
     selectTravelForward = () => {
         this.setState({
             movingForward: true,
-        });
-        this.viciousEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked.");
+        }, () => this.viciousEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked."));
     }
     travelForwardSuccess = () => {
         this.setState({
@@ -580,26 +728,29 @@ class Game extends Component {
     // Combat Functions
     selectAttack = () => {
         this.attack(this.state.player, this.state.currentEnemy);
-        this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
-        this.gameOverCheck();
+        this.enemyTurn(this.state.player, this.state.currentEnemy);
     }
-    selectSpecial1 = () => {
-        const specialName = this.state.player.special1;
-        const specialCost = this.state.player.special1Cost;
-        console.log(specialName + " " + specialCost);
-        if (specialName === "Heal" && this.state.player.hp >= this.state.player.maxHp) {
+    enemyTurn = (player, enemy) => {
+        if (enemy.hp <= 0) {
+            player.totalKills++;
             this.setState({
-                message: "You are already at full health."
+                task: "fight",
+                step: "results",
+                message: "You killed " + enemy.name + "!"
             });
+            this.gainXp(enemy.xp, player);
+            this.dropGold();
+            console.log("total kills: " + player.totalKills);
         } else {
-            this.special(this.state.player, this.state.currentEnemy, specialName, specialCost);
-            this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
+            this.setState({
+                step: "select move"
+            }, () => this.attack(enemy, player));
             this.gameOverCheck();
         }
     }
-    selectSpecial2 = () => {
-        const specialName = this.state.player.special2;
-        const specialCost = this.state.player.special2Cost;
+    selectSpecial = (event) => {
+        const specialCost = event.target.getAttribute("data-cost");
+        const specialName = event.target.value
         console.log(specialName + " " + specialCost);
         if (specialName === "Heal" && this.state.player.hp >= this.state.player.maxHp) {
             this.setState({
@@ -607,8 +758,7 @@ class Game extends Component {
             });
         } else {
             this.special(this.state.player, this.state.currentEnemy, specialName, specialCost);
-            this.enemyDeathCheck(this.state.player, this.state.currentEnemy);
-            this.gameOverCheck();
+            this.enemyTurn(this.state.player, this.state.currentEnemy);
         }
     }
 
@@ -634,7 +784,7 @@ class Game extends Component {
         defender.hp -= damage;
         this.setState({
             message: attackMessage
-        });
+        }, () => this.gameOverCheck());
         // attacker.berserkCheck();
     }
     special = function (attacker, defender, name, cost) {
@@ -755,21 +905,7 @@ class Game extends Component {
             // code block
         };
     }
-    enemyDeathCheck = (player, enemy) => {
-        if (enemy.hp <= 0) {
-            player.totalKills++;
-            this.setState({
-                task: "fight",
-                step: "results",
-                message: "You killed " + enemy.name + "!"
-            });
-            this.gainXp(enemy.xp, this.state.player);
-            this.dropGold();
-            console.log("total kills: " + this.state.player.totalKills);
-        } else {
-            this.attack(enemy, this.state.player);
-        }
-    }
+
     gameOverCheck = () => {
         if (this.state.player.hp <= 0) {
             this.setState({
@@ -789,8 +925,7 @@ class Game extends Component {
         player.xp += xpNum;
         this.setState({
             xpResult: xpNum
-        })
-        this.levelUpCheck(this.state.player);
+        }, () => this.levelUpCheck(this.state.player))
     };
     levelUpCheck = (player) => {
         if (player.xp >= player.nextLevel) {
@@ -825,8 +960,8 @@ class Game extends Component {
             movingForward: false,
             message: "You lost " + lostGold + " gold and " + lostHp + " HP."
         });
-        this.selectToWild();
         this.gameOverCheck();
+        this.selectToWild();
     }
     dropGold = () => {
         const amount = this.randNum(0, this.state.currentEnemy.gold);
@@ -1018,10 +1153,10 @@ class Game extends Component {
                             </div>
                             : this.state.step === "use item" ?
                                 <div>
-                                    <p>Select an item?</p>
+                                    <p>{this.state.subMessage}</p>
                                     {this.state.player.inventory.map((item, index) => (
-                                        <button key={index} className="btn btn-flat game-choice-btn font2" onClick={this.selectItem}>
-                                            {item}
+                                        <button key={index} value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-choice-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
+                                            {item.name}<span className="font1 fontSmall"> x {item.qty}</span>
                                         </button>
                                     ))}
                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
@@ -1077,11 +1212,11 @@ class Game extends Component {
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
                                     Attack
                                         </button>
-                                <button className={specialBtnStyle1} onClick={this.selectSpecial1}>
-                                    {this.state.player.special1} - <span className="font1 fontSmall">{this.state.player.special1Cost} MP</span>
+                                <button className={specialBtnStyle1} value={this.state.player.special1} data-cost={this.state.player.special1Cost} onClick={this.selectSpecial}>
+                                    {this.state.player.special1}<span className="font1 fontSmall"> - {this.state.player.special1Cost} MP</span>
                                 </button>
-                                <button className={specialBtnStyle2} onClick={this.selectSpecial2}>
-                                    {this.state.player.special2} - <span className="font1 fontSmall">{this.state.player.special2Cost} MP</span>
+                                <button className={specialBtnStyle2} value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
+                                    {this.state.player.special2}<span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
                                 </button>
                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                     Use Item
