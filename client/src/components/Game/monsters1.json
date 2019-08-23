@@ -9,7 +9,7 @@
         "luck": 3,
         "xp": 10,
         "inventory": [],
-        "gold": 10
+        "gold": 13
     },
     {
         "name": "Wolf",
@@ -21,7 +21,7 @@
         "luck": 3,
         "xp": 12,
         "inventory": [],
-        "gold": 12
+        "gold": 14
     },
     {
         "name": "Goblin",
