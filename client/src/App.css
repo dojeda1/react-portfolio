@@ -105,17 +105,20 @@ p {
 /* Navbar Styles */
 
 #side-nav,
-#side-modal {
+#side-modal,
+#side-modal-game {
   width: 100px;
 }
 
 #side-nav a,
-#side-modal a {
+#side-modal a,
+#side-modal-game a{
   padding-left: 10px;
   padding-right: 10px;
 }
 
-#side-modal {
+#side-modal,
+#side-modal-game {
   background-image: url("./images/dom-gradient.jpg");
   background-size: cover;
 }
@@ -392,8 +395,16 @@ nav {
   color: white;
   display: block;
 }
+.game-item-btn {
+  color: white;
+  display: inline;
+}
 
 .game-choice-btn:hover{
+  color: #27aae1;
+  background-color: transparent;
+}
+.game-item-btn:hover{
   color: #27aae1;
   background-color: transparent;
 }
@@ -410,6 +421,8 @@ nav {
 
 .fontSmall {
   font-size: 80%;
+  margin-left: -15px;
+  z-index:-10;
 }
 
 .game-info {

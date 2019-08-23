@@ -36,16 +36,16 @@ class App extends Component {
       <div className="App">
 
         <div className="main-container">
-          {this.state.playingGame ?          
-          <Game
-            playingGame={this.state.playingGame}
-            endGame={this.endGame}
-          />          
-          :
-          <Nav
-            playingGame={this.state.playingGame}
-            startGame={this.startGame}
-          />
+          {this.state.playingGame ?
+            <Game
+              playingGame={this.state.playingGame}
+              endGame={this.endGame}
+            />
+            :
+            <Nav
+              playingGame={this.state.playingGame}
+              startGame={this.startGame}
+            />
           }
 
           <Parallax />

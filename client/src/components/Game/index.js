@@ -45,13 +45,14 @@ class Game extends Component {
             inventory: [],
             gold: 0,
             isDead: false
-        }
+        },
+        merchant: []
     }
     componentDidMount() {
         this.setState({ message: "Choose an Option." })
     }
     toggleGame = () => {
-        this.props.endGame();        
+        this.props.endGame();
     }
     //Utility Functions
     changePlayStates = (location, task, step) => {
@@ -78,11 +79,19 @@ class Game extends Component {
     handleCheck = () => {
         console.log(this.state.player);
     }
-    
+
     addItem = (array, item) => {
+        const newItem = {
+            name: item.name,
+            order: item.order,
+            qty: 1,
+            buy: item.buy,
+            sell: item.sell,
+            info: item.info
+        }
         let inInventory = false;
         array.forEach(element => {
-            if (item.name === element.name) {
+            if (newItem.name === element.name) {
                 inInventory = true;
                 element.qty++
             } else {
@@ -90,7 +99,7 @@ class Game extends Component {
             }
         });
         if (inInventory === false) {
-            array.push(item);
+            array.push(newItem);
         }
         function compare(a, b) {
             const orderA = a.order;
@@ -107,6 +116,11 @@ class Game extends Component {
 
         array.sort(compare);
         console.log(array);
+        this.setState({
+            player: this.state.player,
+            currentEnemy: this.state.currentEnemy,
+            merchant: this.state.merchant
+        })
     }
     removeItem = (array, item) => {
         array.forEach((element, i) => {
@@ -123,9 +137,22 @@ class Game extends Component {
         this.setState({
             player: this.state.player,
             currentEnemy: this.state.currentEnemy,
+            merchant: this.state.merchant
         })
         console.log(array);
     };
+    transferItem(fromArr, toArr, item) {
+        var transferItem = {
+            name: item.name,
+            order: item.order,
+            qty: 1,
+            buy: item.buy,
+            sell: item.sell,
+            info: item.info
+        }
+        this.addItem(toArr, transferItem);
+        this.removeItem(fromArr, transferItem);
+    }
 
     //Start Game Functions
     loadGame = () => {
@@ -332,15 +359,16 @@ class Game extends Component {
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items1[1]);
-        this.addItem(this.state.player.inventory, items2[0]);
-        this.addItem(this.state.player.inventory, items2[1]);
         this.selectToWild();
     }
     selectUseItem = () => {
+        let useMessage = "Select an item."
+        if (!this.state.player.inventory.length) {
+            useMessage = "You have no items..."
+        }
         this.setState({
             step: "use item",
-            subMessage: "Select an item."
+            subMessage: useMessage
         })
     }
     selectItem = (event) => {
@@ -358,16 +386,82 @@ class Game extends Component {
             } else {
                 this.activateItem(this.state.player, this.state.currentEnemy, name, index);
             }
-        } else if (this.state.task === "shop" && this.state.step === "buy") {
-            this.buyItem()
-        } else if (this.state.task === "shop" && this.state.step === "sell") {
-            this.sellItem()
         }
+    }
+    buyItem = (event) => {
+        const player = this.state.player
+        const shop = this.state.merchant
+        const index = event.target.getAttribute("data-index");
+        const price = event.target.getAttribute("data-price");
+        const name = event.target.value;
+        if (price < player.gold) {
+            player.gold -= price
+            this.transferItem(this.state.merchant, this.state.player.inventory, this.state.merchant[index])
+            if (!this.state.merchant.length) {
+                this.setState({
+                    player: player,
+                    merchant: shop,
+                    message: "You purchased " + this.aOrAn(name) + " " + name + ".",
+                    subMessage: "There is nothing to buy."
+                })
+            } else {
+                this.setState({
+                    player: player,
+                    merchant: shop,
+                    message: "You purchased " + this.aOrAn(name) + " " + name + "."
+                })
+            }
+        } else {
+            this.setState({
+                message: "You don't have enough gold..."
+            })
+        }
+
+        console.log(this.state.player.inventory);
+        console.log(this.state.merchant);
+    }
+    sellItem = (event) => {
+        const player = this.state.player
+        const shop = this.state.merchant
+        const index = event.target.getAttribute("data-index");
+        const price = event.target.getAttribute("data-price");
+        const name = event.target.value;
+        player.gold += parseInt(price);
+        this.transferItem(this.state.player.inventory, this.state.merchant, this.state.player.inventory[index])
+        if (!this.state.player.inventory.length) {
+            this.setState({
+                player: player,
+                merchant: shop,
+                message: "You sold " + this.aOrAn(name) + " " + name + ".",
+                subMessage: "You have no items..."
+            })
+        } else {
+            this.setState({
+                player: player,
+                merchant: shop,
+                message: "You sold " + this.aOrAn(name) + " " + name + "."
+            })
+        }
+
+        console.log(this.state.player.inventory);
+        console.log(this.state.merchant);
     }
     showItemInfo = (event) => {
         const info = event.target.getAttribute("data-info")
         this.setState({
             subMessage: info
+        })
+    }
+    showItemPrice = (event) => {
+        const cost = event.target.getAttribute("data-price")
+        let shopWord
+        if (this.state.step === "buy") {
+            shopWord = "Buy";
+        } else if (this.state.step === "sell") {
+            shopWord = "Sell";
+        }
+        this.setState({
+            subMessage: shopWord + " for " + cost + " gold."
         })
     }
     showSelectItem = () => {
@@ -386,12 +480,12 @@ class Game extends Component {
                     user.hp = user.maxHp
                 }
 
-                this.removeItem(user.inventory, user.inventory[index]);                
+                this.removeItem(user.inventory, user.inventory[index]);
                 if (this.state.task === "fight") {
                     this.setState({
                         user: user,
                         infoText1: user.name + " recovered " + amount + " hp."
-                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));            
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
                 } else {
                     this.setState({
                         user: user,
@@ -407,12 +501,12 @@ class Game extends Component {
                     user.hp = user.maxHp
                 }
 
-                this.removeItem(user.inventory, user.inventory[index]);                
+                this.removeItem(user.inventory, user.inventory[index]);
                 if (this.state.task === "fight") {
                     this.setState({
                         user: user,
                         infoText1: user.name + " recovered " + amount + " hp."
-                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));            
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
                 } else {
                     this.setState({
                         user: user,
@@ -435,12 +529,12 @@ class Game extends Component {
                     this.enemyTurn(this.state.player, this.state.currentEnemy);
                 }
 
-                this.removeItem(user.inventory, user.inventory[index]);                
+                this.removeItem(user.inventory, user.inventory[index]);
                 if (this.state.task === "fight") {
                     this.setState({
                         user: user,
                         infoText1: user.name + " recovered " + amount + " mp."
-                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));            
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
                 } else {
                     this.setState({
                         user: user,
@@ -455,13 +549,13 @@ class Game extends Component {
                 if (user.mp > user.maxMp) {
                     user.mp = user.maxMp
                 }
-            
-                this.removeItem(user.inventory, user.inventory[index]);                
+
+                this.removeItem(user.inventory, user.inventory[index]);
                 if (this.state.task === "fight") {
                     this.setState({
                         user: user,
                         infoText1: user.name + " recovered " + amount + " mp."
-                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));            
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
                 } else {
                     this.setState({
                         user: user,
@@ -485,6 +579,23 @@ class Game extends Component {
         this.changePlayStates("wild", "select where", null)
     }
     selectToTown = () => {
+        // give shop random set of items each town visit
+        let randItem;
+        if (this.state.location === "wild") {
+            this.setState({
+                merchant: []
+            }, function () {
+                for (let i = 0; i < 4; i++) {
+                    randItem = this.randNum(0, items1.length);
+                    this.addItem(this.state.merchant, items1[randItem]);
+                }
+                for (let i = 0; i < 1; i++) {
+                    randItem = this.randNum(0, items2.length);
+                    this.addItem(this.state.merchant, items2[randItem]);
+                }
+            })
+        }
+        console.log(this.state.merchant)
         this.changePlayStates("town", "select where", null);
     }
     selectToInn = () => {
@@ -520,13 +631,51 @@ class Game extends Component {
                     hp: this.state.player.maxHp,
                     mp: this.state.player.maxMp,
                 },
-                message: "You feel well rested."
-            }, () => this.selectToTown());
+                message: "You feel well rested.",
+                task: "select where",
+                step: null
+            });
         } else {
             this.setState({
-                message: "You can't afford to stay here."
-            }, () => this.selectToTown())
+                message: "You can't afford to stay here.",
+                task: "select where",
+                step: null
+            })
         }
+    }
+    selectNoInn = () => {
+        this.setState({
+            message: "You decided against it.",
+            task: "select where",
+            step: null
+        })
+    }
+    selectToShop = () => {
+        this.setState({
+            message: "You entered the shop.",
+            task: "shop",
+            step: "buy or sell"
+        })
+    }
+    selectBuy = () => {
+        let shopMessage = "Select an item."
+        if (!this.state.merchant.length) {
+            shopMessage = "There is nothing to buy."
+        }
+        this.setState({
+            step: "buy",
+            subMessage: shopMessage
+        })
+    }
+    selectSell = () => {
+        let shopMessage = "Select an item."
+        if (!this.state.merchant.length) {
+            shopMessage = "You have no items..."
+        }
+        this.setState({
+            step: "sell",
+            subMessage: shopMessage
+        })
     }
     selectExploreWild = () => {
         const exploreCheck = this.randNum(1, 10)
@@ -586,6 +735,12 @@ class Game extends Component {
         } else if (this.state.task === "fight") {
             this.setState({
                 step: "select move"
+            });
+        } else if (this.state.task === "shop") {
+            this.setState({
+                message: "You left the shop.",
+                task: "select where",
+                step: null
             });
         }
     }
@@ -1153,7 +1308,7 @@ class Game extends Component {
         }
 
         return (
-             <div>
+            <div>
                 {/* <!-- TOP NAVBAR --> */}
                 <div id="top-nav-container" className="navbar-fixed">
                     <nav id="top-nav" className="nav-wrapper navbar-fixed grey darken-4">
@@ -1203,7 +1358,7 @@ class Game extends Component {
                         </li>
                     </div>
                 </ul>
-            
+
                 <div id="game-container" >
                     <div className="container white-text fade">
                         <div className="row">
@@ -1235,16 +1390,16 @@ class Game extends Component {
                                 </div>
                                 : null}
                             {this.state.task === "chest" && this.state.step === "results" ?
+                                <div>
+                                    <p>Chest contained {this.state.goldResult} gold.</p>
+                                </div>
+                                : this.state.step === "game over" ?
                                     <div>
-                                        <p>Chest contained {this.state.goldResult} gold.</p>
+                                        <p>Monsters Killed: {this.state.player.totalKills}</p>
+                                        <p>Gold Collected: {this.state.player.totalGold}</p>
+                                        <p>Dungeons Completed: {this.state.player.totalDungeons}</p>
                                     </div>
-                                    : this.state.step === "game over" ?
-                                        <div>
-                                            <p>Monsters Killed: {this.state.player.totalKills}</p>
-                                            <p>Gold Collected: {this.state.player.totalGold}</p>
-                                            <p>Dungeons Completed: {this.state.player.totalDungeons}</p>
-                                        </div>
-                                        : null}
+                                    : null}
                             {this.state.location === "title screen" && this.state.task === "new or load" ?
                                 <div>
                                     <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.newGame}>
@@ -1317,9 +1472,12 @@ class Game extends Component {
                                     <div>
                                         <p>{this.state.subMessage}</p>
                                         {this.state.player.inventory.map((item, index) => (
-                                            <button key={index} value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-choice-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
-                                                {item.name}<span className="font1 fontSmall"> x {item.qty}</span>
-                                            </button>
+                                            <div>
+                                                <button key={index} value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
+                                                    {item.name}
+                                                </button>
+                                                <span className="font1 fontSmall"> x {item.qty}</span>
+                                            </div>
                                         ))}
                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
                                             <i className="material-icons left">arrow_back</i>Back
@@ -1350,7 +1508,7 @@ class Game extends Component {
                                                 <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesInn}>
                                                     Yes
                                             </button>
-                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectToTown}>
+                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoInn}>
                                                     No
                                             </button>
                                             </div>
@@ -1413,7 +1571,50 @@ class Game extends Component {
                                                     End
                                             </button>
                                                 : null}
-
+                            {this.state.task === "shop" && this.state.step === "buy or sell" ?
+                                <div>
+                                    <p>What next?</p>
+                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBuy}>
+                                        Buy
+                                            </button>
+                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectSell}>
+                                        Sell
+                                            </button>
+                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                        <i className="material-icons left">arrow_back</i>Back
+                                            </button>
+                                </div>
+                                : this.state.task === "shop" && this.state.step === "buy" ?
+                                    <div>
+                                        <p>{this.state.subMessage}</p>
+                                        {this.state.merchant.map((item, index) => (
+                                            <div>
+                                                <button key={index} value={item.name} data-index={index} data-price={item.buy} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.buyItem}>
+                                                    {item.name}
+                                                </button>
+                                                <span className="font1 fontSmall"> x {item.qty}</span>
+                                            </div>
+                                        ))}
+                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                            <i className="material-icons left">arrow_back</i>Back
+                                        </button>
+                                    </div>
+                                    : this.state.task === "shop" && this.state.step === "sell" ?
+                                        <div>
+                                            <p>{this.state.subMessage}</p>
+                                            {this.state.player.inventory.map((item, index) => (
+                                                <div>
+                                                    <button key={index} value={item.name} data-index={index} data-price={item.sell} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.sellItem}>
+                                                        {item.name}
+                                                    </button>
+                                                    <span className="font1 fontSmall"> x {item.qty}</span>
+                                                </div>
+                                            ))}
+                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                <i className="material-icons left">arrow_back</i>Back
+                                        </button>
+                                        </div>
+                                        : null}
                         </div>
                     </div>
                 </div>
