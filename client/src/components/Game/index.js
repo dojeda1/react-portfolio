@@ -217,9 +217,7 @@ class Game extends Component {
 
             case "Human":
                 maxHpA = 4
-                hpA = 4
                 maxMpA = 4
-                mpA = 4
                 strengthA = 1
                 defenseA = 1
                 manaA = 1
@@ -229,9 +227,7 @@ class Game extends Component {
 
             case "Elf":
                 maxHpA = 4
-                hpA = 4
                 maxMpA = 6
-                mpA = 6
                 strengthA = 0
                 defenseA = 0
                 manaA = 2
@@ -241,9 +237,7 @@ class Game extends Component {
 
             case "Dwarf":
                 maxHpA = 6
-                hpA = 6
                 maxMpA = 2
-                mpA = 2
                 strengthA = 2
                 defenseA = 1
                 manaA = 0
@@ -254,20 +248,21 @@ class Game extends Component {
             default: console.log("error");
 
         }
+
+        let newPlayer = this.state.player;
+        newPlayer.race = event.target.value;
+        newPlayer.maxHp = newPlayer.maxHp + maxHpA;
+        newPlayer.hp = newPlayer.hp + maxHpA;
+        newPlayer.maxMp = newPlayer.maxMp + maxMpA;
+        newPlayer.mp = newPlayer.mp + maxMpA
+        newPlayer.strength = newPlayer.strength + strengthA;
+        newPlayer.defenseA = newPlayer.defense + defenseA;
+        newPlayer.manaA = newPlayer.mana + manaA;
+        newPlayer.speed = newPlayer.speed + speedA;
+        newPlayer.luck = newPlayer.luck + luckA;
+
         this.setState({
-            player: {
-                ...this.state.player,
-                race: event.target.value,
-                maxHp: this.state.player.maxHp + maxHpA,
-                hp: this.state.player.hp + hpA,
-                maxMp: this.state.player.maxMp + maxMpA,
-                mp: this.state.player.mp + mpA,
-                strength: this.state.player.strength + strengthA,
-                defenseA: this.state.player.defense + defenseA,
-                manaA: this.state.player.mana + manaA,
-                speed: this.state.player.speed + speedA,
-                luck: this.state.player.luck + luckA
-            },
+            player: newPlayer,
             step: "class",
             message: "What is your class?"
         })
@@ -290,9 +285,7 @@ class Game extends Component {
 
             case "Warrior":
                 maxHpA = 4
-                hpA = 4
                 maxMpA = 0
-                mpA = 0
                 strengthA = 2
                 defenseA = 2
                 manaA = 0
@@ -306,9 +299,7 @@ class Game extends Component {
 
             case "Mage":
                 maxHpA = 2
-                hpA = 2
                 maxMpA = 4
-                mpA = 4
                 strengthA = 0
                 defenseA = 0
                 manaA = 3
@@ -322,9 +313,7 @@ class Game extends Component {
 
             case "Rogue":
                 maxHpA = 2
-                hpA = 2
                 maxMpA = 2
-                mpA = 2
                 strengthA = 1
                 defenseA = 0
                 manaA = 1
@@ -338,24 +327,25 @@ class Game extends Component {
 
             default: console.log("error");
         }
+
+        let newPlayer = this.state.player;
+        newPlayer.class = event.target.value;
+        newPlayer.maxHp = newPlayer.maxHp + maxHpA;
+        newPlayer.hp = newPlayer.hp + maxHpA;
+        newPlayer.maxMp = newPlayer.maxMp + maxMpA;
+        newPlayer.mp = newPlayer.mp + maxMpA;
+        newPlayer.strength = newPlayer.strength + strengthA;
+        newPlayer.defenseA = newPlayer.defense + defenseA;
+        newPlayer.manaA = newPlayer.mana + manaA;
+        newPlayer.speed = newPlayer.speed + speedA;
+        newPlayer.luck = newPlayer.luck + luckA;
+        newPlayer.special1 = special1A;
+        newPlayer.special2 = special2A;
+        newPlayer.special1Cost = special1CostA;
+        newPlayer.special2Cost = special2CostA;
+
         this.setState({
-            player: {
-                ...this.state.player,
-                class: event.target.value,
-                maxHp: this.state.player.maxHp + maxHpA,
-                hp: this.state.player.hp + hpA,
-                maxMp: this.state.player.maxMp + maxMpA,
-                mp: this.state.player.mp + mpA,
-                strength: this.state.player.strength + strengthA,
-                defenseA: this.state.player.defense + defenseA,
-                manaA: this.state.player.mana + manaA,
-                speed: this.state.player.speed + speedA,
-                luck: this.state.player.luck + luckA,
-                special1: special1A,
-                special2: special2A,
-                special1Cost: special1CostA,
-                special2Cost: special2CostA
-            },
+            player: newPlayer,
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
@@ -374,6 +364,7 @@ class Game extends Component {
     selectItem = (event) => {
         const index = event.target.getAttribute("data-index");
         const name = event.target.value
+        console.log("chosen item: " + name + " " + index)
         if (this.state.task === "fight" || this.state.task === "select where") {
             if (name.includes("Health Potion") && this.state.player.hp >= this.state.player.maxHp) {
                 this.setState({
@@ -571,7 +562,10 @@ class Game extends Component {
                 break;
 
             default:
-            // Nothing
+                // Nothing
+                this.setState({
+                    message: "SOMETHING WENT WRONG"
+                })
         }
     }
     //to place functions
@@ -735,6 +729,10 @@ class Game extends Component {
         } else if (this.state.task === "fight") {
             this.setState({
                 step: "select move"
+            });
+        } else if (this.state.step === "buy" || this.state.step === "sell") {
+            this.setState({
+                step: "buy or sell"
             });
         } else if (this.state.task === "shop") {
             this.setState({
@@ -984,8 +982,9 @@ class Game extends Component {
     }
     selectSpecial = (event) => {
         const specialCost = event.target.getAttribute("data-cost");
-        const specialName = event.target.value
-        console.log(specialName + " " + specialCost);
+        const specialName = event.target.value;
+        console.log(event.target.classList)
+        console.log("Special: " + specialName + " " + specialCost);
         if (specialName === "Heal" && this.state.player.hp >= this.state.player.maxHp) {
             this.setState({
                 message: "You are already at full health."
@@ -1012,7 +1011,7 @@ class Game extends Component {
             attackMessage = attacker.name + " did " + damage + " damage.";
         } else {
             console.log("critical hit!")
-            damage = attacker.strength + Math.floor(attacker.strength / 2);
+            damage = attacker.strength + Math.floor(attacker.strength * 0.25);
             attackMessage = "Critical hit! " + attacker.name + " did " + damage + " damage.";
         }
         defender.hp -= damage;
@@ -1044,11 +1043,11 @@ class Game extends Component {
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
-                    damage = attacker.strength + Math.floor(attacker.strength / 2);
+                    damage = attacker.strength + Math.floor(attacker.strength * 0.25);
                     attackMessage = "Axe did " + damage + " damage.";
                 } else {
                     console.log("critical hit!")
-                    damage = attacker.strength * 2;
+                    damage = attacker.strength + Math.floor(attacker.strength * 0.5);
                     attackMessage = "Critical hit! Axe did " + damage + " damage.";
                 }
                 defender.hp -= damage;
@@ -1069,11 +1068,11 @@ class Game extends Component {
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
-                    damage = attacker.mana + Math.floor(attacker.mana / 2);
+                    damage = attacker.mana + Math.floor(attacker.mana * 0.25);
                     attackMessage = "Fire did " + damage + " damage.";
                 } else {
                     console.log("critical hit!")
-                    damage = attacker.mana * 2;
+                    damage = attacker.mana + Math.floor(attacker.mana * 0.5);
                     attackMessage = "Critical hit! Fire did " + damage + " damage.";
                 }
                 defender.hp -= damage;
@@ -1098,7 +1097,7 @@ class Game extends Component {
                     attackMessage = attacker.name + " recovered" + damage + " hp.";
                 } else {
                     console.log("critical hit!")
-                    damage = Math.floor(attacker.maxHp);
+                    damage = attacker.maxHp;
                     attackMessage = "Wow! " + attacker.name + " recovered" + damage + " hp.";
                 }
                 attacker.hp += damage;
@@ -1122,11 +1121,11 @@ class Game extends Component {
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
-                    damage = attacker.strength + Math.floor(attacker.strength / 2);
+                    damage = attacker.strength + Math.floor(attacker.strength * 0.25);
                     attackMessage = "Dagger did " + damage + " damage.";
                 } else {
                     console.log("critical hit!")
-                    damage = attacker.mana * 2;
+                    damage = attacker.mana + Math.floor(attacker.strength * 0.5);
                     attackMessage = "Critical hit! Dagger did " + damage + " damage.";
                 }
                 defender.hp -= damage;
@@ -1293,18 +1292,18 @@ class Game extends Component {
         if (this.state.player.level < 2) {
             specialBtnStyle1 = "hide"
         } else if (this.state.player.mp >= this.state.player.special1Cost) {
-            specialBtnStyle1 = "btn btn-flat game-choice-btn font2"
+            specialBtnStyle1 = ""
         } else {
-            specialBtnStyle1 = "btn btn-flat game-choice-btn font2 disabled"
+            specialBtnStyle1 = "disabled-div"
         }
 
         let specialBtnStyle2;
-        if (this.state.player.level < 6) {
+        if (this.state.player.level < 5) {
             specialBtnStyle2 = "hide"
         } else if (this.state.player.mp >= this.state.player.special2Cost) {
-            specialBtnStyle2 = "btn btn-flat game-choice-btn font2"
+            specialBtnStyle2 = ""
         } else {
-            specialBtnStyle2 = "btn btn-flat game-choice-btn font2 disabled"
+            specialBtnStyle2 = "disabled-div"
         }
 
         return (
@@ -1472,8 +1471,8 @@ class Game extends Component {
                                     <div>
                                         <p>{this.state.subMessage}</p>
                                         {this.state.player.inventory.map((item, index) => (
-                                            <div>
-                                                <button key={index} value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
+                                            <div key={index}>
+                                                <button value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
                                                     {item.name}
                                                 </button>
                                                 <span className="font1 fontSmall"> x {item.qty}</span>
@@ -1530,13 +1529,22 @@ class Game extends Component {
                                     <p>What next?</p>
                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
                                         Attack
-                                            </button>
-                                    <button className={specialBtnStyle1} value={this.state.player.special1} data-cost={this.state.player.special1Cost} onClick={this.selectSpecial}>
-                                        {this.state.player.special1}<span className="font1 fontSmall"> - {this.state.player.special1Cost} MP</span>
                                     </button>
-                                    <button className={specialBtnStyle2} value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
+                                    <div className={specialBtnStyle1}>
+                                        <button className="btn btn-flat game-item-btn font2" value={this.state.player.special1} data-cost={this.state.player.special1Cost} onClick={this.selectSpecial}>
+                                            {this.state.player.special1}
+                                        </button>
+                                        <span className="font1 fontSmall"> - {this.state.player.special1Cost} MP</span>
+                                    </div>
+                                    <div className={specialBtnStyle2}>
+                                        <button className="btn btn-flat game-item-btn font2" value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
+                                            {this.state.player.special2}
+                                        </button>
+                                        <span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
+                                    </div>
+                                    {/* <button className={specialBtnStyle2} value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
                                         {this.state.player.special2}<span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
-                                    </button>
+                                    </button> */}
                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                         Use Item
                                             </button>
@@ -1588,8 +1596,8 @@ class Game extends Component {
                                     <div>
                                         <p>{this.state.subMessage}</p>
                                         {this.state.merchant.map((item, index) => (
-                                            <div>
-                                                <button key={index} value={item.name} data-index={index} data-price={item.buy} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.buyItem}>
+                                            <div key={index}>
+                                                <button value={item.name} data-index={index} data-price={item.buy} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.buyItem}>
                                                     {item.name}
                                                 </button>
                                                 <span className="font1 fontSmall"> x {item.qty}</span>
@@ -1603,8 +1611,8 @@ class Game extends Component {
                                         <div>
                                             <p>{this.state.subMessage}</p>
                                             {this.state.player.inventory.map((item, index) => (
-                                                <div>
-                                                    <button key={index} value={item.name} data-index={index} data-price={item.sell} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.sellItem}>
+                                                <div key={index}>
+                                                    <button value={item.name} data-index={index} data-price={item.sell} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.sellItem}>
                                                         {item.name}
                                                     </button>
                                                     <span className="font1 fontSmall"> x {item.qty}</span>

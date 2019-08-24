@@ -4,16 +4,16 @@ self.__precacheManifest = [
     "url": "/static/media/trivia-start.0e7576b3.jpg"
   },
   {
-    "revision": "335b51bb7d3c80bd939a",
-    "url": "/static/css/main.02b6663c.chunk.css"
+    "revision": "b8f04038be5a99399479",
+    "url": "/static/css/main.8c2d6deb.chunk.css"
   },
   {
     "revision": "42ac5946195a7306e2a5",
     "url": "/static/js/runtime~main.a8a9905a.js"
   },
   {
-    "revision": "4649f82c7b2e4bf0f265",
-    "url": "/static/js/2.90d9c848.chunk.js"
+    "revision": "7726bd46f1d8ddfb6158",
+    "url": "/static/js/2.9b7d18b0.chunk.js"
   },
   {
     "revision": "9f1dd4e1a1c18b460fc56f8f20906eea",
@@ -136,8 +136,8 @@ self.__precacheManifest = [
     "url": "/static/media/trivia-paint.0527b8fc.png"
   },
   {
-    "revision": "335b51bb7d3c80bd939a",
-    "url": "/static/js/main.2e9c8677.chunk.js"
+    "revision": "b8f04038be5a99399479",
+    "url": "/static/js/main.825df874.chunk.js"
   },
   {
     "revision": "a24c176ba4a636ef3e86caf6c75c7cea",
@@ -272,7 +272,7 @@ self.__precacheManifest = [
     "url": "/static/media/dom-gradient.4a99fb7e.jpg"
   },
   {
-    "revision": "738e1d290e90bdbb340832644b88ef68",
+    "revision": "496215be4da895a2b98bb168fc7a9af5",
     "url": "/index.html"
   }
 ];

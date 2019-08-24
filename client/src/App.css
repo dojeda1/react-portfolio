@@ -418,7 +418,14 @@ nav {
   color: white;
   background-color: #27aae1;
 }
-
+.disabled-div {
+    pointer-events: none !important;
+    color: grey !important;
+}
+.disabled-div button{
+    pointer-events: none !important;
+    color: grey !important;
+}
 .fontSmall {
   font-size: 80%;
   margin-left: -15px;
