@@ -820,11 +820,6 @@ class Game extends Component {
         newEnemy.gold = monsterArray[monNum].gold;
         newEnemy.isDead = false
         this.addItem(newEnemy.inventory, items1[0]);
-        this.addItem(newEnemy.inventory, items1[0]);
-        this.addItem(newEnemy.inventory, items1[0]);
-        this.addItem(newEnemy.inventory, items1[1]);
-        this.addItem(newEnemy.inventory, items1[1]);
-        this.addItem(newEnemy.inventory, items1[1]);
         this.setState({
             currentEnemy: newEnemy,
             task: "fight",
@@ -993,6 +988,10 @@ class Game extends Component {
             this.setState({
                 message: "You are already at full health."
             });
+        } else if (specialName === "Steal" && !this.state.currentEnemy.inventory.length) {
+            this.setState({
+                message: "There is nothing to steal."
+            });
         } else {
             this.special(this.state.player, this.state.currentEnemy, specialName, specialCost);
             this.enemyTurn(this.state.player, this.state.currentEnemy);
@@ -1034,7 +1033,8 @@ class Game extends Component {
         let attackMessage;
         let damage;
         let criticalCheck;
-        let luckCheck
+        let luckCheck;
+        let speedCheck;
 
         switch (name) {
             case "Axe Strike":
@@ -1139,9 +1139,30 @@ class Game extends Component {
                 });
                 // attacker.berserkCheck();
                 break;
-            case 3:
 
-                console.log("Case 3");
+            case "Steal":
+                criticalCheck = this.randNum(1, 100);
+                speedCheck = (attacker.speed - defender.speed) + 60;
+                if (speedCheck > 95) {
+                    speedCheck = 95;
+                } else if (speedCheck < 5) {
+                    speedCheck = 5;
+                }
+                if (criticalCheck <= speedCheck) {
+                    const itemNum = this.randNum(0, defender.inventory.length);
+                    const item = defender.inventory[itemNum];
+                    this.transferItem(defender.inventory, attacker.inventory, item)
+                    this.setState({
+                        infoText1: attacker.name + " stole " + this.aOrAn(item.name) + " " + item.name + "."
+                    });
+                } else {
+                    this.setState({
+                        infoText1: attacker.name + " failed to steal anything."
+                    });
+                }
+
+                attacker.mp -= cost;
+                // attacker.berserkCheck();
                 break;
 
             default:
@@ -1235,7 +1256,7 @@ class Game extends Component {
     };
     dropLoot = (enemy) => {
         const lootCheck = this.randNum(1, 5);
-        if (lootCheck > 1) {
+        if (lootCheck === 1) {
             if (enemy.inventory.length) {
                 const itemNum = this.randNum(0, enemy.inventory.length);
                 const item = enemy.inventory[itemNum];
