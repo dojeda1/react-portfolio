@@ -806,22 +806,27 @@ class Game extends Component {
         let monNum = this.randNum(0, rangeNum);
         const message = alternateMessage || "You encountered " + this.aOrAn(monsterArray[monNum].name) + " " + monsterArray[monNum].name + ".";
         console.log("message: " + message)
+        var newEnemy = this.state.currentEnemy
+        newEnemy.name = monsterArray[monNum].name;
+        newEnemy.type = monsterArray[monNum].type;
+        newEnemy.maxHp = monsterArray[monNum].maxHp;
+        newEnemy.hp = monsterArray[monNum].maxHp;
+        newEnemy.maxMp = monsterArray[monNum].maxMp;
+        newEnemy.mp = monsterArray[monNum].maxMp;
+        newEnemy.strength = monsterArray[monNum].strength;
+        newEnemy.luck = monsterArray[monNum].luck;
+        newEnemy.xp = monsterArray[monNum].xp;
+        newEnemy.inventory = monsterArray[monNum].inventory;
+        newEnemy.gold = monsterArray[monNum].gold;
+        newEnemy.isDead = false
+        this.addItem(newEnemy.inventory, items1[0]);
+        this.addItem(newEnemy.inventory, items1[0]);
+        this.addItem(newEnemy.inventory, items1[0]);
+        this.addItem(newEnemy.inventory, items1[1]);
+        this.addItem(newEnemy.inventory, items1[1]);
+        this.addItem(newEnemy.inventory, items1[1]);
         this.setState({
-            currentEnemy: {
-                ...this.state.currentEnemy,
-                name: monsterArray[monNum].name,
-                type: monsterArray[monNum].type,
-                maxHp: monsterArray[monNum].maxHp,
-                hp: monsterArray[monNum].maxHp,
-                maxMp: monsterArray[monNum].maxMp,
-                mp: monsterArray[monNum].maxMp,
-                strength: monsterArray[monNum].strength,
-                luck: monsterArray[monNum].luck,
-                xp: monsterArray[monNum].xp,
-                inventory: monsterArray[monNum].inventory,
-                gold: monsterArray[monNum].gold,
-                isDead: false
-            },
+            currentEnemy: newEnemy,
             task: "fight",
             step: "select move",
             message: message
@@ -876,23 +881,21 @@ class Game extends Component {
         };
         let monNum = this.randNum(0, rangeNum);
         const message = alternateMessage || "You encountered a Vicious " + monsterArray[monNum].name + ".";
-
+        var newEnemy = this.state.currentEnemy
+        newEnemy.name = "Vicious " + monsterArray[monNum].name;
+        newEnemy.type = "vicious";
+        newEnemy.maxHp = monsterArray[monNum].maxHp + 5;
+        newEnemy.hp = monsterArray[monNum].maxHp + 5;
+        newEnemy.maxMp = monsterArray[monNum].maxMp + 5;
+        newEnemy.mp = monsterArray[monNum].maxMp + 5;
+        newEnemy.strength = monsterArray[monNum].strength + 5;
+        newEnemy.luck = monsterArray[monNum].luck;
+        newEnemy.xp = monsterArray[monNum].xp + 10;
+        newEnemy.inventory = monsterArray[monNum].inventory;
+        newEnemy.gold = monsterArray[monNum].gold + 30;
+        newEnemy.isDead = false
         this.setState({
-            currentEnemy: {
-                ...this.state.currentEnemy,
-                name: "Vicious " + monsterArray[monNum].name,
-                type: "vicious",
-                maxHp: monsterArray[monNum].maxHp + 5,
-                hp: monsterArray[monNum].maxHp + 5,
-                maxMp: monsterArray[monNum].maxMp + 5,
-                mp: monsterArray[monNum].maxMp + 5,
-                strength: monsterArray[monNum].strength + 5,
-                luck: monsterArray[monNum].luck,
-                xp: monsterArray[monNum].xp + 10,
-                inventory: monsterArray[monNum].inventory,
-                gold: monsterArray[monNum].gold = 30,
-                isDead: false
-            },
+            currentEnemy: newEnemy,
             task: "fight",
             step: "select move",
             message: message
@@ -907,21 +910,21 @@ class Game extends Component {
     }
     mimicEncounter = () => {
         const regionLevel = this.state.region.level;
+        var newEnemy = this.state.currentEnemy
+        newEnemy.name = "Mimic"
+        newEnemy.type = "mimic";
+        newEnemy.maxHp = (regionLevel * 5) + 20;
+        newEnemy.hp = (regionLevel * 5) + 20;
+        newEnemy.maxMp = 10;
+        newEnemy.mp = 10;
+        newEnemy.strength = regionLevel * 2 + 2;
+        newEnemy.luck = regionLevel * 2 + 2;
+        newEnemy.xp = regionLevel * 5 + 5;
+        newEnemy.inventory = [];
+        newEnemy.gold = 60 + regionLevel * 5;
+        newEnemy.isDead = false
         this.setState({
-            currentEnemy: {
-                ...this.state.currentEnemy,
-                name: "Mimic",
-                type: "mimic",
-                maxHp: (regionLevel * 5) + 20,
-                hp: (regionLevel * 5) + 20,
-                maxMp: 10,
-                mp: 10,
-                strength: regionLevel * 2 + 2,
-                xp: regionLevel * 5 + 5,
-                inventory: [],
-                gold: 60 + regionLevel * 5,
-                isDead: false
-            },
+            currentEnemy: newEnemy,
             task: "fight",
             step: "select move",
             message: "You were tricked by a Mimic!"
@@ -972,6 +975,7 @@ class Game extends Component {
             });
             this.gainXp(enemy.xp, player);
             this.dropGold();
+            this.dropLoot(enemy)
             console.log("total kills: " + player.totalKills);
         } else {
             this.setState({
@@ -1229,6 +1233,19 @@ class Game extends Component {
             goldResult: amount
         });
     };
+    dropLoot = (enemy) => {
+        const lootCheck = this.randNum(1, 5);
+        if (lootCheck > 1) {
+            if (enemy.inventory.length) {
+                const itemNum = this.randNum(0, enemy.inventory.length);
+                const item = enemy.inventory[itemNum];
+                this.transferItem(enemy.inventory, this.state.player.inventory, item)
+                console.log(enemy.name + " dropped " + this.aOrAn(item.name) + " " + item.name + ".")
+            } else {
+                console.log("enemy has no items")
+            }
+        }
+    }
     //town functions
     render() {
         const code = "< / >"
@@ -1600,7 +1617,7 @@ class Game extends Component {
                                                 <button value={item.name} data-index={index} data-price={item.buy} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.buyItem}>
                                                     {item.name}
                                                 </button>
-                                                <span className="font1 fontSmall"> x {item.qty}</span>
+                                                <span className="font1 fontSmall"> ${item.buy} x {item.qty}</span>
                                             </div>
                                         ))}
                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
@@ -1615,7 +1632,7 @@ class Game extends Component {
                                                     <button value={item.name} data-index={index} data-price={item.sell} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.sellItem}>
                                                         {item.name}
                                                     </button>
-                                                    <span className="font1 fontSmall"> x {item.qty}</span>
+                                                    <span className="font1 fontSmall"> ${item.sell} x {item.qty}</span>
                                                 </div>
                                             ))}
                                             <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
