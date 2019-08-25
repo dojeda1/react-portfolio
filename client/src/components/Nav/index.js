@@ -48,7 +48,7 @@ class Nav extends Component {
                         <a href={Resume} target="blank" className="white-text">Resume</a>
                     </li>
                     <li>
-                        <a className="white-text" onClick={this.toggleGame.bind(this)}>{code}</a>
+                        <a className="grey-text" onClick={this.toggleGame.bind(this)}>{code}</a>
                     </li>
                 </ul>
                 {/* <!-- End NavBar --> */}
@@ -74,7 +74,7 @@ class Nav extends Component {
                             <a href={Resume} target="blank" className="white-text">Resume</a>
                         </li>
                         <li>
-                            <a className="white-text" onClick={this.toggleGame.bind(this)}>{code}</a>
+                            <a className="grey-text" onClick={this.toggleGame.bind(this)}>{code}</a>
                         </li>
                     </div>
                 </ul>

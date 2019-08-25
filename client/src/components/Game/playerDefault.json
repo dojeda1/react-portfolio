@@ -13,7 +13,7 @@
     "speed": 2,
     "maxHp": 20,
     "hp": 20,
-    "maxMp": 40,
+    "maxMp": 4,
     "mp": 4,
     "level": 1,
     "xp": 1000,
