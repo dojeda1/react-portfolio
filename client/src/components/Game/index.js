@@ -9,6 +9,7 @@ import monsters3 from "./monsters3.json";
 
 import items1 from "./items1.json";
 import items2 from "./items2.json";
+import items3 from "./items3.json";
 // this.setState({ something: true }, () => console.log(this.state))
 
 class Game extends Component {
@@ -69,16 +70,23 @@ class Game extends Component {
         };
     }
     atkText = (attacker, attackMessage) => {
+        console.log("atk txt: " + attackMessage)
         let text;
         if (attacker.name === this.state.player.name) {
+            console.log("empty mes arr")
             text = [];
         } else {
+            console.log("do not empty mes arr")
             text = this.state.infoText;
         };
         text.push(attackMessage);
+        console.log("atk text: " + text)
         this.setState({
             infoText: text,
-        }, () => this.gameOverCheck());
+        }, () => {
+            console.log("after attack A: " + this.state.infoText);
+            this.gameOverCheck();
+        });
     }
     handleCheck = () => {
         console.log(this.state.player);
@@ -343,6 +351,7 @@ class Game extends Component {
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
+        this.addItem(this.state.player.inventory, items3[3]);
         this.selectToWild();
     }
     selectUseItem = () => {
@@ -492,6 +501,26 @@ class Game extends Component {
                 }
                 break;
 
+            case "Superior Health Potion":
+                amount = user.maxHp;
+                user.hp += amount;
+                if (user.hp > user.maxHp) {
+                    user.hp = user.maxHp
+                }
+                this.removeItem(user.inventory, user.inventory[index]);
+                if (this.state.task === "fight") {
+                    this.atkText(user, user.name + " recovered " + amount + " HP.")
+                    this.setState({
+                        user: user,
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
+                } else {
+                    this.setState({
+                        user: user,
+                        message: user.name + " recovered " + amount + " HP."
+                    });
+                }
+                break;
+
             case "Mana Potion":
                 amount = Math.floor(user.maxMp * 0.5);
                 user.mp += amount;
@@ -532,10 +561,46 @@ class Game extends Component {
                 }
                 break;
 
+            case "Superior Mana Potion":
+                amount = user.maxMp;
+                user.mp += amount;
+                if (user.mp > user.maxMp) {
+                    user.mp = user.maxMp
+                }
+                this.removeItem(user.inventory, user.inventory[index]);
+                if (this.state.task === "fight") {
+                    this.atkText(user, user.name + " recovered " + amount + " MP.")
+                    this.setState({
+                        user: user,
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
+                } else {
+                    this.setState({
+                        user: user,
+                        message: user.name + " recovered " + amount + " MP."
+                    });
+                }
+                break;
+
             case "Old Hat":
                 this.setState({
                     message: "It looks good on you..."
                 })
+                break;
+
+            case "Death Scroll":
+                if (this.state.task === "fight") {
+                    opponent.hp = 0;
+                    this.removeItem(user.inventory, user.inventory[index]);
+                    this.atkText(user, user.name + " read from the Death Scroll.")
+                    this.setState({
+                        user: user,
+                    }, () => this.enemyTurn(this.state.player, this.state.currentEnemy));
+                } else {
+                    this.setState({
+                        user: user,
+                        message: "Death Scroll can only be used in battle."
+                    });
+                }
                 break;
 
             default:
@@ -560,9 +625,13 @@ class Game extends Component {
                     randItem = this.randNum(0, items1.length);
                     this.addItem(this.state.merchant, items1[randItem]);
                 }
-                for (let i = 0; i < 1; i++) {
+                for (let i = 0; i < 2; i++) {
                     randItem = this.randNum(0, items2.length);
                     this.addItem(this.state.merchant, items2[randItem]);
+                }
+                for (let i = 0; i < 1; i++) {
+                    randItem = this.randNum(0, items3.length);
+                    this.addItem(this.state.merchant, items3[randItem]);
                 }
             })
         };
@@ -718,6 +787,10 @@ class Game extends Component {
             message: "You traveled back to the " + regions[this.state.region.index - 2].name + "."
         })
     }
+    addEnemyItems = (enemy) => {
+        this.addItem(enemy.inventory, items1[0]);
+        this.addItem(enemy.inventory, items1[1]);
+    }
     //encounters
     monsterEncounter = (alternateMessage) => {
 
@@ -766,17 +839,19 @@ class Game extends Component {
         newEnemy.strength = monsterArray[monNum].strength;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp;
-        newEnemy.inventory = monsterArray[monNum].inventory;
+        newEnemy.inventory = [];
         newEnemy.gold = monsterArray[monNum].gold;
         newEnemy.isDead = false
-        this.addItem(newEnemy.inventory, items1[0]);
+        this.addEnemyItems(newEnemy);
         let text = [];
         this.setState({
             currentEnemy: newEnemy,
             task: "fight",
             step: "select move",
+            message: message,
             infoText: text
         });
+        console.log(this.state.currentEnemy);
     };
     viciousEncounter = (alternateMessage) => {
 
@@ -825,14 +900,17 @@ class Game extends Component {
         newEnemy.strength = monsterArray[monNum].strength + 5;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp + 10;
-        newEnemy.inventory = monsterArray[monNum].inventory;
+        newEnemy.inventory = [];
         newEnemy.gold = monsterArray[monNum].gold + 30;
-        newEnemy.isDead = false
+        newEnemy.isDead = false;
+        this.addEnemyItems(newEnemy)
+        let text = [];
         this.setState({
             currentEnemy: newEnemy,
             task: "fight",
             step: "select move",
-            message: message
+            message: message,
+            infoText: text
         });
     };
     chestEncounter = () => {
@@ -857,11 +935,14 @@ class Game extends Component {
         newEnemy.inventory = [];
         newEnemy.gold = 60 + regionLevel * 5;
         newEnemy.isDead = false
+        this.addEnemyItems(newEnemy);
+        let text = [];
         this.setState({
             currentEnemy: newEnemy,
             task: "fight",
             step: "select move",
-            message: "You were tricked by a Mimic!"
+            message: "You were tricked by a Mimic!",
+            infoText: text
         });
     }
     selectYesChest = () => {
@@ -872,24 +953,16 @@ class Game extends Component {
             player.gold += goldNum;
             player.totalGold += goldNum;
 
-
-            // Chest contained { this.state.goldResult } gold.
-
-            // for (i = 0; i < 2; i++) {
-            //     var itemNum = randNum(0, chestInventory.length)
-            //     var item = chestInventory[itemNum];
-            //     player.inventory.push(chestInventory[itemNum]);
-            //     removeItem(item, chestInventory);
-
-
-            //     var anA = aOrAn(item)
-
-            //     console.log("You got " + anA + " " + item + ".");
-
-            // }
             let text = [];
             text.push("--- RESULTS ---");
             text.push("Chest contained " + goldNum + " gold.");
+
+            for (let i = 0; i < 2; i++) {
+                const itemNum = this.randNum(0, items1.length)
+                const item = items1[itemNum];
+                this.addItem(this.state.player.inventory, item);
+                text.push("You got " + this.aOrAn(item.name) + " " + item.name + ".");
+            }
             this.setState({
                 step: "results",
                 message: "You opened it!",
@@ -901,31 +974,34 @@ class Game extends Component {
     }
     // Combat Functions
     selectAttack = () => {
-        this.attack(this.state.player, this.state.currentEnemy);
-        this.enemyTurn(this.state.player, this.state.currentEnemy);
+        let player = this.state.player;
+        let enemy = this.state.currentEnemy
+        this.attack(player, enemy);
+        this.enemyTurn(player, enemy);
     }
     enemyTurn = (player, enemy) => {
-        if (enemy.hp <= 0) {
-            player.totalKills++;
-            let text = this.state.infoText;
-            text.push("You killed " + enemy.name + "!")
-            text.push("--- RESULTS ---")
-            this.setState({
-                task: "fight",
-                step: "results",
-                message: enemy.name + " defeated.",
-                infoText: text
-            });
-            this.dropGold();
-            this.dropLoot(enemy)
-            this.gainXp(enemy.xp, player);
-            console.log("total kills: " + player.totalKills);
-        } else {
-            this.setState({
-                step: "select move"
-            }, () => this.attack(enemy, player));
-            this.gameOverCheck();
-        }
+        setTimeout(() => {
+            if (enemy.hp <= 0) {
+                player.totalKills++;
+                let text = this.state.infoText;
+                text.push("You killed " + enemy.name + "!")
+                text.push("--- RESULTS ---")
+                this.setState({
+                    task: "fight",
+                    step: "results",
+                    message: enemy.name + " defeated.",
+                    infoText: text
+                });
+                this.dropGold();
+                this.dropLoot(enemy)
+                this.gainXp(enemy.xp, player);
+                console.log("total kills: " + player.totalKills);
+            } else {
+                this.setState({
+                    step: "select move"
+                }, () => this.attack(enemy, player));
+            }
+        }, 1);
     }
     selectSpecial = (event) => {
         const specialCost = event.target.getAttribute("data-cost");
@@ -949,7 +1025,7 @@ class Game extends Component {
         console.log(attacker.name + " attacked " + defender.name)
         let attackMessage;
         let damage;
-        const criticalCheck = this.randNum(1, 100);
+        let criticalCheck = this.randNum(1, 100);
         let luckCheck = (attacker.luck - defender.luck) + 10;
         if (luckCheck > 95) {
             luckCheck = 95;
@@ -958,24 +1034,14 @@ class Game extends Component {
         }
         console.log("rand/target: " + criticalCheck + "/" + luckCheck)
         if (criticalCheck >= luckCheck) {
-            damage = attacker.strength;
+            damage = damage = attacker.strength;
             attackMessage = attacker.name + " did " + damage + " damage.";
         } else {
             damage = attacker.strength + Math.floor(attacker.strength * 0.25);
             attackMessage = "Critical hit! " + attacker.name + " did " + damage + " damage.";
         }
         defender.hp -= damage;
-        let text;
-        if (attacker.name === this.state.player.name) {
-            text = [];
-        } else {
-            text = this.state.infoText;
-        }
-        text.push(attackMessage);
-        this.setState({
-            infoText: text,
-        })
-        this.gameOverCheck()
+        this.atkText(attacker, attackMessage);
         // attacker.berserkCheck();
     }
     special = function (attacker, defender, name, cost) {
@@ -1133,6 +1199,7 @@ class Game extends Component {
         let text = this.state.infoText;
         text.push("You gained " + xpNum + " XP.");
         this.setState({
+            player: player,
             xpResult: xpNum,
             infoText: text
         }, () => this.levelUpCheck(this.state.player))
@@ -1152,7 +1219,7 @@ class Game extends Component {
             player.mp = player.maxMp;
 
             let text = this.state.infoText;
-            text.push("You are now lv. " + this.state.player.level + "!!!");
+            text.push("You are now lv. " + player.level + "!!!");
             if (player.level === 2) {
                 text.push("You learned " + player.special1 + "!!!!!");
             } else if (player.level === 6) {
@@ -1160,9 +1227,10 @@ class Game extends Component {
             }
 
             this.setState({
+                player: player,
                 infoText: text
             });
-            this.levelUpCheck(this.state.player);
+            this.levelUpCheck(player);
         };
     };
     selectRun = () => {
@@ -1182,12 +1250,11 @@ class Game extends Component {
         const amount = this.randNum(0, this.state.currentEnemy.gold);
         let text = this.state.infoText;
         text.push(this.state.currentEnemy.name + " dropped " + amount + " gold.")
+        let player = this.state.player;
+        player.gold = player.gold + amount;
+        player.totalGold = player.totalGold + amount;
         this.setState({
-            player: {
-                ...this.state.player,
-                gold: this.state.player.gold + amount,
-                totalGold: this.state.player.gold + amount,
-            },
+            player: player,
             infoText: text,
             goldResult: amount
         });

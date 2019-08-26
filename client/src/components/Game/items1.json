@@ -1,7 +1,7 @@
 [
     {
         "name": "Health Potion",
-        "order": 2,
+        "order": 3,
         "qty": 1,
         "buy": 10,
         "sell": 5,
@@ -9,18 +9,10 @@
     },
     {
         "name": "Mana Potion",
-        "order": 4,
+        "order": 6,
         "qty": 1,
         "buy": 10,
         "sell": 5,
         "info": "Recovers 50% of max MP."
-    },
-    {
-        "name": "Old Hat",
-        "order": 6,
-        "qty": 1,
-        "buy": 100,
-        "sell": 50,
-        "info": "An old, but stylish hat."
     }
 ]

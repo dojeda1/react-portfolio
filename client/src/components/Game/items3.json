@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Superior Health Potion",
+        "order": 1,
+        "qty": 1,
+        "buy": 30,
+        "sell": 15,
+        "info": "Recovers !00% of max HP."
+    },
+    {
+        "name": "Superior Mana Potion",
+        "order": 4,
+        "qty": 1,
+        "buy": 30,
+        "sell": 15,
+        "info": "Recovers 100% of max MP."
+    },
+    {
+        "name": "Old Hat",
+        "order": 7,
+        "qty": 1,
+        "buy": 100,
+        "sell": 80,
+        "info": "An old, but stylish hat."
+    },
+    {
+        "name": "Death Scroll",
+        "order": 8,
+        "qty": 1,
+        "buy": 300,
+        "sell": 150,
+        "info": "Instantly kill your enemy."
+    }
+]
