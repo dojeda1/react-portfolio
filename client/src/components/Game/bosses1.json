@@ -1,0 +1,41 @@
+[
+    {
+        "name": "Bob",
+        "title": "the Persistent",
+        "type": "boss",
+        "maxHp": 40,
+        "maxMp": 10,
+        "strength": 9,
+        "speed": 12,
+        "luck": 6,
+        "xp": 40,
+        "inventory": [],
+        "gold": 50
+    },
+    {
+        "name": "Grue",
+        "title": "the Devourer",
+        "type": "boss",
+        "maxHp": 45,
+        "maxMp": 10,
+        "strength": 12,
+        "speed": 15,
+        "luck": 5,
+        "xp": 45,
+        "inventory": [],
+        "gold": 50
+    },
+    {
+        "name": "Goblong",
+        "title": "the Goblin King",
+        "type": "boss",
+        "maxHp": 50,
+        "maxMp": 20,
+        "strength": 15,
+        "speed": 16,
+        "luck": 8,
+        "xp": 50,
+        "inventory": [],
+        "gold": 50
+    }
+]

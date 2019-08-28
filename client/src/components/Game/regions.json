@@ -3,18 +3,21 @@
         "index": 1,
         "name": "Plains",
         "level": 1,
-        "targetLevel": 4
+        "targetLevel": 4,
+        "dungeonGoal": 4
     },
     {
         "index": 2,
         "name": "Forest",
         "level": 4,
-        "targetLevel": 8
+        "targetLevel": 8,
+        "dungeonGoal": 5
     },
     {
         "index": 3,
         "name": "Mountains",
         "level": 8,
-        "targetLevel": 12
+        "targetLevel": 12,
+        "dungeonGoal": 6
     }
 ]
