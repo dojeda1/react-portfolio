@@ -1,38 +1,53 @@
 [
     {
-        "name": "Bob",
-        "type": "the Persistent",
-        "maxHp": 40,
+        "name": "Celene",
+        "title": "Collector of Lost Souls",
+        "type": "boss",
+        "maxHp": 80,
         "maxMp": 10,
         "strength": 9,
         "speed": 12,
         "luck": 6,
-        "xp": 40,
+        "xp": 100,
         "inventory": [],
-        "gold": 50
+        "gold": 100
     },
     {
-        "name": "Grue",
-        "type": "the Devourer",
-        "maxHp": 45,
+        "name": "Rigor",
+        "title": "the Grand Dire Wolf",
+        "type": "boss",
+        "maxHp": 85,
         "maxMp": 10,
         "strength": 12,
         "speed": 15,
         "luck": 5,
-        "xp": 45,
+        "xp": 100,
         "inventory": [],
-        "gold": 50
+        "gold": 120
     },
     {
-        "name": "Goblong",
-        "type": "the Goblin King",
-        "maxHp": 50,
+        "name": "Lilith",
+        "title": "Demon of the Black Lake",
+        "type": "boss",
+        "maxHp": 90,
         "maxMp": 20,
-        "strength": 15,
-        "speed": 16,
+        "strength": 25,
+        "speed": 25,
         "luck": 8,
-        "xp": 50,
+        "xp": 100,
         "inventory": [],
-        "gold": 50
+        "gold": 150
+    },
+    {
+        "name": "Valedora",
+        "type": "Elder Dragon of the Skies",
+        "maxHp": 100,
+        "maxMp": 20,
+        "strength": 30,
+        "speed": 30,
+        "luck": 8,
+        "xp": 100,
+        "inventory": [],
+        "gold": 150
     }
 ]

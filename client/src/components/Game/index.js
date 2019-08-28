@@ -318,7 +318,7 @@ class Game extends Component {
                 maxMpA = 4
                 strengthA = 0
                 defenseA = 0
-                manaA = 3
+                manaA = 5
                 speedA = 0
                 luckA = 1
                 special1A = "Fireball"
@@ -758,8 +758,6 @@ class Game extends Component {
         const exploreCheck = this.randNum(1, 10)
         if (exploreCheck === 1) {
             this.chestEncounter();
-            // } else if (battleCheck === 2) {            
-            //     this.dungeonEncounter();
         } else if (exploreCheck === 2) {
             this.dungeonEncounter();
         } else {
@@ -857,9 +855,10 @@ class Game extends Component {
         })
     }
     addEnemyItems = (enemy) => {
+        let randItem = this.randNum(0, items3.length)
+        this.addItem(enemy.inventory, items3[randItem]);
         this.addItem(enemy.inventory, items1[0]);
         this.addItem(enemy.inventory, items1[1]);
-        this.addItem(enemy.inventory, items3[3]);
     }
     //encounters
     monsterEncounter = (alternateMessage) => {
@@ -1092,6 +1091,13 @@ class Game extends Component {
             for (let i = 0; i < 2; i++) {
                 const itemNum = this.randNum(0, items1.length)
                 const item = items1[itemNum];
+                this.addItem(this.state.player.inventory, item);
+                text.push("You got " + this.aOrAn(item.name) + " " + item.name + ".");
+            }
+            let uncommonCheck = this.randNum(0, 2);
+            for (let i = 0; i < uncommonCheck; i++) {
+                const itemNum = this.randNum(0, items2.length)
+                const item = items2[itemNum];
                 this.addItem(this.state.player.inventory, item);
                 text.push("You got " + this.aOrAn(item.name) + " " + item.name + ".");
             }
@@ -1413,12 +1419,14 @@ class Game extends Component {
         player.gold -= lostGold;
         const lostHp = this.randNum(0, 3);
         player.hp -= lostHp;
+        this.gameOverCheck();
         this.setState({
+            task: "select where",
+            step: null,
             movingForward: false,
             message: "You lost " + lostGold + " gold and " + lostHp + " HP.",
         });
-        this.gameOverCheck();
-        this.selectToWild();
+
     }
     dropGold = () => {
         const amount = this.randNum(0, this.state.currentEnemy.gold);
@@ -1434,19 +1442,30 @@ class Game extends Component {
         });
     };
     dropLoot = (enemy) => {
-        const lootCheck = this.randNum(1, 5);
-        if (lootCheck === 1) {
-            if (enemy.inventory.length) {
-                const itemNum = this.randNum(0, enemy.inventory.length);
-                const item = enemy.inventory[itemNum];
+        if (enemy.name === "Mimic") {
+            let text = this.state.infoText;
+            enemy.inventory.forEach(item => {
                 this.transferItem(enemy.inventory, this.state.player.inventory, item)
-                let text = this.state.infoText;
                 text.push(enemy.name + " dropped " + this.aOrAn(item.name) + " " + item.name + ".");
-                this.setState({
-                    infoText: text
-                })
-            } else {
-                console.log("enemy has no items")
+            });
+            this.setState({
+                infoText: text
+            })
+        } else {
+            const lootCheck = this.randNum(1, 5);
+            if (lootCheck === 1) {
+                if (enemy.inventory.length) {
+                    const itemNum = this.randNum(0, enemy.inventory.length);
+                    const item = enemy.inventory[itemNum];
+                    this.transferItem(enemy.inventory, this.state.player.inventory, item)
+                    let text = this.state.infoText;
+                    text.push(enemy.name + " dropped " + this.aOrAn(item.name) + " " + item.name + ".");
+                    this.setState({
+                        infoText: text
+                    })
+                } else {
+                    console.log("enemy has no items")
+                }
             }
         }
     }

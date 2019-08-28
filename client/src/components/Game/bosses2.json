@@ -1,38 +1,41 @@
 [
     {
-        "name": "Bob",
-        "type": "the Persistent",
-        "maxHp": 40,
+        "name": "Brutus",
+        "title": "Crusher of Skulls",
+        "type": "boss",
+        "maxHp": 60,
         "maxMp": 10,
-        "strength": 9,
-        "speed": 12,
+        "strength": 15,
+        "speed": 15,
         "luck": 6,
-        "xp": 40,
+        "xp": 75,
         "inventory": [],
-        "gold": 50
+        "gold": 80
     },
     {
-        "name": "Grue",
-        "type": "the Devourer",
-        "maxHp": 45,
+        "name": "Xerus",
+        "title": "Mother of Spiders",
+        "type": "boss",
+        "maxHp": 65,
         "maxMp": 10,
-        "strength": 12,
+        "strength": 15,
         "speed": 15,
         "luck": 5,
-        "xp": 45,
+        "xp": 75,
         "inventory": [],
-        "gold": 50
+        "gold": 80
     },
     {
-        "name": "Goblong",
-        "type": "the Goblin King",
-        "maxHp": 50,
+        "name": "Arealus",
+        "title": "the White Lion",
+        "type": "boss",
+        "maxHp": 70,
         "maxMp": 20,
-        "strength": 15,
-        "speed": 16,
+        "strength": 18,
+        "speed": 17,
         "luck": 8,
-        "xp": 50,
+        "xp": 75,
         "inventory": [],
-        "gold": 50
+        "gold": 80
     }
 ]

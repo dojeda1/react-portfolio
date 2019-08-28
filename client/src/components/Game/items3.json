@@ -5,7 +5,7 @@
         "qty": 1,
         "buy": 30,
         "sell": 15,
-        "info": "Recovers !00% of max HP."
+        "info": "Recovers 100% of max HP."
     },
     {
         "name": "Superior Mana Potion",
