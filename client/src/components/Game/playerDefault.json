@@ -20,8 +20,6 @@
     "nextLevel": 50,
     "inventory": [],
     "gold": 0,
-    "goldCount": 0,
-    "killCount": 0,
     "isDead": false,
     "isBerserk": false,
     "berserkCount": 0,

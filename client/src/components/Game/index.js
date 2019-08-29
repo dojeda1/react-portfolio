@@ -44,7 +44,8 @@ class Game extends Component {
             isDead: false
         },
         merchant: [],
-        dungeonCount: 0
+        dungeonCount: 0,
+        meadCount: 0
     }
     componentDidMount() {
         this.setState({ message: "Choose an Option." });
@@ -635,6 +636,10 @@ class Game extends Component {
         let randItem;
         if (this.state.location === "wild") {
             this.setState({
+                location: "town",
+                task: "select where",
+                step: null,
+                meadCount: 0,
                 merchant: []
             }, function () {
                 for (let i = 0; i < 4; i++) {
@@ -651,29 +656,6 @@ class Game extends Component {
                 }
             })
         };
-        this.changePlayStates("town", "select where", null);
-    }
-    goToTOwn = () => {
-        let randItem;
-        if (this.state.location === "wild") {
-            this.setState({
-                merchant: []
-            }, function () {
-                for (let i = 0; i < 4; i++) {
-                    randItem = this.randNum(0, items1.length);
-                    this.addItem(this.state.merchant, items1[randItem]);
-                }
-                for (let i = 0; i < 2; i++) {
-                    randItem = this.randNum(0, items2.length);
-                    this.addItem(this.state.merchant, items2[randItem]);
-                }
-                for (let i = 0; i < 1; i++) {
-                    randItem = this.randNum(0, items3.length);
-                    this.addItem(this.state.merchant, items3[randItem]);
-                }
-            })
-        };
-        this.changePlayStates("town", "select where", null);
     }
     selectToInn = () => {
         const cost = 10 + (this.state.player.level - 2) * 2;
@@ -701,13 +683,12 @@ class Game extends Component {
     selectYesInn = () => {
         const cost = 10 + (this.state.player.level - 2) * 2;
         if (this.state.player.gold >= cost) {
+            let player = this.state.player;
+            player.gold = player.gold - cost;
+            player.hp = player.maxHp;
+            player.mp = player.maxMp;
             this.setState({
-                player: {
-                    ...this.state.player,
-                    gold: this.state.player.gold - cost,
-                    hp: this.state.player.maxHp,
-                    mp: this.state.player.maxMp,
-                },
+                player: player,
                 message: "You feel well rested.",
                 task: "select where",
                 step: null
@@ -752,6 +733,89 @@ class Game extends Component {
         this.setState({
             step: "sell",
             subMessage: shopMessage
+        })
+    }
+    selectToTavern = () => {
+        this.setState({
+            message: "You entered the tavern.",
+            task: "tavern",
+            step: "select next"
+        })
+    }
+    selectGrabMead = () => {
+        this.setState({
+            message: "That will be 5 gold.",
+            messageSub: "Pay for the Mead?",
+            step: "accept mead"
+        });
+    }
+    selectYesMead = () => {
+        const cost = 5;
+        if (this.state.player.gold >= cost) {
+            let player = this.state.player;
+            player.gold = player.gold - 5
+            player.hp = player.hp + 5;
+            if (player.hp > player.maxHp) {
+                player.hp = player.maxHp
+            }
+            player.mp = player.mp + 3;
+            if (player.mp > player.maxMp) {
+                player.mp = player.maxMp
+            }
+            let meadNum = this.state.meadCount + 1;
+
+            if (meadNum < 3) {
+                this.setState({
+                    player: player,
+                    message: "It was refreshing.",
+                    task: "tavern",
+                    step: "select next",
+                    meadCount: meadNum
+                });
+            } else if (meadNum < 4) {
+                this.setState({
+                    player: player,
+                    message: "You are starting to feel drunk...",
+                    task: "tavern",
+                    step: "select next",
+                    meadCount: meadNum
+                });
+            } else if (meadNum < 5) {
+                this.setState({
+                    player: player,
+                    message: "Maaaysssbe wwuuun meerrrrr...",
+                    task: "tavern",
+                    step: "select next",
+                    meadCount: meadNum
+                });
+            } else if (meadNum >= 5) {
+                console.log("You blacked out from drunkenness.")
+                console.log("Hours later, you find yourself in the midst of a dungeon, on the brink of death.")
+                player.hp = 3
+                player.mp = 0
+                this.setState({
+                    player: player,
+                    message: "You blacked out from drunkenness. Hours later, you find yourself in the midst of a dungeon, on the brink of death.",
+                    location: "dungeon",
+                    task: "select where",
+                    step: null,
+                    meadCount: 0,
+                    dungeonCount: 0
+                });
+            }
+        } else {
+            this.setState({
+                message: "You don't have enough gold.",
+                task: "tavern",
+                step: "select next"
+            })
+        }
+    }
+    selectNoMead = () => {
+        this.setState({
+            message: "You decided against it.",
+            task: "tavern",
+            step: "select next"
         })
     }
     selectExplore = () => {
@@ -820,6 +884,12 @@ class Game extends Component {
         } else if (this.state.task === "shop") {
             this.setState({
                 message: "You left the shop.",
+                task: "select where",
+                step: null
+            });
+        } else if (this.state.task === "tavern") {
+            this.setState({
+                message: "You left the tavern.",
                 task: "select where",
                 step: null
             });
@@ -1748,8 +1818,36 @@ class Game extends Component {
                                                         No
                                             </button>
                                                 </div>
-                                                : null
-                            }
+                                                : this.state.location === "town" && this.state.task === "tavern" && this.state.step === "select next" ?
+                                                    <div>
+                                                        <p>What next?</p>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGrabMead}>
+                                                            Grab a Mead
+                                                        </button>
+                                                        {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectLookWork}>
+                                                            Look for Work
+                                                        </button> */}
+                                                        {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
+                                                            Play Game
+                                                        </button> */}
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
+                                                            Use Item
+                                                        </button>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                            <i className="material-icons left">arrow_back</i>Leave Tavern
+                                                        </button>
+                                                    </div>
+                                                    : this.state.task === "tavern" && this.state.step === "accept mead" ?
+                                                        <div>
+                                                            <p>{this.state.messageSub}</p>
+                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesMead}>
+                                                                Yes
+                                                             </button>
+                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoMead}>
+                                                                No
+                                                            </button>
+                                                        </div>
+                                                        : null}
 
                             {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index !== 1 ?
                                 <button className="btn btn-flat game-blue-btn font2" onClick={this.selectTravelBackward}>
