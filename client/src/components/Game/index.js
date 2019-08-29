@@ -86,8 +86,16 @@ class Game extends Component {
             text = this.state.infoText;
         };
         text.push(attackMessage);
+        let berserkNum = attacker.berserkCount;
+        if (berserkNum === 3) {
+            attacker.berserkCount = 0;
+            attacker.isBerserk = false;
+            text.push("Berserk has run out.")
+        }
         console.log("atk text: " + text)
         this.setState({
+            player: this.state.player,
+            currentEnemy: this.state.currentEnemy,
             infoText: text,
         }, () => {
             console.log("after attack A: " + this.state.infoText);
@@ -789,13 +797,11 @@ class Game extends Component {
                     meadCount: meadNum
                 });
             } else if (meadNum >= 5) {
-                console.log("You blacked out from drunkenness.")
-                console.log("Hours later, you find yourself in the midst of a dungeon, on the brink of death.")
                 player.hp = 3
                 player.mp = 0
                 this.setState({
                     player: player,
-                    message: "You blacked out from drunkenness. Hours later, you find yourself in the midst of a dungeon, on the brink of death.",
+                    message: "You blacked out, waking hours later inside a dungeon.",
                     location: "dungeon",
                     task: "select where",
                     step: null,
@@ -1272,6 +1278,23 @@ class Game extends Component {
     }
 
     attack = function (attacker, defender) {
+        let berserkNum = 0;
+        if (attacker.isBerserk) {
+            attacker.berserkCount++
+            berserkNum = Math.floor(attacker.strength / 2)
+        }
+
+        if (this.isBerserk === true) {
+            this.berserkCount++;
+            // console.log(this.berserkCount);
+            if (this.berserkCount > 2) {
+                this.berserkCount = 0;
+                this.isBerserk = false;
+                this.strength = this.berserkAtkHold
+                console.log(" - Berserk has run out. - \n")
+            }
+        }
+
         console.log(attacker.name + " attacked " + defender.name)
         let attackMessage;
         let damage;
@@ -1284,10 +1307,10 @@ class Game extends Component {
         }
         console.log("rand/target: " + criticalCheck + "/" + luckCheck)
         if (criticalCheck >= luckCheck) {
-            damage = damage = attacker.strength;
+            damage = attacker.strength + berserkNum;
             attackMessage = attacker.name + " did " + damage + " damage.";
         } else {
-            damage = attacker.strength + Math.floor(attacker.strength * 0.25);
+            damage = attacker.strength + Math.floor(attacker.strength * 0.25) + berserkNum;
             attackMessage = "Critical hit! " + attacker.name + " did " + damage + " damage.";
         }
         defender.hp -= damage;
@@ -1321,6 +1344,13 @@ class Game extends Component {
                 defender.hp -= damage;
                 attacker.mp -= cost;
                 this.atkText(attacker, attackMessage);
+                break;
+
+            case "Berserk":
+                attacker.mp -= cost;
+                attacker.isBerserk = true;
+                attacker.berserkCount = 0;
+                this.atkText(attacker, attacker.name + " is now Berserk!");
                 // attacker.berserkCheck();
                 break;
 
@@ -1683,6 +1713,7 @@ class Game extends Component {
                                         <span className={playerMpStyle}>MP: {this.state.player.mp}/{this.state.player.maxMp}</span><span className="white-text"> | </span>
                                         <span className={playerXpStyle}>XP: {this.state.player.xp}/{this.state.player.nextLevel}</span><span className="white-text"> | </span>
                                         <span className={playerGoldStyle}>${this.state.player.gold}</span>
+                                        {this.state.player.isBerserk ? <span><span className="white-text"> - </span>Berserk</span> : null}
                                     </p>
                                 </div>
                                 : null}
