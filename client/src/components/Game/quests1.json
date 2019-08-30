@@ -1,6 +1,17 @@
 [
     {
-        "name": "Kill",
-        "info": "Kill 10 Goblins"
+        "name": "Kill 3 Goblins",
+        "info": "Goblins have been ruining all my walks outside town. I will pay to have some of them taken out.",
+        "reward": "100 Gold"
+    },
+    {
+        "name": "Find a Death Scroll",
+        "info": "I am in desperate need of a Death Scroll. I fancy a girl, but her father has forbade our union.",
+        "reward": "500 Gold"
+    },
+    {
+        "name": "Kill a Vicious Slime",
+        "info": "A Vicious Slime has destroyed all my crops. Take it out and I will reward you handsomely.",
+        "reward": "Elixir of Life"
     }
 ]

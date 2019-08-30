@@ -46,6 +46,8 @@ class Game extends Component {
             isDead: false
         },
         quests: [],
+        tavernQuests: quests1,
+        viewQuest: {},
         merchant: [],
         dungeonCount: 0,
         meadCount: 0,
@@ -861,6 +863,47 @@ class Game extends Component {
             step: "select next"
         })
     }
+    selectGetQuest = () => {
+        this.setState({
+            message: "You viewed the job board.",
+            task: "tavern",
+            step: "select quest"
+        })
+    }
+    selectQuest = (event) => {
+        const index = event.target.getAttribute("data-index");
+        const grabQuest = this.state.tavernQuests[index]
+        let thisQuest = this.state.viewQuest
+        thisQuest.name = grabQuest.name;
+        thisQuest.info = grabQuest.info;
+        thisQuest.reward = grabQuest.reward;
+        thisQuest.index = index;
+        this.setState({
+            viewQuest: thisQuest,
+            step: "accept quest"
+        })
+    }
+    selectYesQuest = (event) => {
+        const index = event.target.getAttribute("data-index");
+        let quests = this.state.quests
+        let newQuest = {};
+        newQuest.name = this.state.tavernQuests[index].name;
+        newQuest.info = this.state.tavernQuests[index].info;
+        newQuest.reward = this.state.tavernQuests[index].reward;
+        quests.push(newQuest);
+        this.setState({
+            quests: quests,
+            message: "You got a new quest!",
+            step: "select next"
+        })
+    }
+    selectNoQuest = () => {
+        this.setState({
+            message: "You decided against it.",
+            task: "tavern",
+            step: "select quest"
+        })
+    }
     selectExplore = () => {
         const exploreCheck = this.randNum(1, 10)
         if (exploreCheck === 1) {
@@ -929,6 +972,12 @@ class Game extends Component {
                 message: "You left the shop.",
                 task: "select where",
                 step: null
+            });
+        } else if (this.state.step === "select quest") {
+            this.setState({
+                message: "You decided against it.",
+                task: "tavern",
+                step: "select next"
             });
         } else if (this.state.task === "tavern") {
             this.setState({
@@ -1759,9 +1808,10 @@ class Game extends Component {
                                     <div>
                                         <p className="font1 center-align">- Quests -</p>
                                         {this.state.quests.length ? this.state.quests.map((quest, index) => (
-                                            <div>
-                                                <p key={index}>{quest.name}</p>
-                                                <p key={index}>{quest.info}</p>
+                                            <div key={index} class="game-info">
+                                                <p>{quest.name}</p>
+                                                <p>{quest.info}</p>
+                                                <p>Reward: {quest.reward}</p>
                                             </div>
                                         )) : <p>You have no quests...</p>}
                                         <button className="btn btn-flat game-blue-btn font2" onClick={this.selectExit}>
@@ -1929,41 +1979,70 @@ class Game extends Component {
                                                                     <p>{this.state.messageSub}</p>
                                                                     <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesInn}>
                                                                         Yes
-                                            </button>
+                                                                    </button>
                                                                     <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoInn}>
                                                                         No
-                                            </button>
+                                                                    </button>
                                                                 </div>
                                                                 : this.state.location === "town" && this.state.task === "tavern" && this.state.step === "select next" ?
                                                                     <div>
                                                                         <p>What next?</p>
                                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGrabMead}>
                                                                             Grab a Mead
-                                                        </button>
-                                                                        {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectLookWork}>
-                                                            Look for Work
-                                                        </button> */}
+                                                                        </button>
+                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGetQuest}>
+                                                                            Get Quest
+                                                                        </button>
                                                                         {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
                                                             Play Game
                                                         </button> */}
                                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                                                             Use Item
-                                                        </button>
+                                                                        </button>
                                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
                                                                             <i className="material-icons left">arrow_back</i>Leave Tavern
-                                                        </button>
+                                                                        </button>
                                                                     </div>
                                                                     : this.state.task === "tavern" && this.state.step === "accept mead" ?
                                                                         <div>
                                                                             <p>{this.state.messageSub}</p>
                                                                             <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesMead}>
                                                                                 Yes
-                                                             </button>
+                                                                            </button>
                                                                             <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoMead}>
                                                                                 No
-                                                            </button>
+                                                                            </button>
                                                                         </div>
-                                                                        : null}
+                                                                        : this.state.task === "tavern" && this.state.step === "select quest" ?
+                                                                            <div>
+                                                                                <p>Which quest intrigues you?</p>
+                                                                                {this.state.tavernQuests.map((quest, index) => (
+                                                                                    <div key={index}>
+                                                                                        <button value={quest.name} data-index={index} data-info={quest.info} className="btn btn-flat game-choice-btn font2" onClick={this.selectQuest}>
+                                                                                            {quest.name}
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ))}
+                                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                                                    <i className="material-icons left">arrow_back</i>Back
+                                                                                </button>
+                                                                            </div>
+                                                                            : this.state.task === "tavern" && this.state.step === "accept quest" ?
+                                                                                <div>
+                                                                                    <div className="game-info">
+                                                                                        <p>{this.state.viewQuest.name}</p>
+                                                                                        <p>{this.state.viewQuest.info}</p>
+                                                                                        <p>Reward: {this.state.viewQuest.reward}</p>
+                                                                                    </div>
+                                                                                    <p>Will you take on this quest?</p>
+                                                                                    <button className="btn btn-flat game-blue-btn font2" data-index={this.state.viewQuest.index} onClick={this.selectYesQuest}>
+                                                                                        Yes
+                                                                                    </button>
+                                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoQuest}>
+                                                                                        No
+                                                                                    </button>
+                                                                                </div>
+                                                                                : null}
 
                                             {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index !== 1 ?
                                                 <button className="btn btn-flat game-blue-btn font2" onClick={this.selectTravelBackward}>
