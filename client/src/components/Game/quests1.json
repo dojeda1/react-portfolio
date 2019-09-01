@@ -1,13 +1,13 @@
 [
     {
-        "name": "Kill 3 Goblins",
+        "name": "Kill 1 Goblins",
         "info": "Goblins have been ruining all my walks outside town. I will pay to have some of them taken out.",
         "amount": 100,
         "reward": "gold",
         "type": "kill",
         "task": "Goblin",
         "count": 0,
-        "goal": 3,
+        "goal": 1,
         "completed": false
     },
     {
@@ -33,14 +33,14 @@
         "completed": false
     },
     {
-        "name": "Kill 6 Slimes",
+        "name": "Kill 1 Slimes",
         "info": "Slimes are disgusting! Will pay for removing some of these vile creatures from our land.",
         "amount": 300,
         "reward": "gold",
         "type": "kill",
         "task": "Slime",
         "count": 0,
-        "goal": 6,
+        "goal": 1,
         "completed": false
     },
     {

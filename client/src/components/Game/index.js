@@ -197,6 +197,7 @@ class Game extends Component {
         newQuest.amount = fromArr[index].amount;
         newQuest.reward = fromArr[index].reward;
         newQuest.type = fromArr[index].type;
+        newQuest.task = fromArr[index].task;
         newQuest.count = fromArr[index].count;
         newQuest.goal = fromArr[index].goal;
         newQuest.completed = fromArr[index].completed;
@@ -904,6 +905,7 @@ class Game extends Component {
         thisQuest.amount = grabQuest.amount;
         thisQuest.reward = grabQuest.reward;
         thisQuest.type = grabQuest.type;
+        thisQuest.task = grabQuest.task;
         thisQuest.count = grabQuest.count;
         thisQuest.goal = grabQuest.goal;
         thisQuest.completed = grabQuest.completed;
@@ -931,7 +933,6 @@ class Game extends Component {
                 message: "You can only have 3 quests at a time.",
             })
         }
-
     }
     selectNoQuest = () => {
         this.setState({
@@ -940,6 +941,32 @@ class Game extends Component {
             step: "select quest"
         })
     }
+    selectCashQuest = () => {
+        this.setState({
+            message: "You decided against it.",
+            task: "tavern",
+            step: "cash quest"
+        })
+    }
+    selectRedeemReward = (event) => {
+        console.log("Redeemed reward")
+        let player = this.state.player
+        let index = event.target.getAttribute("data-index");
+        let type = event.target.getAttribute("data-type");
+        let amount = event.target.getAttribute("data-amount");
+        let reward = event.target.getAttribute("data-reward");
+        if (reward === "gold") {
+            player.gold += parseInt(amount)
+        } else {
+            // this.addItem(player.inventory, )
+            console.log("item reward.")
+        }
+        this.setState({
+            message: "You earned " + amount + " " + reward + ".",
+            player: player
+        })
+        this.removeQuest(this.state.quests, index);
+    }
     selectAbandonQuest = (event) => {
         const index = event.target.getAttribute("data-index");
         let questArr = this.state.quests
@@ -947,6 +974,29 @@ class Game extends Component {
         this.setState({
             quests: questArr
         });
+    }
+
+
+    killQuestCheck = (enemyName) => {
+        let playerQuests = this.state.quests;
+        playerQuests.forEach(quest => {
+            if (quest.type === "kill" && !quest.completed) {
+                console.log("kill Quest: " + enemyName);
+                console.log(enemyName + ":" + quest.task)
+                if (enemyName === quest.task) {
+                    quest.count++;
+                    if (quest.count >= quest.goal) {
+                        quest.completed = true
+                    }
+                    console.log("QC: " + quest.count)
+                } else {
+                    console.log("not correct enemy.")
+                }
+            }
+        });
+        this.setState({
+            quests: playerQuests
+        })
     }
     selectExplore = () => {
         const exploreCheck = this.randNum(1, 10)
@@ -1017,7 +1067,7 @@ class Game extends Component {
                 task: "select where",
                 step: null
             });
-        } else if (this.state.step === "select quest") {
+        } else if (this.state.step === "select quest" || this.state.step === "cash quest") {
             this.setState({
                 message: "You decided against it.",
                 task: "tavern",
@@ -1355,6 +1405,7 @@ class Game extends Component {
                 this.dropGold();
                 this.dropLoot(enemy)
                 this.gainXp(enemy.xp, player);
+                this.killQuestCheck(enemy.name);
                 console.log("total kills: " + player.totalKills);
                 if (this.state.location === "dungeon") {
                     this.setState({
@@ -1853,7 +1904,7 @@ class Game extends Component {
                                         <p className="font1 center-align">- Quests -</p>
                                         {this.state.quests.length ? this.state.quests.map((quest, index) => (
 
-                                            <div key={index} class="game-info">
+                                            <div key={index} className="game-info">
                                                 <p>{quest.name}</p>
                                                 <p>{quest.info}</p>
                                                 <p>Reward: {quest.amount} {quest.reward}</p>
@@ -2043,6 +2094,10 @@ class Game extends Component {
                                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGetQuest}>
                                                                             Get Quest
                                                                         </button>
+                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectCashQuest}>
+                                                                            Cash in Quest
+                                                                        </button>
+
                                                                         {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
                                                             Play Game
                                                         </button> */}
@@ -2096,7 +2151,25 @@ class Game extends Component {
                                                                                         No
                                                                                     </button>
                                                                                 </div>
-                                                                                : null}
+                                                                                : this.state.task === "tavern" && this.state.step === "cash quest" ?
+                                                                                    <div>
+                                                                                        {this.state.quests.length ?
+                                                                                            <div>
+                                                                                                <p>Cash in which quest?</p>
+                                                                                                {this.state.quests.map((quest, index) => (
+                                                                                                    <div key={index}>
+                                                                                                        <button data-index={index} data-type={quest.type} data-amount={quest.amount} data-reward={quest.reward} className={quest.completed ? "btn btn-flat game-choice-btn font2" : "btn btn-flat game-choice-btn font2 disabled-div"} onClick={this.selectRedeemReward}>
+                                                                                                            {quest.name}
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                ))}
+                                                                                            </div>
+                                                                                            : <p>You have no quests at the moment.</p>}
+                                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                                                            <i className="material-icons left">arrow_back</i>Back
+                                                                                </button>
+                                                                                    </div>
+                                                                                    : null}
 
                                             {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index !== 1 ?
                                                 <button className="btn btn-flat game-blue-btn font2" onClick={this.selectTravelBackward}>
