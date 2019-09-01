@@ -1,0 +1,68 @@
+[
+    {
+        "name": "Kill 3 Goblins",
+        "info": "Goblins have been ruining all my walks outside town. I will pay to have some of them taken out.",
+        "amount": 100,
+        "reward": "gold",
+        "type": "kill",
+        "task": "Goblin",
+        "count": 0,
+        "goal": 3,
+        "completed": false
+    },
+    {
+        "name": "Find a Death Scroll",
+        "info": "I am in desperate need of a Death Scroll. I fancy a girl, but her father has forbade our union.",
+        "amount": 500,
+        "reward": "gold",
+        "type": "fetch",
+        "task": "Death Scroll",
+        "count": 0,
+        "goal": 1,
+        "completed": false
+    },
+    {
+        "name": "Kill a Vicious Slime",
+        "info": "A Vicious Slime has destroyed all my crops. Take it out and I will reward you handsomely.",
+        "amount": 1,
+        "reward": "Superior Mana Potion",
+        "type": "kill",
+        "task": "Vicious Slime",
+        "count": 0,
+        "goal": 1,
+        "completed": false
+    },
+    {
+        "name": "Kill 3 Slimes",
+        "info": "Slimes are disgusting! Will pay for removing some of these vile creatures from our land.",
+        "amount": 60,
+        "reward": "gold",
+        "type": "kill",
+        "task": "Slime",
+        "count": 0,
+        "goal": 3,
+        "completed": false
+    },
+    {
+        "name": "Find a Superior Health Potion",
+        "info": "My husband is going off to war soon. I need a Superior Health Potion to make sure he comes back to me.",
+        "amount": 50,
+        "reward": "gold",
+        "type": "fetch",
+        "task": "Superior Health Potion",
+        "count": 0,
+        "goal": 1,
+        "completed": false
+    },
+    {
+        "name": "Kill a Demon",
+        "info": "A Demon has torn our town apart. Kill it and you will be rewarded handsomely.",
+        "amount": 3,
+        "reward": "Superior Health Potion",
+        "type": "kill",
+        "task": "Demon",
+        "count": 0,
+        "goal": 1,
+        "completed": false
+    }
+]

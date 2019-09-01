@@ -378,10 +378,10 @@ class Game extends Component {
 
             case "Mage":
                 maxHpA = 2
-                maxMpA = 4
+                maxMpA = 6
                 strengthA = 0
                 defenseA = 0
-                manaA = 5
+                manaA = 7
                 speedA = 0
                 luckA = 1
                 special1A = "Fireball"
@@ -428,7 +428,7 @@ class Game extends Component {
             message: "Your adventure Begins..."
         })
         this.addItem(this.state.player.inventory, items1[0]);
-        this.addItem(this.state.player.inventory, items3[3]);
+        // this.addItem(this.state.player.inventory, items3[3]);
         this.selectToWild();
     }
     selectUseItem = () => {
@@ -2095,7 +2095,7 @@ class Game extends Component {
                                                                             Get Quest
                                                                         </button>
                                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectCashQuest}>
-                                                                            Cash in Quest
+                                                                            Quest Rewards
                                                                         </button>
 
                                                                         {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
