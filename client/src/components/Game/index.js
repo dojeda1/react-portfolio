@@ -31,20 +31,7 @@ class Game extends Component {
         inputName: "",
         movingForward: false,
         player: playerDefault,
-        currentEnemy: {
-            name: "",
-            type: "common",
-            maxHp: 0,
-            hp: 0,
-            maxMp: 0,
-            mp: 0,
-            strength: 0,
-            speed: 0,
-            xp: 0,
-            inventory: [],
-            gold: 0,
-            isDead: false
-        },
+        currentEnemy: {},
         quests: [],
         tavernQuests: [],
         viewQuest: {},
@@ -160,11 +147,11 @@ class Game extends Component {
             player: this.state.player,
             currentEnemy: this.state.currentEnemy,
             merchant: this.state.merchant
-        });
+        }, this.fetchQuestCheck(item.name));
     }
-    removeItem = (array, item) => {
+    removeItem = (array, itemName) => {
         array.forEach((element, i) => {
-            if (item.name === element.name) {
+            if (itemName === element.name) {
                 element.qty--
             };
             if (element.qty <= 0) {
@@ -176,7 +163,7 @@ class Game extends Component {
             player: this.state.player,
             currentEnemy: this.state.currentEnemy,
             merchant: this.state.merchant
-        });
+        }, this.fetchQuestCheck(itemName));
     };
     transferItem = (fromArr, toArr, item) => {
         var transferItem = {
@@ -188,7 +175,7 @@ class Game extends Component {
             info: item.info
         }
         this.addItem(toArr, transferItem);
-        this.removeItem(fromArr, transferItem);
+        this.removeItem(fromArr, transferItem.name);
     }
     addQuest = (fromArr, toArr, index) => {
         let newQuest = {};
@@ -203,6 +190,9 @@ class Game extends Component {
         newQuest.completed = fromArr[index].completed;
         newQuest.index = index;
         toArr.push(newQuest);
+        if (newQuest.type === "fetch") {
+            this.fetchQuestCheck(newQuest.task);
+        }
     }
     removeQuest = (array, index) => {
         console.log("quest removed.")
@@ -210,25 +200,43 @@ class Game extends Component {
     }
     //Menu Functions
     showSave = () => {
-        this.setState({
-            showSave: true,
-            showStats: false,
-            showQuests: false
-        })
+        if (this.state.showSave === false) {
+            this.setState({
+                showSave: true,
+                showStats: false,
+                showQuests: false
+            })
+        } else {
+            this.setState({
+                showSave: false
+            })
+        }
     }
     showStats = () => {
-        this.setState({
-            showSave: false,
-            showStats: true,
-            showQuests: false
-        })
+        if (this.state.showStats === false) {
+            this.setState({
+                showSave: false,
+                showStats: true,
+                showQuests: false
+            })
+        } else {
+            this.setState({
+                showStats: false
+            })
+        }
     }
     showQuests = () => {
-        this.setState({
-            showSave: false,
-            showStats: false,
-            showQuests: true
-        })
+        if (this.state.showQuests === false) {
+            this.setState({
+                showSave: false,
+                showStats: false,
+                showQuests: true
+            })
+        } else {
+            this.setState({
+                showQuests: false
+            })
+        }
     }
     selectExit = () => {
         this.setState({
@@ -544,7 +552,7 @@ class Game extends Component {
                 if (user.hp > user.maxHp) {
                     user.hp = user.maxHp
                 }
-                this.removeItem(user.inventory, user.inventory[index]);
+                this.removeItem(user.inventory, user.inventory[index].name);
                 if (this.state.task === "fight") {
                     this.atkText(user, user.name + " recovered " + amount + " HP.")
                     if (user.name === this.state.player.name) {
@@ -566,7 +574,7 @@ class Game extends Component {
                 if (user.hp > user.maxHp) {
                     user.hp = user.maxHp
                 }
-                this.removeItem(user.inventory, user.inventory[index]);
+                this.removeItem(user.inventory, user.inventory[index].name);
                 if (this.state.task === "fight") {
                     this.atkText(user, user.name + " recovered " + amount + " HP.")
                     this.setState({
@@ -586,7 +594,7 @@ class Game extends Component {
                 if (user.hp > user.maxHp) {
                     user.hp = user.maxHp
                 }
-                this.removeItem(user.inventory, user.inventory[index]);
+                this.removeItem(user.inventory, user.inventory[index].name);
                 if (this.state.task === "fight") {
                     this.atkText(user, user.name + " recovered " + amount + " HP.")
                     this.setState({
@@ -606,7 +614,7 @@ class Game extends Component {
                 if (user.mp > user.maxMp) {
                     user.mp = user.maxMp
                 }
-                this.removeItem(user.inventory, user.inventory[index]);
+                this.removeItem(user.inventory, user.inventory[index].name);
                 if (this.state.task === "fight") {
                     this.atkText(user, user.name + " recovered " + amount + " MP.")
                     this.setState({
@@ -626,7 +634,7 @@ class Game extends Component {
                 if (user.mp > user.maxMp) {
                     user.mp = user.maxMp
                 }
-                this.removeItem(user.inventory, user.inventory[index]);
+                this.removeItem(user.inventory, user.inventory[index].name);
                 if (this.state.task === "fight") {
                     this.atkText(user, user.name + " recovered " + amount + " MP.")
                     this.setState({
@@ -646,7 +654,7 @@ class Game extends Component {
                 if (user.mp > user.maxMp) {
                     user.mp = user.maxMp
                 }
-                this.removeItem(user.inventory, user.inventory[index]);
+                this.removeItem(user.inventory, user.inventory[index].name);
                 if (this.state.task === "fight") {
                     this.atkText(user, user.name + " recovered " + amount + " MP.")
                     this.setState({
@@ -669,7 +677,7 @@ class Game extends Component {
             case "Death Scroll":
                 if (this.state.task === "fight") {
                     opponent.hp = 0;
-                    this.removeItem(user.inventory, user.inventory[index]);
+                    this.removeItem(user.inventory, user.inventory[index].name);
                     this.atkText(user, user.name + " read from the Death Scroll.")
                     this.setState({
                         user: user,
@@ -916,7 +924,7 @@ class Game extends Component {
         })
     }
     selectYesQuest = (event) => {
-        if (this.state.quests.length < 3) {
+        if (this.state.quests.length < 2) {
             const index = event.target.getAttribute("data-index");
             let quests = this.state.quests
             let tavernQuests = this.state.tavernQuests
@@ -930,7 +938,7 @@ class Game extends Component {
             })
         } else {
             this.setState({
-                message: "You can only have 3 quests at a time.",
+                message: "You can only have 2 quests at a time.",
             })
         }
     }
@@ -949,17 +957,25 @@ class Game extends Component {
         })
     }
     selectRedeemReward = (event) => {
-        console.log("Redeemed reward")
         let player = this.state.player
         let index = event.target.getAttribute("data-index");
         let type = event.target.getAttribute("data-type");
+        let task = event.target.getAttribute("data-task");
+        let goal = event.target.getAttribute("data-goal");
         let amount = event.target.getAttribute("data-amount");
         let reward = event.target.getAttribute("data-reward");
         if (reward === "gold") {
             player.gold += parseInt(amount)
+            player.totalGold += parseInt(amount)
+            player.totalQuests++
         } else {
             // this.addItem(player.inventory, )
             console.log("item reward.")
+        }
+        if (type === "fetch") {
+            for (let i = 0; i < goal; i++) {
+                this.removeItem(player.inventory, task)
+            }
         }
         this.setState({
             message: "You earned " + amount + " " + reward + ".",
@@ -994,6 +1010,39 @@ class Game extends Component {
                 }
             }
         });
+        this.setState({
+            quests: playerQuests
+        })
+    }
+
+    fetchQuestCheck = (itemName) => {
+        let player = this.state.player;
+        let playerQuests = this.state.quests;
+        playerQuests.forEach(quest => {
+            if (quest.type === "fetch" && itemName === quest.task) {
+                let qty = 0;
+                console.log("fetch Quest: " + itemName);
+                console.log(itemName + ":" + quest.task)
+                if (this.hasItem(player.inventory, itemName)) {
+                    player.inventory.forEach(item => {
+                        if (item.name === itemName) {
+                            qty = item.qty;
+                            if (qty >= quest.goal) {
+                                qty = quest.goal
+                                quest.completed = true
+                            } else {
+                                quest.completed = false
+                            }
+                        }
+                    })
+                } else {
+                    quest.completed = false;
+                }
+                quest.count = qty
+                console.log("quest count: " + quest.count)
+            }
+        });
+        console.log(playerQuests);
         this.setState({
             quests: playerQuests
         })
@@ -1640,6 +1689,7 @@ class Game extends Component {
             text.push("--- RESULTS ---");
             text.push("Monsters Killed: " + this.state.player.totalKills);
             text.push("Gold Collected: " + this.state.player.totalGold);
+            text.push("Quests Completed: " + this.state.player.totalQuests);
             text.push("Dungeons Completed: " + this.state.player.totalDungeons);
             this.setState({
                 message: "Game over.",
@@ -2158,7 +2208,7 @@ class Game extends Component {
                                                                                                 <p>Cash in which quest?</p>
                                                                                                 {this.state.quests.map((quest, index) => (
                                                                                                     <div key={index}>
-                                                                                                        <button data-index={index} data-type={quest.type} data-amount={quest.amount} data-reward={quest.reward} className={quest.completed ? "btn btn-flat game-choice-btn font2" : "btn btn-flat game-choice-btn font2 disabled-div"} onClick={this.selectRedeemReward}>
+                                                                                                        <button data-index={index} data-type={quest.type} data-task={quest.task} data-goal={quest.goal} data-amount={quest.amount} data-reward={quest.reward} className={quest.completed ? "btn btn-flat game-choice-btn font2" : "btn btn-flat game-choice-btn font2 disabled-div"} onClick={this.selectRedeemReward}>
                                                                                                             {quest.name}
                                                                                                         </button>
                                                                                                     </div>
@@ -2297,6 +2347,7 @@ class Game extends Component {
                                         </div>}
                         </div>
                     </div>
+                    <div className="spacer" />
                 </div>
             </div>
         );

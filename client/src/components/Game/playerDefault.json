@@ -19,12 +19,13 @@
     "xp": 0,
     "nextLevel": 50,
     "inventory": [],
-    "gold": 0,
+    "gold": 20,
     "isDead": false,
     "isBerserk": false,
     "berserkCount": 0,
     "baseAtkHold": 0,
     "totalKills": 0,
     "totalDungeons": 0,
-    "totalGold": 0
+    "totalGold": 0,
+    "totalQuests": 0
 }

@@ -2,7 +2,7 @@
     {
         "name": "Kill 3 Goblins",
         "info": "Goblins have been ruining all my walks outside town. I will pay to have some of them taken out.",
-        "amount": 100,
+        "amount": 30,
         "reward": "gold",
         "type": "kill",
         "task": "Goblin",
@@ -13,7 +13,7 @@
     {
         "name": "Kill 3 Slimes",
         "info": "Slimes are disgusting! Will pay for removing some of these vile creatures from our land.",
-        "amount": 60,
+        "amount": 20,
         "reward": "gold",
         "type": "kill",
         "task": "Slime",
@@ -24,7 +24,7 @@
     {
         "name": "Kill 3 Orcs",
         "info": "Orcs have been ruining all my walks outside town. I will pay to have some of them taken out.",
-        "amount": 100,
+        "amount": 50,
         "reward": "gold",
         "type": "kill",
         "task": "Orc",
@@ -33,14 +33,25 @@
         "completed": false
     },
     {
-        "name": "Kill 2 Wolves",
+        "name": "Kill 3 Wolves",
         "info": "Wolves are dangerous! Will pay for removing some of these vile creatures from our land.",
-        "amount": 60,
+        "amount": 25,
         "reward": "gold",
         "type": "kill",
         "task": "Wolf",
         "count": 0,
-        "goal": 2,
+        "goal": 3,
+        "completed": false
+    },
+    {
+        "name": "Find a Health Potion",
+        "info": "My husband is going off to war soon. I need a Health Potion to make sure he comes back to me.",
+        "amount": 50,
+        "reward": "gold",
+        "type": "fetch",
+        "task": "Health Potion",
+        "count": 0,
+        "goal": 1,
         "completed": false
     }
 ]
