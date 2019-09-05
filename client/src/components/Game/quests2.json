@@ -56,7 +56,7 @@
         "completed": false
     },
     {
-        "name": "Kill aa Ogre",
+        "name": "Kill an Ogre",
         "info": "An Ogre ate my dog. Help me get revenge on this terrible creature.",
         "amount": 2,
         "reward": "Superior Mana Potions",
