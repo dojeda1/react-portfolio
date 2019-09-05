@@ -16,7 +16,7 @@
     "maxMp": 4,
     "mp": 4,
     "level": 1,
-    "xp": 0,
+    "xp": 1000,
     "nextLevel": 50,
     "inventory": [],
     "gold": 20,

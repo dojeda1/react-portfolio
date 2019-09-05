@@ -4,10 +4,13 @@
         "info": "Goblins have been ruining all my walks outside town. I will pay to have some of them taken out.",
         "amount": 30,
         "reward": "gold",
+        "rarity": null,
+        "itemIndex": null,
         "type": "kill",
         "task": "Goblin",
         "count": 0,
         "goal": 3,
+        "region": "Plains",
         "completed": false
     },
     {
@@ -15,21 +18,13 @@
         "info": "Slimes are disgusting! Will pay for removing some of these vile creatures from our land.",
         "amount": 20,
         "reward": "gold",
+        "rarity": null,
+        "itemIndex": null,
         "type": "kill",
         "task": "Slime",
         "count": 0,
         "goal": 3,
-        "completed": false
-    },
-    {
-        "name": "Kill 3 Orcs",
-        "info": "Orcs have been ruining all my walks outside town. I will pay to have some of them taken out.",
-        "amount": 50,
-        "reward": "gold",
-        "type": "kill",
-        "task": "Orc",
-        "count": 0,
-        "goal": 3,
+        "region": "Plains",
         "completed": false
     },
     {
@@ -37,10 +32,13 @@
         "info": "Wolves are dangerous! Will pay for removing some of these vile creatures from our land.",
         "amount": 25,
         "reward": "gold",
+        "rarity": null,
+        "itemIndex": null,
         "type": "kill",
         "task": "Wolf",
         "count": 0,
         "goal": 3,
+        "region": "Plains",
         "completed": false
     },
     {
@@ -48,10 +46,41 @@
         "info": "My husband is going off to war soon. I need a Health Potion to make sure he comes back to me.",
         "amount": 50,
         "reward": "gold",
+        "rarity": null,
+        "itemIndex": null,
         "type": "fetch",
         "task": "Health Potion",
         "count": 0,
         "goal": 1,
+        "region": "Plains",
+        "completed": false
+    },
+    {
+        "name": "Kill a Slime",
+        "info": "A slime ate my dog. Help me get revenge on this terrible creature.",
+        "amount": 2,
+        "reward": "Superior Health Potion",
+        "rarity": 3,
+        "itemIndex": 0,
+        "type": "kill",
+        "task": "Slime",
+        "count": 0,
+        "goal": 1,
+        "region": "Plains",
+        "completed": false
+    },
+    {
+        "name": "Kill a Slime",
+        "info": "A slime ate my dog. Help me get revenge on this terrible creature.",
+        "amount": 2,
+        "reward": "Superior Health Potion",
+        "rarity": 3,
+        "itemIndex": 0,
+        "type": "kill",
+        "task": "Slime",
+        "count": 0,
+        "goal": 1,
+        "region": "Plains",
         "completed": false
     }
 ]
