@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import M from 'materialize-css';
 import DLogo from "../../images/D_logo_final.png"
 import playerDefault from "./playerDefault.json";
 import regions from "./regions.json";
@@ -45,6 +46,7 @@ class Game extends Component {
     }
     componentDidMount() {
         this.setState({ message: "Choose an Option." });
+        M.AutoInit();
     }
     toggleGame = () => {
         this.props.endGame();
@@ -202,6 +204,15 @@ class Game extends Component {
         console.log("quest removed.")
         array.splice(index, 1);
     }
+    hasRegionQuest = () => {
+        let hasQuest = false
+        this.state.quests.forEach(quest => {
+            if (quest.region === this.state.region.name) {
+                hasQuest = true
+            }
+        })
+        return hasQuest
+    }
     //Menu Functions
     showSave = () => {
         if (this.state.showSave === false) {
@@ -272,17 +283,17 @@ class Game extends Component {
         event.preventDefault();
 
         if (this.state.inputName === "") {
-            // this.setState({
-            //     message: "Surely, you must have a name..."
-            // });
             this.setState({
-                player: {
-                    ...this.state.player,
-                    name: "Killgore"
-                },
-                message: "What is your race?",
-                step: "race"
+                message: "Surely, you must have a name..."
             });
+            // this.setState({
+            //     player: {
+            //         ...this.state.player,
+            //         name: "Killgore"
+            //     },
+            //     message: "What is your race?",
+            //     step: "race"
+            // });
         } else {
             let newName = this.state.inputName.trim();
             newName = newName.charAt(0).toUpperCase() + newName.slice(1);
@@ -1924,7 +1935,7 @@ class Game extends Component {
                         <a href="#Stats" className="white-text" onClick={this.showStats}>Stats</a>
                     </li>
                     <li>
-                        <a className="grey-text" onClick={this.toggleGame.bind(this)}>{code}</a>
+                        <a className="lime-text" onClick={this.toggleGame.bind(this)}>{code}</a>
                     </li>
                 </ul>
                 {/* <!-- End NavBar --> */}
@@ -2212,33 +2223,37 @@ class Game extends Component {
                                                                             </div>
                                                                             : this.state.task === "tavern" && this.state.step === "cash quest" ?
                                                                                 <div>
-                                                                                    {this.state.quests.length ?
-                                                                                        <div>
-                                                                                            <p>Cash in which quest?</p>
-                                                                                            {this.state.quests.map((quest, index) => (
-                                                                                                <div key={index}>
-                                                                                                    <button
-                                                                                                        data-index={index}
-                                                                                                        data-type={quest.type}
-                                                                                                        data-task={quest.task}
-                                                                                                        data-goal={quest.goal}
-                                                                                                        data-amount={quest.amount}
-                                                                                                        data-reward={quest.reward}
-                                                                                                        data-rarity={quest.rarity}
-                                                                                                        data-item={quest.itemIndex}
-                                                                                                        className={quest.completed && quest.region === this.state.region.name ?
-                                                                                                            "btn btn-flat game-choice-btn font2"
-                                                                                                            : quest.region === this.state.region.name ?
-                                                                                                                "btn btn-flat game-choice-btn font2 disabled-div"
-                                                                                                                : "hide"
-                                                                                                        }
-                                                                                                        onClick={this.selectRedeemReward}>
-                                                                                                        {quest.amount} {quest.reward} - {quest.name}
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            ))}
-                                                                                        </div>
-                                                                                        : <p>You currently have no quests.</p>}
+                                                                                    {!this.state.quests.length ?
+                                                                                        <p>You currently have no quests.</p>
+                                                                                        : this.hasRegionQuest() ?
+                                                                                            <div>
+                                                                                                <p>Cash in which quest?</p>
+                                                                                                {this.state.quests.map((quest, index) => (
+                                                                                                    <div key={index}>
+                                                                                                        {quest.region === this.state.region.name ?
+                                                                                                            <div class={quest.completed && quest.region === this.state.region.name ?
+                                                                                                                null
+                                                                                                                : "disabled-div"}>
+                                                                                                                <button
+                                                                                                                    data-index={index}
+                                                                                                                    data-type={quest.type}
+                                                                                                                    data-task={quest.task}
+                                                                                                                    data-goal={quest.goal}
+                                                                                                                    data-amount={quest.amount}
+                                                                                                                    data-reward={quest.reward}
+                                                                                                                    data-rarity={quest.rarity}
+                                                                                                                    data-item={quest.itemIndex}
+                                                                                                                    className="btn btn-flat game-item-btn font2"
+                                                                                                                    onClick={this.selectRedeemReward}>
+                                                                                                                    {quest.amount} {quest.reward} | {quest.name}
+                                                                                                                </button>
+                                                                                                                <span className="font1 fontSmall"> - {quest.count}/{quest.goal}</span>
+                                                                                                            </div>
+                                                                                                            : null}
+                                                                                                    </div>
+                                                                                                ))}
+                                                                                            </div>
+                                                                                            : <p>You currently have no quests for this region.</p>}
                                                                                     <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
                                                                                         <i className="material-icons left">arrow_back</i>Back
                                                                                 </button>

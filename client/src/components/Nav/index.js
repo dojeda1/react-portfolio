@@ -1,8 +1,14 @@
 import React, { Component } from "react";
+import M from 'materialize-css';
 import DLogo from "../../images/D_logo_final.png"
 import Resume from "../../files/dro_resume.pdf"
 
 class Nav extends Component {
+
+    componentDidMount() {
+        //Auto initialize all materialize components
+        M.AutoInit();
+    }
 
     toggleGame = () => {
         if (this.props.playingGame === false) {
@@ -48,7 +54,7 @@ class Nav extends Component {
                         <a href={Resume} target="blank" className="white-text">Resume</a>
                     </li>
                     <li>
-                        <a className="grey-text" onClick={this.toggleGame.bind(this)}>{code}</a>
+                        <a className="lime-text" onClick={this.toggleGame.bind(this)}>{code}</a>
                     </li>
                 </ul>
                 {/* <!-- End NavBar --> */}
