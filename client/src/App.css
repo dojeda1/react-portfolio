@@ -355,6 +355,7 @@ nav {
   background-color: #212121;
   background-image: url("./images/map.jpg");
   background-size: cover;
+  background-position: center; 
   position: fixed;
   z-index: 2;
   overflow: scroll;
@@ -479,6 +480,10 @@ nav {
 
   #game-container {
     width: calc(100% - 99px);
+  }
+
+  #game-container {
+      background-position: left; 
   }
 }
 

@@ -1926,13 +1926,13 @@ class Game extends Component {
                 {/* <!-- Modal side navbar --> */}
                 <ul id="side-modal-game" className="sidenav center-align font1">
                     <li>
-                        <a href="#Save" className="white-text" onClick={this.showSave}>Save</a>
+                        <a className="white-text" onClick={this.showSave}>Save</a>
                     </li>
                     <li>
-                        <a href="#Quests" className="white-text" onClick={this.showQuests}>Quests</a>
+                        <a className="white-text" onClick={this.showQuests}>Quests</a>
                     </li>
                     <li>
-                        <a href="#Stats" className="white-text" onClick={this.showStats}>Stats</a>
+                        <a className="white-text" onClick={this.showStats}>Stats</a>
                     </li>
                     <li>
                         <a className="lime-text" onClick={this.toggleGame.bind(this)}>{code}</a>
@@ -1949,13 +1949,13 @@ class Game extends Component {
                     </li>
                     <div className="table-of-contents">
                         <li>
-                            <a href="#Save" className="white-text" onClick={this.showSave}>Save</a>
+                            <a className="white-text" onClick={this.showSave}>Save</a>
                         </li>
                         <li>
-                            <a href="#Quests" className="white-text" onClick={this.showQuests}>Quests</a>
+                            <a className="white-text" onClick={this.showQuests}>Quests</a>
                         </li>
                         <li>
-                            <a href="#Stats" className="white-text" onClick={this.showStats}>Stats</a>
+                            <a className="white-text" onClick={this.showStats}>Stats</a>
                         </li>
                         <li>
                             <a className="grey-text" onClick={this.toggleGame.bind(this)}>{code}</a>
@@ -1986,8 +1986,8 @@ class Game extends Component {
 
                                             <div key={index} className="game-info">
                                                 <h5>{quest.name}</h5>
-                                                <p>Region: {quest.region}</p>
                                                 <p>{quest.info}</p>
+                                                <p>Region: {quest.region}</p>
                                                 <p>Reward: {quest.amount} {quest.reward}</p>
                                                 <p className={quest.completed ? "dom-green1-text" : null}>Progress: {quest.count}/{quest.goal}</p>
                                                 <br />
@@ -2231,7 +2231,7 @@ class Game extends Component {
                                                                                                 {this.state.quests.map((quest, index) => (
                                                                                                     <div key={index}>
                                                                                                         {quest.region === this.state.region.name ?
-                                                                                                            <div class={quest.completed && quest.region === this.state.region.name ?
+                                                                                                            <div className={quest.completed && quest.region === this.state.region.name ?
                                                                                                                 null
                                                                                                                 : "disabled-div"}>
                                                                                                                 <button
