@@ -412,12 +412,21 @@ nav {
 
 .game-blue-btn {
   color: #27aae1;
-  margin-right: 10px;
+  margin-right: 2px;
   background-color: transparent;
 }
 .game-blue-btn:hover{
   color: white;
   background-color: #27aae1;
+}
+.game-travel-btn {
+  color: #2bb673;
+  margin-right: 2px;
+  background-color: transparent;
+}
+.game-travel-btn:hover{
+  color: white;
+  background-color: #2bb673;
 }
 .disabled-div {
     pointer-events: none !important;

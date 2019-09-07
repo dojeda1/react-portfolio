@@ -19,7 +19,6 @@ import items3 from "./items3.json";
 import quests1 from "./quests1.json";
 import quests2 from "./quests2.json";
 import quests3 from "./quests3.json";
-// this.setState({ something: true }, () => console.log(this.state))
 
 class Game extends Component {
 
@@ -39,10 +38,12 @@ class Game extends Component {
         tavernQuests: [],
         merchant: [],
         dungeonCount: 0,
+        castleCount: 0,
         meadCount: 0,
         showSave: false,
         showStats: false,
-        showQuests: false
+        showQuests: false,
+        showQuit: false
     }
     componentDidMount() {
         this.setState({ message: "Choose an Option." });
@@ -219,7 +220,8 @@ class Game extends Component {
             this.setState({
                 showSave: true,
                 showStats: false,
-                showQuests: false
+                showQuests: false,
+                showQuit: false
             })
         } else {
             this.setState({
@@ -232,7 +234,8 @@ class Game extends Component {
             this.setState({
                 showSave: false,
                 showStats: true,
-                showQuests: false
+                showQuests: false,
+                showQuit: false
             })
         } else {
             this.setState({
@@ -245,7 +248,8 @@ class Game extends Component {
             this.setState({
                 showSave: false,
                 showStats: false,
-                showQuests: true
+                showQuests: true,
+                showQuit: false
             })
         } else {
             this.setState({
@@ -253,11 +257,26 @@ class Game extends Component {
             })
         }
     }
+    showQuit = () => {
+        if (this.state.showQuit === false) {
+            this.setState({
+                showSave: false,
+                showStats: false,
+                showQuests: false,
+                showQuit: true
+            })
+        } else {
+            this.setState({
+                showQuit: false
+            })
+        }
+    }
     selectExit = () => {
         this.setState({
             showSave: false,
             showStats: false,
-            showQuests: false
+            showQuests: false,
+            showQuit: false
         })
     }
     //Start Game Functions
@@ -283,17 +302,17 @@ class Game extends Component {
         event.preventDefault();
 
         if (this.state.inputName === "") {
-            this.setState({
-                message: "Surely, you must have a name..."
-            });
             // this.setState({
-            //     player: {
-            //         ...this.state.player,
-            //         name: "Killgore"
-            //     },
-            //     message: "What is your race?",
-            //     step: "race"
+            //     message: "Surely, you must have a name..."
             // });
+            this.setState({
+                player: {
+                    ...this.state.player,
+                    name: "Killgore"
+                },
+                message: "What is your race?",
+                step: "race"
+            });
         } else {
             let newName = this.state.inputName.trim();
             newName = newName.charAt(0).toUpperCase() + newName.slice(1);
@@ -1094,6 +1113,9 @@ class Game extends Component {
             this.chestEncounter();
         } else if (this.state.dungeonCount === this.state.region.dungeonGoal - 1) {
             this.bossEncounter();
+        } else if (this.state.castleCount === this.state.region.dungeonGoal) {
+            this.bossEncounter();
+            // this.endBossEncounter();
         } else {
             this.viciousEncounter();
         }
@@ -1119,6 +1141,13 @@ class Game extends Component {
                 task: "select where",
                 step: null,
                 message: "Dungeon Complete!"
+            });
+        } else if (this.state.location === "castle" && this.state.castleCount > this.state.region.dungeonGoal) {
+            this.setState({
+                location: "wild",
+                task: "select where",
+                step: null,
+                message: "Final Boss Vanquished!"
             });
         } else {
             this.setState({
@@ -1164,12 +1193,24 @@ class Game extends Component {
                 task: "select where",
                 step: null
             });
+        } else if (this.state.task === "castle") {
+            this.setState({
+                message: "You left the castle behind.",
+                task: "select where",
+                step: null
+            });
         }
     }
     selectLeaveDungeon = () => {
         this.setState({
             location: "wild",
             message: "You left the dungeon..."
+        })
+    }
+    selectLeaveCastle = () => {
+        this.setState({
+            location: "wild",
+            message: "You left the castle..."
         })
     }
     selectTravelForward = () => {
@@ -1241,6 +1282,7 @@ class Game extends Component {
         newEnemy.maxMp = monsterArray[monNum].maxMp;
         newEnemy.mp = monsterArray[monNum].maxMp;
         newEnemy.strength = monsterArray[monNum].strength;
+        newEnemy.speed = monsterArray[monNum].speed;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp;
         newEnemy.inventory = [];
@@ -1303,6 +1345,7 @@ class Game extends Component {
         newEnemy.maxMp = monsterArray[monNum].maxMp;
         newEnemy.mp = monsterArray[monNum].maxMp;
         newEnemy.strength = monsterArray[monNum].strength;
+        newEnemy.speed = monsterArray[monNum].speed;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp;
         newEnemy.inventory = [];
@@ -1363,7 +1406,8 @@ class Game extends Component {
         newEnemy.hp = monsterArray[monNum].maxHp + 5;
         newEnemy.maxMp = monsterArray[monNum].maxMp + 5;
         newEnemy.mp = monsterArray[monNum].maxMp + 5;
-        newEnemy.strength = monsterArray[monNum].strength + 5;
+        newEnemy.strength = monsterArray[monNum].strength + 3;
+        newEnemy.speed = monsterArray[monNum].speed + 2;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp + 10;
         newEnemy.inventory = [];
@@ -1396,6 +1440,7 @@ class Game extends Component {
         newEnemy.maxMp = 10;
         newEnemy.mp = 10;
         newEnemy.strength = regionLevel * 2 + 2;
+        newEnemy.speed = regionLevel + 2;
         newEnemy.luck = regionLevel * 2 + 2;
         newEnemy.xp = regionLevel * 5 + 5;
         newEnemy.inventory = [];
@@ -1461,6 +1506,22 @@ class Game extends Component {
             message: "You step into the dungeon."
         })
     }
+    selectToCastle = () => {
+        this.setState({
+            task: "castle",
+            step: "accept",
+            message: "The Dark Castle emits an evil aura..."
+        })
+    }
+    selectYesCastle = () => {
+        this.setState({
+            location: "castle",
+            task: "select where",
+            step: null,
+            castleCount: 0,
+            message: "You step into the castle."
+        })
+    }
     // Combat Functions
     selectAttack = () => {
         let player = this.state.player;
@@ -1491,6 +1552,18 @@ class Game extends Component {
                         dungeonCount: this.state.dungeonCount + 1
                     }, () => {
                         if (this.state.dungeonCount >= this.state.region.dungeonGoal) {
+                            player.totalDungeons++
+                            this.setState({
+                                player: player
+                            })
+                        }
+                    })
+                }
+                if (this.state.location === "castle") {
+                    this.setState({
+                        castleCount: this.state.castleCount + 1
+                    }, () => {
+                        if (this.state.castleCount > this.state.region.dungeonGoal) {
                             player.totalDungeons++
                             this.setState({
                                 player: player
@@ -1874,13 +1947,13 @@ class Game extends Component {
 
         let enemyStyle;
         if (this.state.currentEnemy.hp > 0) {
-            enemyStyle = "dom-green2-text font1"
+            enemyStyle = "dom-green1-text font1"
         } else {
             enemyStyle = "grey-text font1"
         }
         let enemyHpStyle;
         if (this.state.currentEnemy.hp > (this.state.currentEnemy.maxMp * 0.25)) {
-            enemyHpStyle = "dom-green2-text font1"
+            enemyHpStyle = "dom-green1-text font1"
         } else if (this.state.currentEnemy.hp > 0) {
             enemyHpStyle = "red-text font1"
         } else {
@@ -1935,7 +2008,7 @@ class Game extends Component {
                         <a className="white-text" onClick={this.showStats}>Stats</a>
                     </li>
                     <li>
-                        <a className="lime-text" onClick={this.toggleGame.bind(this)}>{code}</a>
+                        <a className="lime-text" onClick={this.showQuit}>{code}</a>
                     </li>
                 </ul>
                 {/* <!-- End NavBar --> */}
@@ -1949,16 +2022,16 @@ class Game extends Component {
                     </li>
                     <div className="table-of-contents">
                         <li>
-                            <a className="white-text" onClick={this.showSave}>Save</a>
+                            <a className={this.state.showSave ? "white-text active" : "white-text"} onClick={this.showSave}>Save</a>
                         </li>
                         <li>
-                            <a className="white-text" onClick={this.showQuests}>Quests</a>
+                            <a className={this.state.showQuests ? "white-text active" : "white-text"} onClick={this.showQuests}>Quests</a>
                         </li>
                         <li>
-                            <a className="white-text" onClick={this.showStats}>Stats</a>
+                            <a className={this.state.showStats ? "white-text active" : "white-text"} onClick={this.showStats}>Stats</a>
                         </li>
                         <li>
-                            <a className="grey-text" onClick={this.toggleGame.bind(this)}>{code}</a>
+                            <a className={this.state.showQuit ? "grey-text active" : "white-text"} onClick={this.showQuit}>{code}</a>
                         </li>
                     </div>
                 </ul>
@@ -1976,7 +2049,7 @@ class Game extends Component {
                                         Save
                                         </button>
                                     <button className="btn btn-flat game-blue-btn font2" onClick={this.selectExit}>
-                                        Exit
+                                        Back
                                         </button>
                                 </div>
                                 : this.state.showQuests ?
@@ -2015,375 +2088,413 @@ class Game extends Component {
                                                 <i className="material-icons left">arrow_back</i>Back
                                             </button>
                                         </div>
-                                        :
-                                        <div>
-                                            <p className="font1 center-align">- {this.state.region.name} | {this.state.location} -</p>
-                                            <h5>{this.state.message}</h5>
-                                            {this.state.task === "fight" ?
-                                                <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
-                                                : null}
-                                            {this.state.location !== "title screen" ?
-                                                <div>
-                                                    <p className={playerStyle}>
-                                                        <i className="material-icons left">person</i>{this.state.player.name}<span className="white-text"> | </span>
-                                                        <span className={playerHpStyle}>HP: {this.state.player.hp}/{this.state.player.maxHp}</span><span className="white-text"> | </span>
-                                                        <span className={playerMpStyle}>MP: {this.state.player.mp}/{this.state.player.maxMp}</span><span className="white-text"> | </span>
-                                                        <span className={playerXpStyle}>XP: {this.state.player.xp}/{this.state.player.nextLevel}</span><span className="white-text"> | </span>
-                                                        <span className={playerGoldStyle}>${this.state.player.gold}</span>
-                                                        {this.state.player.isBerserk ? <span><span className="white-text"> - </span>Berserk</span> : null}
-                                                    </p>
-                                                </div>
-                                                : null}
-                                            {this.state.task === "fight" || this.state.task === "chest" && this.state.step === "results" || this.state.step === "game over" ?
-                                                <div className="game-info">
-                                                    {this.state.infoText.map((text, index) => (
-                                                        <p key={index}>{text}</p>
-                                                    ))}
-                                                </div>
-                                                : null}
-                                            {this.state.location === "title screen" && this.state.task === "new or load" ?
-                                                <div>
-                                                    <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.newGame}>
-                                                        New Game
+                                        : this.state.showQuit ?
+                                            <div>
+                                                <p className="font1 center-align">- Quit Game -</p>
+                                                <p>Quit Game? All unsaved progress will be lost.</p>
+                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.toggleGame.bind(this)}>
+                                                    Quit
+                                            </button>
+                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectExit}>
+                                                    Back
+                                            </button>
+                                            </div>
+                                            :
+                                            <div>
+                                                <p className="font1 center-align">- {this.state.region.name} | {this.state.location} -</p>
+                                                <h5>{this.state.message}</h5>
+                                                {this.state.task === "fight" ?
+                                                    <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
+                                                    : null}
+                                                {this.state.location !== "title screen" ?
+                                                    <div>
+                                                        <p className={playerStyle}>
+                                                            <i className="material-icons left">person</i>{this.state.player.name}<span className="white-text"> | </span>
+                                                            <span className={playerHpStyle}>HP: {this.state.player.hp}/{this.state.player.maxHp}</span><span className="white-text"> | </span>
+                                                            <span className={playerMpStyle}>MP: {this.state.player.mp}/{this.state.player.maxMp}</span><span className="white-text"> | </span>
+                                                            <span className={playerXpStyle}>XP: {this.state.player.xp}/{this.state.player.nextLevel}</span><span className="white-text"> | </span>
+                                                            <span className={playerGoldStyle}>${this.state.player.gold}</span>
+                                                            {this.state.player.isBerserk ? <span><span className="white-text"> - </span>Berserk</span> : null}
+                                                        </p>
+                                                    </div>
+                                                    : null}
+                                                {this.state.task === "fight" || this.state.task === "chest" && this.state.step === "results" || this.state.step === "game over" ?
+                                                    <div className="game-info">
+                                                        {this.state.infoText.map((text, index) => (
+                                                            <p key={index}>{text}</p>
+                                                        ))}
+                                                    </div>
+                                                    : null}
+                                                {this.state.location === "title screen" && this.state.task === "new or load" ?
+                                                    <div>
+                                                        <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.newGame}>
+                                                            New Game
                                     </button>
-                                                    {/* <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.loadGame}>
+                                                        {/* <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.loadGame}>
                                         Load Game
                                     </button> */}
-                                                </div>
-                                                : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "name" ?
-                                                    <div>
-                                                        <form id="game-form" onSubmit={this.handleName}>
-                                                            <div className="row">
-                                                                <div className="input-field col s12">
-                                                                    <input type="text" className="form-input" name="inputName" value={this.state.inputName} onChange={this.handleInputChange} />
-                                                                    <label htmlFor="inputName" className="font1">Name</label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="row">
-                                                                <div className="col m12">
-                                                                    <button
-                                                                        className="btn btn-flat game-blue-btn font2"
-                                                                        type="submit" name="action" value="Send">Enter</button>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-
                                                     </div>
-                                                    : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "race" ?
+                                                    : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "name" ?
                                                         <div>
-                                                            <button className="btn btn-flat game-choice-btn font2" value="Human" onClick={this.selectRace}>
-                                                                Human
-                                    </button>
-                                                            <button className="btn btn-flat game-choice-btn font2" value="Elf" onClick={this.selectRace}>
-                                                                Elf
-                                    </button>
-                                                            <button className="btn btn-flat game-choice-btn font2" value="Dwarf" onClick={this.selectRace}>
-                                                                Dwarf
-                                    </button>
+                                                            <form id="game-form" onSubmit={this.handleName}>
+                                                                <div className="row">
+                                                                    <div className="input-field col s12">
+                                                                        <input type="text" className="form-input" name="inputName" value={this.state.inputName} onChange={this.handleInputChange} />
+                                                                        <label htmlFor="inputName" className="font1">Name</label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="row">
+                                                                    <div className="col m12">
+                                                                        <button
+                                                                            className="btn btn-flat game-blue-btn font2"
+                                                                            type="submit" name="action" value="Send">Enter</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+
                                                         </div>
-                                                        : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "class" ?
+                                                        : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "race" ?
                                                             <div>
-                                                                <button className="btn btn-flat game-choice-btn font2" value="Warrior" onClick={this.selectClass}>
-                                                                    Warrior
+                                                                <button className="btn btn-flat game-choice-btn font2" value="Human" onClick={this.selectRace}>
+                                                                    Human
                                     </button>
-                                                                <button className="btn btn-flat game-choice-btn font2" value="Mage" onClick={this.selectClass}>
-                                                                    Mage
+                                                                <button className="btn btn-flat game-choice-btn font2" value="Elf" onClick={this.selectRace}>
+                                                                    Elf
                                     </button>
-                                                                <button className="btn btn-flat game-choice-btn font2" value="Rogue" onClick={this.selectClass}>
-                                                                    Rogue
+                                                                <button className="btn btn-flat game-choice-btn font2" value="Dwarf" onClick={this.selectRace}>
+                                                                    Dwarf
                                     </button>
                                                             </div>
-                                                            : null}
+                                                            : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "class" ?
+                                                                <div>
+                                                                    <button className="btn btn-flat game-choice-btn font2" value="Warrior" onClick={this.selectClass}>
+                                                                        Warrior
+                                    </button>
+                                                                    <button className="btn btn-flat game-choice-btn font2" value="Mage" onClick={this.selectClass}>
+                                                                        Mage
+                                    </button>
+                                                                    <button className="btn btn-flat game-choice-btn font2" value="Rogue" onClick={this.selectClass}>
+                                                                        Rogue
+                                    </button>
+                                                                </div>
+                                                                : null}
 
-                                            {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null ?
-                                                <div>
-                                                    <p>Where to next?</p>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectExplore}>
-                                                        Explore
-                                            </button>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTown}>
-                                                        Go to town
-                                            </button>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
-                                                        Use Item
-                                            </button>
-                                                </div>
-                                                : this.state.location === "dungeon" && this.state.task === "select where" && this.state.step === null ?
+                                                {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null ?
                                                     <div>
-                                                        <p>What next?</p>
-                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
-                                                            Venture Deeper
+                                                        <p>Where to next?</p>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectExplore}>
+                                                            Explore
+                                            </button>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTown}>
+                                                            Go to town
                                             </button>
                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                                             Use Item
                                             </button>
-                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectLeaveDungeon}>
-                                                            <i className="material-icons left">arrow_back</i>Leave Dungeon
-                                        </button>
                                                     </div>
-                                                    : this.state.step === "use item" ?
+                                                    : this.state.location === "dungeon" && this.state.task === "select where" && this.state.step === null ?
                                                         <div>
-                                                            <p>{this.state.subMessage}</p>
-                                                            {this.state.player.inventory.map((item, index) => (
-                                                                <div key={index}>
-                                                                    <button value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
-                                                                        {item.name}
-                                                                    </button>
-                                                                    <span className="font1 fontSmall"> x {item.qty}</span>
-                                                                </div>
-                                                            ))}
-                                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
-                                                                <i className="material-icons left">arrow_back</i>Back
-                                        </button>
+                                                            <p>What next?</p>
+                                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
+                                                                Venture Deeper
+                                                            </button>
+                                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
+                                                                Use Item
+                                                            </button>
+                                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectLeaveDungeon}>
+                                                                <i className="material-icons left">arrow_back</i>Leave Dungeon
+                                                            </button>
                                                         </div>
-                                                        : this.state.location === "town" && this.state.task === "select where" && this.state.step === null ?
+                                                        : this.state.location === "castle" && this.state.task === "select where" && this.state.step === null ?
                                                             <div>
                                                                 <p>What next?</p>
-                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToInn}>
-                                                                    Stay at Inn
-                                            </button>
-                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTavern}>
-                                                                    Visit Tavern
-                                            </button>
-                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToShop}>
-                                                                    Go to Shop
-                                            </button>
+                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
+                                                                    Venture Deeper
+                                                                </button>
                                                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                                                     Use Item
-                                            </button>
-                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToWild}>
-                                                                    <i className="material-icons left">arrow_back</i>Leave Town
-                                            </button>
+                                                                </button>
+                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectLeaveCastle}>
+                                                                    <i className="material-icons left">arrow_back</i>Leave Castle
+                                                                </button>
                                                             </div>
-                                                            : this.state.location === "town" && this.state.task === "inn" && this.state.step === "accept" ?
+                                                            : this.state.step === "use item" ?
                                                                 <div>
-                                                                    <p>{this.state.messageSub}</p>
-                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesInn}>
-                                                                        Yes
-                                                                    </button>
-                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoInn}>
-                                                                        No
-                                                                    </button>
+                                                                    <p>{this.state.subMessage}</p>
+                                                                    {this.state.player.inventory.map((item, index) => (
+                                                                        <div key={index}>
+                                                                            <button value={item.name} data-index={index} data-info={item.info} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemInfo} onMouseOut={this.showSelectItem} onClick={this.selectItem}>
+                                                                                {item.name}
+                                                                            </button>
+                                                                            <span className="font1 fontSmall"> x {item.qty}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                                        <i className="material-icons left">arrow_back</i>Back
+                                        </button>
                                                                 </div>
-                                                                : this.state.location === "town" && this.state.task === "tavern" && this.state.step === "select next" ?
+                                                                : this.state.location === "town" && this.state.task === "select where" && this.state.step === null ?
                                                                     <div>
                                                                         <p>What next?</p>
-                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGrabMead}>
-                                                                            Grab a Mead
-                                                                        </button>
-                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGetQuest}>
-                                                                            Quest Board
-                                                                        </button>
-                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectCashQuest}>
-                                                                            Quest Rewards
-                                                                        </button>
-
-                                                                        {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
-                                                            Play Game
-                                                        </button> */}
+                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToInn}>
+                                                                            Stay at Inn
+                                            </button>
+                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToTavern}>
+                                                                            Visit Tavern
+                                            </button>
+                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToShop}>
+                                                                            Go to Shop
+                                            </button>
                                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                                                             Use Item
-                                                                        </button>
-                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
-                                                                            <i className="material-icons left">arrow_back</i>Leave Tavern
-                                                                        </button>
+                                            </button>
+                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectToWild}>
+                                                                            <i className="material-icons left">arrow_back</i>Leave Town
+                                            </button>
                                                                     </div>
-                                                                    : this.state.task === "tavern" && this.state.step === "accept mead" ?
+                                                                    : this.state.location === "town" && this.state.task === "inn" && this.state.step === "accept" ?
                                                                         <div>
                                                                             <p>{this.state.messageSub}</p>
-                                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesMead}>
+                                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesInn}>
                                                                                 Yes
-                                                                            </button>
-                                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoMead}>
+                                                                    </button>
+                                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoInn}>
                                                                                 No
-                                                                            </button>
+                                                                    </button>
                                                                         </div>
-                                                                        : this.state.task === "tavern" && this.state.step === "select quest" ?
+                                                                        : this.state.location === "town" && this.state.task === "tavern" && this.state.step === "select next" ?
                                                                             <div>
-                                                                                {this.state.tavernQuests.length ?
-                                                                                    <div>
-                                                                                        <p>Which quest intrigues you?</p>
-                                                                                        {this.state.tavernQuests.map((quest, index) => (
-                                                                                            <div key={index} className="game-info">
-                                                                                                <h5>{quest.name}</h5>
-                                                                                                <p>{quest.info}</p>
-                                                                                                <p>Region: {quest.region}</p>
-                                                                                                <p>Reward: {quest.amount} {quest.reward}</p>
-                                                                                                <button className="btn btn-flat game-blue-btn font2" data-index={index} onClick={this.selectYesQuest}>
-                                                                                                    Accept Quest
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                    : <p>Board is currently empty.</p>}
+                                                                                <p>What next?</p>
+                                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGrabMead}>
+                                                                                    Grab a Mead
+                                                                        </button>
+                                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectGetQuest}>
+                                                                                    Quest Board
+                                                                        </button>
+                                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectCashQuest}>
+                                                                                    Quest Rewards
+                                                                        </button>
+
+                                                                                {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
+                                                            Play Game
+                                                        </button> */}
+                                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
+                                                                                    Use Item
+                                                                        </button>
                                                                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
-                                                                                    <i className="material-icons left">arrow_back</i>Back
-                                                                                </button>
+                                                                                    <i className="material-icons left">arrow_back</i>Leave Tavern
+                                                                        </button>
                                                                             </div>
-                                                                            : this.state.task === "tavern" && this.state.step === "cash quest" ?
+                                                                            : this.state.task === "tavern" && this.state.step === "accept mead" ?
                                                                                 <div>
-                                                                                    {!this.state.quests.length ?
-                                                                                        <p>You currently have no quests.</p>
-                                                                                        : this.hasRegionQuest() ?
+                                                                                    <p>{this.state.messageSub}</p>
+                                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesMead}>
+                                                                                        Yes
+                                                                            </button>
+                                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNoMead}>
+                                                                                        No
+                                                                            </button>
+                                                                                </div>
+                                                                                : this.state.task === "tavern" && this.state.step === "select quest" ?
+                                                                                    <div>
+                                                                                        {this.state.tavernQuests.length ?
                                                                                             <div>
-                                                                                                <p>Cash in which quest?</p>
-                                                                                                {this.state.quests.map((quest, index) => (
-                                                                                                    <div key={index}>
-                                                                                                        {quest.region === this.state.region.name ?
-                                                                                                            <div className={quest.completed && quest.region === this.state.region.name ?
-                                                                                                                null
-                                                                                                                : "disabled-div"}>
-                                                                                                                <button
-                                                                                                                    data-index={index}
-                                                                                                                    data-type={quest.type}
-                                                                                                                    data-task={quest.task}
-                                                                                                                    data-goal={quest.goal}
-                                                                                                                    data-amount={quest.amount}
-                                                                                                                    data-reward={quest.reward}
-                                                                                                                    data-rarity={quest.rarity}
-                                                                                                                    data-item={quest.itemIndex}
-                                                                                                                    className="btn btn-flat game-item-btn font2"
-                                                                                                                    onClick={this.selectRedeemReward}>
-                                                                                                                    {quest.amount} {quest.reward} | {quest.name}
-                                                                                                                </button>
-                                                                                                                <span className="font1 fontSmall"> - {quest.count}/{quest.goal}</span>
-                                                                                                            </div>
-                                                                                                            : null}
+                                                                                                <p>Which quest intrigues you?</p>
+                                                                                                {this.state.tavernQuests.map((quest, index) => (
+                                                                                                    <div key={index} className="game-info">
+                                                                                                        <h5>{quest.name}</h5>
+                                                                                                        <p>{quest.info}</p>
+                                                                                                        <p>Region: {quest.region}</p>
+                                                                                                        <p>Reward: {quest.amount} {quest.reward}</p>
+                                                                                                        <button className="btn btn-flat game-blue-btn font2" data-index={index} onClick={this.selectYesQuest}>
+                                                                                                            Accept Quest
+                                                                                                </button>
                                                                                                     </div>
                                                                                                 ))}
                                                                                             </div>
-                                                                                            : <p>You currently have no quests for this region.</p>}
-                                                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
-                                                                                        <i className="material-icons left">arrow_back</i>Back
+                                                                                            : <p>Board is currently empty.</p>}
+                                                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                                                            <i className="material-icons left">arrow_back</i>Back
                                                                                 </button>
-                                                                                </div>
-                                                                                : null}
+                                                                                    </div>
+                                                                                    : this.state.task === "tavern" && this.state.step === "cash quest" ?
+                                                                                        <div>
+                                                                                            {!this.state.quests.length ?
+                                                                                                <p>You currently have no quests.</p>
+                                                                                                : this.hasRegionQuest() ?
+                                                                                                    <div>
+                                                                                                        <p>Cash in which quest?</p>
+                                                                                                        {this.state.quests.map((quest, index) => (
+                                                                                                            <div key={index}>
+                                                                                                                {quest.region === this.state.region.name ?
+                                                                                                                    <div className={quest.completed && quest.region === this.state.region.name ?
+                                                                                                                        null
+                                                                                                                        : "disabled-div"}>
+                                                                                                                        <button
+                                                                                                                            data-index={index}
+                                                                                                                            data-type={quest.type}
+                                                                                                                            data-task={quest.task}
+                                                                                                                            data-goal={quest.goal}
+                                                                                                                            data-amount={quest.amount}
+                                                                                                                            data-reward={quest.reward}
+                                                                                                                            data-rarity={quest.rarity}
+                                                                                                                            data-item={quest.itemIndex}
+                                                                                                                            className="btn btn-flat game-item-btn font2"
+                                                                                                                            onClick={this.selectRedeemReward}>
+                                                                                                                            {quest.amount} {quest.reward} | {quest.name}
+                                                                                                                        </button>
+                                                                                                                        <span className="font1 fontSmall"> - {quest.count}/{quest.goal}</span>
+                                                                                                                    </div>
+                                                                                                                    : null}
+                                                                                                            </div>
+                                                                                                        ))}
+                                                                                                    </div>
+                                                                                                    : <p>You currently have no quests for this region.</p>}
+                                                                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                                                                <i className="material-icons left">arrow_back</i>Back
+                                                                                </button>
+                                                                                        </div>
+                                                                                        : null}
 
-                                            {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index !== 1 ?
-                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectTravelBackward}>
-                                                    <i className="material-icons left">arrow_back</i>Head Back
-                                </button>
-                                                : null}
-                                            {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index < regions.length ?
-                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectTravelForward}>
-                                                    <i className="material-icons right">arrow_forward</i>Travel Onward
-                                </button>
-                                                : null}
-                                            {this.state.task === "fight" && this.state.step === "select move" ?
-                                                <div>
-                                                    <p>What next?</p>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
-                                                        Attack
+                                                {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index !== 1 ?
+                                                    <button className="btn btn-flat game-travel-btn font2" onClick={this.selectTravelBackward}>
+                                                        <i className="material-icons left">arrow_back</i>To {regions[this.state.region.index - 2].name}
+                                                    </button>
+                                                    : null}
+                                                {this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index < regions.length ?
+                                                    <button className="btn btn-flat game-travel-btn font2" onClick={this.selectTravelForward}>
+                                                        <i className="material-icons right">arrow_forward</i>To {regions[this.state.region.index].name}
+                                                    </button>
+                                                    : this.state.location === "wild" && this.state.task === "select where" && this.state.step === null && this.state.region.index === regions.length ?
+                                                        <button className="btn btn-flat game-travel-btn font2" onClick={this.selectToCastle}>
+                                                            <i className="material-icons right">arrow_forward</i>To Dark Castle
+                                                        </button>
+                                                        : null}
+                                                {this.state.task === "fight" && this.state.step === "select move" ?
+                                                    <div>
+                                                        <p>What next?</p>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectAttack}>
+                                                            Attack
                                     </button>
-                                                    <div className={specialBtnStyle1}>
-                                                        <button className="btn btn-flat game-item-btn font2" value={this.state.player.special1} data-cost={this.state.player.special1Cost} onClick={this.selectSpecial}>
-                                                            {this.state.player.special1}
-                                                        </button>
-                                                        <span className="font1 fontSmall"> - {this.state.player.special1Cost} MP</span>
-                                                    </div>
-                                                    <div className={specialBtnStyle2}>
-                                                        <button className="btn btn-flat game-item-btn font2" value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
-                                                            {this.state.player.special2}
-                                                        </button>
-                                                        <span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
-                                                    </div>
-                                                    {/* <button className={specialBtnStyle2} value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
+                                                        <div className={specialBtnStyle1}>
+                                                            <button className="btn btn-flat game-item-btn font2" value={this.state.player.special1} data-cost={this.state.player.special1Cost} onClick={this.selectSpecial}>
+                                                                {this.state.player.special1}
+                                                            </button>
+                                                            <span className="font1 fontSmall"> - {this.state.player.special1Cost} MP</span>
+                                                        </div>
+                                                        <div className={specialBtnStyle2}>
+                                                            <button className="btn btn-flat game-item-btn font2" value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
+                                                                {this.state.player.special2}
+                                                            </button>
+                                                            <span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
+                                                        </div>
+                                                        {/* <button className={specialBtnStyle2} value={this.state.player.special2} data-cost={this.state.player.special2Cost} onClick={this.selectSpecial}>
                                         {this.state.player.special2}<span className="font1 fontSmall"> - {this.state.player.special2Cost} MP</span>
                                     </button> */}
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
-                                                        Use Item
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
+                                                            Use Item
                                             </button>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectRun}>
-                                                        <i className="material-icons left">arrow_back</i>Run
-                                            </button>
-                                                </div>
-                                                : this.state.task === "fight" && this.state.step === "results" ?
-                                                    <div>
-                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
-                                                            Next
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectRun}>
+                                                            <i className="material-icons left">arrow_back</i>Run
                                             </button>
                                                     </div>
-                                                    : this.state.task === "chest" && this.state.step === "results" ?
+                                                    : this.state.task === "fight" && this.state.step === "results" ?
                                                         <div>
                                                             <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
                                                                 Next
                                             </button>
                                                         </div>
-                                                        : this.state.task === "chest" && this.state.step === "accept" ?
+                                                        : this.state.task === "chest" && this.state.step === "results" ?
                                                             <div>
-                                                                <p>Do you wish to open it?</p>
-                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesChest}>
-                                                                    Yes
-                                                </button>
                                                                 <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
-                                                                    No
+                                                                    Next
+                                            </button>
+                                                            </div>
+                                                            : this.state.task === "chest" && this.state.step === "accept" ?
+                                                                <div>
+                                                                    <p>Do you wish to open it?</p>
+                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesChest}>
+                                                                        Yes
                                                 </button>
-                                                            </div>
-                                                            : this.state.step === "game over" ?
-                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
-                                                                    End
+                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectNext}>
+                                                                        No
+                                                </button>
+                                                                </div>
+                                                                : this.state.step === "game over" ?
+                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
+                                                                        End
                                             </button>
-                                                                : this.state.task === "dungeon" && this.state.step === "accept" ?
-                                                                    <div>
-                                                                        <p>Do you dare to enter?</p>
-                                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesDungeon}>
-                                                                            Yes
-                                                        </button>
-                                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectBack}>
-                                                                            No
-                                                        </button>
-                                                                    </div>
-                                                                    : this.state.step === "game over" ?
-                                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
-                                                                            End
-                                            </button>
-                                                                        : null}
-                                            {this.state.task === "shop" && this.state.step === "buy or sell" ?
-                                                <div>
-                                                    <p>What next?</p>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBuy}>
-                                                        Buy
-                                            </button>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectSell}>
-                                                        Sell
-                                            </button>
-                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
-                                                        <i className="material-icons left">arrow_back</i>Back
-                                            </button>
-                                                </div>
-                                                : this.state.task === "shop" && this.state.step === "buy" ?
+                                                                    : this.state.task === "dungeon" && this.state.step === "accept" ?
+                                                                        <div>
+                                                                            <p>Do you dare to enter?</p>
+                                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesDungeon}>
+                                                                                Yes
+                                                                            </button>
+                                                                            <button className="btn btn-flat game-blue-btn font2" onClick={this.selectBack}>
+                                                                                No
+                                                                            </button>
+                                                                        </div>
+                                                                        : this.state.task === "castle" && this.state.step === "accept" ?
+                                                                            <div>
+                                                                                <p>Do you dare to enter?</p>
+                                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesCastle}>
+                                                                                    Yes
+                                                                                </button>
+                                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectBack}>
+                                                                                    No
+                                                                                </button>
+                                                                            </div>
+                                                                            : this.state.step === "game over" ?
+                                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
+                                                                                    End
+                                                                                </button>
+                                                                                : null}
+                                                {this.state.task === "shop" && this.state.step === "buy or sell" ?
                                                     <div>
-                                                        <p>{this.state.subMessage}</p>
-                                                        {this.state.merchant.map((item, index) => (
-                                                            <div key={index}>
-                                                                <button value={item.name} data-index={index} data-price={item.buy} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.buyItem}>
-                                                                    {item.name}
-                                                                </button>
-                                                                <span className="font1 fontSmall"> ${item.buy} x {item.qty}</span>
-                                                            </div>
-                                                        ))}
+                                                        <p>What next?</p>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBuy}>
+                                                            Buy
+                                            </button>
+                                                        <button className="btn btn-flat game-choice-btn font2" onClick={this.selectSell}>
+                                                            Sell
+                                            </button>
                                                         <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
                                                             <i className="material-icons left">arrow_back</i>Back
-                                        </button>
+                                            </button>
                                                     </div>
-                                                    : this.state.task === "shop" && this.state.step === "sell" ?
+                                                    : this.state.task === "shop" && this.state.step === "buy" ?
                                                         <div>
                                                             <p>{this.state.subMessage}</p>
-                                                            {this.state.player.inventory.map((item, index) => (
+                                                            {this.state.merchant.map((item, index) => (
                                                                 <div key={index}>
-                                                                    <button value={item.name} data-index={index} data-price={item.sell} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.sellItem}>
+                                                                    <button value={item.name} data-index={index} data-price={item.buy} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.buyItem}>
                                                                         {item.name}
                                                                     </button>
-                                                                    <span className="font1 fontSmall"> ${item.sell} x {item.qty}</span>
+                                                                    <span className="font1 fontSmall"> ${item.buy} x {item.qty}</span>
                                                                 </div>
                                                             ))}
                                                             <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
                                                                 <i className="material-icons left">arrow_back</i>Back
                                         </button>
                                                         </div>
-                                                        : null}
-                                        </div>}
+                                                        : this.state.task === "shop" && this.state.step === "sell" ?
+                                                            <div>
+                                                                <p>{this.state.subMessage}</p>
+                                                                {this.state.player.inventory.map((item, index) => (
+                                                                    <div key={index}>
+                                                                        <button value={item.name} data-index={index} data-price={item.sell} className="btn btn-flat game-item-btn font2" onMouseOver={this.showItemPrice} onMouseOut={this.showSelectItem} onClick={this.sellItem}>
+                                                                            {item.name}
+                                                                        </button>
+                                                                        <span className="font1 fontSmall"> ${item.sell} x {item.qty}</span>
+                                                                    </div>
+                                                                ))}
+                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectBack}>
+                                                                    <i className="material-icons left">arrow_back</i>Back
+                                        </button>
+                                                            </div>
+                                                            : null}
+                                            </div>}
                         </div>
                     </div>
                     <div className="spacer" />

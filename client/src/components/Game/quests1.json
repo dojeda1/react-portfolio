@@ -65,7 +65,7 @@
         "type": "fetch",
         "task": "Greater Mana Potion",
         "count": 0,
-        "goal": 3,
+        "goal": 1,
         "region": "Plains",
         "completed": false
     },
