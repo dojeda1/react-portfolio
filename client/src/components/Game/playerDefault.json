@@ -19,7 +19,7 @@
     "xp": 10000,
     "nextLevel": 50,
     "inventory": [],
-    "gold": 10,
+    "gold": 1000,
     "isDead": false,
     "isBerserk": false,
     "berserkCount": 0,

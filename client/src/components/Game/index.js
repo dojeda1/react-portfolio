@@ -11,6 +11,7 @@ import monsters3 from "./monsters3.json";
 import bosses1 from "./bosses1.json";
 import bosses2 from "./bosses2.json";
 import bosses3 from "./bosses3.json";
+import endBosses from "./endBosses.json";
 
 import items1 from "./items1.json";
 import items2 from "./items2.json";
@@ -40,6 +41,10 @@ class Game extends Component {
         dungeonCount: 0,
         castleCount: 0,
         meadCount: 0,
+        bosses1: bosses1,
+        bosses2: bosses2,
+        bosses3: bosses3,
+        endBosses: endBosses,
         showSave: false,
         showStats: false,
         showQuests: false,
@@ -1109,13 +1114,33 @@ class Game extends Component {
     }
     selectVentureDeeper = () => {
         const exploreCheck = this.randNum(1, 10)
+        const regionIndex = this.state.region.index;
+        let bossArray = [];
+
+        switch (regionIndex) {
+            case 1:
+                bossArray = this.state.bosses1;
+                break;
+            case 2:
+                bossArray = this.state.bosses2;
+                break;
+            case 3:
+                bossArray = this.state.bosses3;
+                break;
+
+            default:
+            // code block
+        };
         if (exploreCheck <= 2) {
             this.chestEncounter();
         } else if (this.state.dungeonCount === this.state.region.dungeonGoal - 1) {
-            this.bossEncounter();
+            if (bossArray.length) {
+                this.bossEncounter();
+                } else {
+                    this.viciousEncounter();
+                }
         } else if (this.state.castleCount === this.state.region.dungeonGoal) {
-            this.bossEncounter();
-            // this.endBossEncounter();
+            this.endBossEncounter();
         } else {
             this.viciousEncounter();
         }
@@ -1214,9 +1239,17 @@ class Game extends Component {
         })
     }
     selectTravelForward = () => {
+        const endIndex = this.state.region.index - 1;
+        console.log(this.state.endBosses[endIndex]);
+        console.log("Boss is Dead: " + this.state.endBosses[endIndex].isDead);
+        if (this.state.endBosses[endIndex].isDead === false) {
+            this.endBossEncounter();
+        } else {
+            this.viciousEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked.");
+        }
         this.setState({
             movingForward: true,
-        }, () => this.viciousEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked."));
+        });
     }
     travelForwardSuccess = () => {
         this.setState({
@@ -1313,13 +1346,13 @@ class Game extends Component {
 
         switch (regionIndex) {
             case 1:
-                monsterArray = bosses1;
+                monsterArray = this.state.bosses1;
                 break;
             case 2:
-                monsterArray = bosses2;
+                monsterArray = this.state.bosses2;
                 break;
             case 3:
-                monsterArray = bosses3;
+                monsterArray = this.state.bosses3;
                 break;
 
             default:
@@ -1337,6 +1370,7 @@ class Game extends Component {
         const message = "You encountered " + monsterArray[monNum].name + ", " + monsterArray[monNum].title + ".";
         console.log("message: " + message)
         var newEnemy = this.state.currentEnemy
+        newEnemy.index = monNum;
         newEnemy.name = monsterArray[monNum].name;
         newEnemy.title = monsterArray[monNum].title;
         newEnemy.type = monsterArray[monNum].type;
@@ -1350,6 +1384,37 @@ class Game extends Component {
         newEnemy.xp = monsterArray[monNum].xp;
         newEnemy.inventory = [];
         newEnemy.gold = monsterArray[monNum].gold;
+        newEnemy.isDead = false;
+        this.addEnemyItems(newEnemy);
+        let text = [];
+        this.setState({
+            currentEnemy: newEnemy,
+            task: "fight",
+            step: "select move",
+            message: message,
+            infoText: text
+        });
+        console.log(this.state.currentEnemy);
+    };
+    endBossEncounter = () => {
+        const bossIndex = this.state.region.index - 1;
+        const message = "You encountered " + endBosses[bossIndex].name + ", " + endBosses[0].title + ".";
+        console.log("message: " + message)
+        var newEnemy = this.state.currentEnemy
+        newEnemy.index = endBosses[bossIndex].index;
+        newEnemy.name = endBosses[bossIndex].name;
+        newEnemy.title = endBosses[bossIndex].title;
+        newEnemy.type = endBosses[bossIndex].type;
+        newEnemy.maxHp = endBosses[bossIndex].maxHp;
+        newEnemy.hp = endBosses[bossIndex].maxHp;
+        newEnemy.maxMp = endBosses[bossIndex].maxMp;
+        newEnemy.mp = endBosses[bossIndex].maxMp;
+        newEnemy.strength = endBosses[bossIndex].strength;
+        newEnemy.speed = endBosses[bossIndex].speed;
+        newEnemy.luck = endBosses[bossIndex].luck;
+        newEnemy.xp = endBosses[bossIndex].xp;
+        newEnemy.inventory = [];
+        newEnemy.gold = endBosses[bossIndex].gold;
         newEnemy.isDead = false
         this.addEnemyItems(newEnemy);
         let text = [];
@@ -1532,6 +1597,7 @@ class Game extends Component {
     enemyTurn = (player, enemy) => {
         setTimeout(() => {
             if (enemy.hp <= 0) {
+                let regionIndex = this.state.region.index;
                 player.totalKills++;
                 let text = this.state.infoText;
                 text.push("You killed " + enemy.name + "!")
@@ -1547,6 +1613,30 @@ class Game extends Component {
                 this.gainXp(enemy.xp, player);
                 this.killQuestCheck(enemy.name);
                 console.log("total kills: " + player.totalKills);
+                if (enemy.type === "endBoss") {
+                    const endBosses = this.state.endBosses;
+                    endBosses[enemy.index].isDead = true;
+                    this.setState({
+                        endBosses: endBosses
+                    });
+                } else if (enemy.type === "boss") {
+                    let bossArray = [];
+                    switch (regionIndex) {
+                        case 1:
+                            bossArray = this.state.bosses1;
+                            break;
+                        case 2:
+                            bossArray = this.state.bosses2;
+                            break;
+                        case 3:
+                            bossArray = this.state.bosses3;
+                            break;
+
+                        default:
+                        // code block
+                    };
+                    bossArray.splice(enemy.index, 1);
+                }
                 if (this.state.location === "dungeon") {
                     this.setState({
                         dungeonCount: this.state.dungeonCount + 1

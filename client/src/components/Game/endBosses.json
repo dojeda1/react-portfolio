@@ -1,0 +1,47 @@
+[
+    {
+        "index": 0,
+        "name": "A",
+        "title": "Mas",
+        "type": "endBoss",
+        "maxHp": 30,
+        "maxMp": 10,
+        "strength": 10,
+        "speed": 10,
+        "luck": 10,
+        "xp": 30,
+        "inventory": [],
+        "gold": 100,
+        "isDead": false
+    },
+    {
+        "index": 1,
+        "name": "B",
+        "title": "Mas",
+        "type": "endBoss",
+        "maxHp": 30,
+        "maxMp": 10,
+        "strength": 10,
+        "speed": 10,
+        "luck": 10,
+        "xp": 30,
+        "inventory": [],
+        "gold": 100,
+        "isDead": false
+    },
+    {
+        "index": 2,
+        "name": "Asteroth",
+        "title": "Master of Darkness",
+        "type": "endBoss",
+        "maxHp": 200,
+        "maxMp": 40,
+        "strength": 40,
+        "speed": 40,
+        "luck": 15,
+        "xp": 200,
+        "inventory": [],
+        "gold": 1000,
+        "isDead": false
+    }
+]

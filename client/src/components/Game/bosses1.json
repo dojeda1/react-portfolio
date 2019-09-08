@@ -1,5 +1,6 @@
 [
     {
+        "index": 0,
         "name": "Bob",
         "title": "the Persistent",
         "type": "boss",
@@ -13,6 +14,7 @@
         "gold": 50
     },
     {
+        "index": 1,
         "name": "Grue",
         "title": "the Devourer",
         "type": "boss",
@@ -26,6 +28,7 @@
         "gold": 50
     },
     {
+        "index": 2,
         "name": "Goblong",
         "title": "the Goblin King",
         "type": "boss",
