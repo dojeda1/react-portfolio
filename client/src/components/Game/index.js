@@ -1106,8 +1106,10 @@ class Game extends Component {
         const exploreCheck = this.randNum(1, 10)
         if (exploreCheck === 1) {
             this.chestEncounter();
-        } else if (exploreCheck > 2) {
+        } else if (exploreCheck === 2) {
             this.dungeonEncounter();
+        } else if (exploreCheck === 3) {
+            this.viciousEncounter();
         } else {
             this.monsterEncounter();
         }
@@ -2477,7 +2479,7 @@ class Game extends Component {
                                                                                     Quest Board
                                                                         </button>
                                                                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectCashQuest}>
-                                                                                    Quest Rewards
+                                                                                    Rewards
                                                                         </button>
 
                                                                                 {/* <button className="btn btn-flat game-choice-btn font2" onClick={this.selectPlayGame}>
