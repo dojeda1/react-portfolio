@@ -1,20 +1,5 @@
 [
     {
-        "index": 0,
-        "name": "Celene",
-        "title": "Collector of Lost Souls",
-        "type": "boss",
-        "maxHp": 80,
-        "maxMp": 10,
-        "strength": 20,
-        "speed": 12,
-        "luck": 6,
-        "xp": 100,
-        "inventory": [],
-        "gold": 100
-    },
-    {
-        "index": 1,
         "name": "Rigor",
         "title": "the Grand Dire Wolf",
         "type": "boss",
@@ -28,7 +13,6 @@
         "gold": 120
     },
     {
-        "index": 2,
         "name": "Lilith",
         "title": "Demon of the Black Lake",
         "type": "boss",
@@ -42,9 +26,9 @@
         "gold": 150
     },
     {
-        "index": 3,
         "name": "Valdora",
-        "type": "Elder Dragon of the Skies",
+        "title": "Elder Dragon of the Skies",
+        "type": "boss",
         "maxHp": 100,
         "maxMp": 20,
         "strength": 30,

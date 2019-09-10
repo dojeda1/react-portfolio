@@ -26,16 +26,16 @@
         "gold": 80
     },
     {
-        "name": "Arealus",
-        "title": "the White Lion",
+        "name": "Celene",
+        "title": "Collector of Lost Souls",
         "type": "boss",
         "maxHp": 70,
-        "maxMp": 20,
-        "strength": 18,
-        "speed": 17,
-        "luck": 8,
-        "xp": 75,
+        "maxMp": 30,
+        "strength": 20,
+        "speed": 12,
+        "luck": 6,
+        "xp": 100,
         "inventory": [],
-        "gold": 80
+        "gold": 85
     }
 ]

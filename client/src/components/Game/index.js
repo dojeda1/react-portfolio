@@ -1106,7 +1106,7 @@ class Game extends Component {
         const exploreCheck = this.randNum(1, 10)
         if (exploreCheck === 1) {
             this.chestEncounter();
-        } else if (exploreCheck === 2) {
+        } else if (exploreCheck > 2) {
             this.dungeonEncounter();
         } else {
             this.monsterEncounter();
@@ -1114,6 +1114,15 @@ class Game extends Component {
     }
     selectVentureDeeper = () => {
         const exploreCheck = this.randNum(1, 10)
+        if (exploreCheck <= 2) {
+            this.chestEncounter();
+        } else if (this.state.location === "castle") {
+            this.darkEncounter();
+        } else {
+            this.viciousEncounter();
+        }
+    }
+    selectFightBoss = () => {
         const regionIndex = this.state.region.index;
         let bossArray = [];
 
@@ -1131,19 +1140,14 @@ class Game extends Component {
             default:
             // code block
         };
-        if (exploreCheck <= 2) {
-            this.chestEncounter();
-        } else if (this.state.dungeonCount === this.state.region.dungeonGoal - 1) {
-            if (bossArray.length) {
-                this.bossEncounter();
-                } else {
-                    this.viciousEncounter();
-                }
-        } else if (this.state.castleCount === this.state.region.dungeonGoal) {
-            this.endBossEncounter();
+        if (bossArray.length) {
+            this.bossEncounter();
         } else {
-            this.viciousEncounter();
-        }
+            this.darkEncounter();
+        };
+    }
+    selectEndBoss = () => {
+        this.endBossEncounter();
     }
     selectNext = () => {
         if (this.state.movingForward === true) {
@@ -1167,7 +1171,7 @@ class Game extends Component {
                 step: null,
                 message: "Dungeon Complete!"
             });
-        } else if (this.state.location === "castle" && this.state.castleCount > this.state.region.dungeonGoal) {
+        } else if (this.state.location === "castle" && this.state.castleCount >= this.state.region.dungeonGoal) {
             this.setState({
                 location: "wild",
                 task: "select where",
@@ -1224,6 +1228,18 @@ class Game extends Component {
                 task: "select where",
                 step: null
             });
+        } else if (this.state.task === "forward" || this.state.task === "backward") {
+            this.setState({
+                message: "You stayed in the " + this.state.region.name + ".",
+                task: "select where",
+                step: null
+            });
+        } else {
+            this.setState({
+                message: "You decided against it.",
+                task: "select where",
+                step: null
+            });
         }
     }
     selectLeaveDungeon = () => {
@@ -1239,16 +1255,28 @@ class Game extends Component {
         })
     }
     selectTravelForward = () => {
+        this.setState({
+            task: "forward",
+            step: "accept",
+            message: "The path ahead is dangerous..."
+        });
+    }
+    selectYesTravelForward = () => {
+        this.travelForward();
+    }
+    travelForward = () => {
         const endIndex = this.state.region.index - 1;
         console.log(this.state.endBosses[endIndex]);
         console.log("Boss is Dead: " + this.state.endBosses[endIndex].isDead);
-        if (this.state.endBosses[endIndex].isDead === false) {
-            this.endBossEncounter();
-        } else {
-            this.viciousEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked.");
-        }
+
         this.setState({
             movingForward: true,
+        }, () => {
+            if (this.state.endBosses[endIndex].isDead === false) {
+                this.endBossEncounter();
+            } else {
+                this.darkEncounter("As you near the " + regions[this.state.region.index].name + ", you are attacked.");
+            }
         });
     }
     travelForwardSuccess = () => {
@@ -1259,8 +1287,17 @@ class Game extends Component {
     }
     selectTravelBackward = () => {
         this.setState({
+            task: "backward",
+            step: "accept",
+            message: "The see the " + regions[this.state.region.index - 2].name + " behind you..."
+        });
+    }
+    selectYesTravelBackward = () => {
+        this.setState({
             region: regions[this.state.region.index - 2],
-            message: "You traveled back to the " + regions[this.state.region.index - 2].name + "."
+            message: "You traveled back to the " + regions[this.state.region.index - 2].name + ".",
+            task: "select where",
+            step: null
         })
     }
     addEnemyItems = (enemy) => {
@@ -1398,7 +1435,10 @@ class Game extends Component {
     };
     endBossEncounter = () => {
         const bossIndex = this.state.region.index - 1;
-        const message = "You encountered " + endBosses[bossIndex].name + ", " + endBosses[0].title + ".";
+        let message = "You face " + endBosses[bossIndex].name + ", " + endBosses[bossIndex].title + ".";
+        if (this.state.movingForward === true) {
+            message = endBosses[bossIndex].name + ", " + endBosses[bossIndex].title + " blocks your path."
+        };
         console.log("message: " + message)
         var newEnemy = this.state.currentEnemy
         newEnemy.index = endBosses[bossIndex].index;
@@ -1477,6 +1517,69 @@ class Game extends Component {
         newEnemy.xp = monsterArray[monNum].xp + 10;
         newEnemy.inventory = [];
         newEnemy.gold = monsterArray[monNum].gold + 30;
+        newEnemy.isDead = false;
+        this.addEnemyItems(newEnemy)
+        let text = [];
+        this.setState({
+            currentEnemy: newEnemy,
+            task: "fight",
+            step: "select move",
+            message: message,
+            infoText: text
+        });
+    };
+    darkEncounter = (alternateMessage) => {
+
+        let rangeNum = 0;
+        let playerLevel = this.state.player.level;
+
+        const regionIndex = this.state.region.index;
+        console.log("RI:" + regionIndex)
+        const regionLevel = this.state.region.level;
+        const regionTarget = this.state.region.targetLevel;
+        let monsterArray;
+
+        switch (regionIndex) {
+            case 1:
+                monsterArray = monsters1;
+                break;
+            case 2:
+                monsterArray = monsters2;
+                break;
+            case 3:
+                monsterArray = monsters3;
+                break;
+
+            default:
+            // code block
+        };
+        if (this.state.movingForward === true) {
+            rangeNum = monsterArray.length;
+        } else if (playerLevel <= regionLevel) {
+            rangeNum = 1;
+        } else if (playerLevel > regionLevel && playerLevel < regionTarget) {
+            rangeNum = Math.ceil(monsterArray.length * (playerLevel / regionTarget));
+        } else {
+            rangeNum = monsterArray.length;
+        };
+        let monNum = this.randNum(0, rangeNum);
+        let message = "You encountered a Dark " + monsterArray[monNum].name + ".";
+        if (this.state.movingForward === true) {
+            message = "A Dark " + monsterArray[monNum].name + " blocks your path."
+        };
+        var newEnemy = this.state.currentEnemy
+        newEnemy.name = "Dark " + monsterArray[monNum].name;
+        newEnemy.type = "dark";
+        newEnemy.maxHp = monsterArray[monNum].maxHp + 10;
+        newEnemy.hp = monsterArray[monNum].maxHp + 10;
+        newEnemy.maxMp = monsterArray[monNum].maxMp + 10;
+        newEnemy.mp = monsterArray[monNum].maxMp + 10;
+        newEnemy.strength = monsterArray[monNum].strength + 5;
+        newEnemy.speed = monsterArray[monNum].speed + 5;
+        newEnemy.luck = monsterArray[monNum].luck + 5;
+        newEnemy.xp = monsterArray[monNum].xp + 20;
+        newEnemy.inventory = [];
+        newEnemy.gold = monsterArray[monNum].gold + 340;
         newEnemy.isDead = false;
         this.addEnemyItems(newEnemy)
         let text = [];
@@ -1575,7 +1678,7 @@ class Game extends Component {
         this.setState({
             task: "castle",
             step: "accept",
-            message: "The Dark Castle emits an evil aura..."
+            message: "The Castle emits an evil aura..."
         })
     }
     selectYesCastle = () => {
@@ -2286,9 +2389,15 @@ class Game extends Component {
                                                     : this.state.location === "dungeon" && this.state.task === "select where" && this.state.step === null ?
                                                         <div>
                                                             <p>What next?</p>
-                                                            <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
-                                                                Venture Deeper
+                                                            {this.state.dungeonCount < this.state.region.dungeonGoal - 1 ?
+                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
+                                                                    Venture Deeper
                                                             </button>
+                                                                : <button className="btn btn-flat game-choice-btn font2" onClick={this.selectFightBoss}>
+                                                                    Fight Boss
+                                                            </button>
+                                                            }
+
                                                             <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                                                 Use Item
                                                             </button>
@@ -2299,9 +2408,14 @@ class Game extends Component {
                                                         : this.state.location === "castle" && this.state.task === "select where" && this.state.step === null ?
                                                             <div>
                                                                 <p>What next?</p>
-                                                                <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
-                                                                    Venture Deeper
+                                                                {this.state.castleCount < this.state.region.dungeonGoal - 1 ?
+                                                                    <button className="btn btn-flat game-choice-btn font2" onClick={this.selectVentureDeeper}>
+                                                                        Venture Deeper
                                                                 </button>
+                                                                    : <button className="btn btn-flat game-choice-btn font2" onClick={this.selectEndBoss}>
+                                                                        Fight Boss
+                                                                </button>
+                                                                }
                                                                 <button className="btn btn-flat game-choice-btn font2" onClick={this.selectUseItem}>
                                                                     Use Item
                                                                 </button>
@@ -2525,21 +2639,41 @@ class Game extends Component {
                                                                                 No
                                                                             </button>
                                                                         </div>
-                                                                        : this.state.task === "castle" && this.state.step === "accept" ?
+                                                                        : this.state.task === "forward" && this.state.step === "accept" ?
                                                                             <div>
-                                                                                <p>Do you dare to enter?</p>
-                                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesCastle}>
+                                                                                <p>Continue forward?</p>
+                                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesTravelForward}>
                                                                                     Yes
                                                                                 </button>
                                                                                 <button className="btn btn-flat game-blue-btn font2" onClick={this.selectBack}>
                                                                                     No
                                                                                 </button>
                                                                             </div>
-                                                                            : this.state.step === "game over" ?
-                                                                                <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
-                                                                                    End
+                                                                            : this.state.task === "backward" && this.state.step === "accept" ?
+                                                                                <div>
+                                                                                    <p>Head back?</p>
+                                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesTravelBackward}>
+                                                                                        Yes
                                                                                 </button>
-                                                                                : null}
+                                                                                    <button className="btn btn-flat game-blue-btn font2" onClick={this.selectBack}>
+                                                                                        No
+                                                                                </button>
+                                                                                </div>
+                                                                                : this.state.task === "castle" && this.state.step === "accept" ?
+                                                                                    <div>
+                                                                                        <p>Do you dare to enter?</p>
+                                                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectYesCastle}>
+                                                                                            Yes
+                                                                                </button>
+                                                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectBack}>
+                                                                                            No
+                                                                                </button>
+                                                                                    </div>
+                                                                                    : this.state.step === "game over" ?
+                                                                                        <button className="btn btn-flat game-blue-btn font2" onClick={this.selectReset}>
+                                                                                            End
+                                                                                </button>
+                                                                                        : null}
                                                 {this.state.task === "shop" && this.state.step === "buy or sell" ?
                                                     <div>
                                                         <p>What next?</p>
