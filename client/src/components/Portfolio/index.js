@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import M from 'materialize-css';
+import M from 'materialize-css';
 
 import MealPlannerMockup from "../../images/meal-planner/meal-planner-mockup.png"
 import MealPlannerPaint from "../../images/meal-planner/meal-planner-paint.png"
@@ -148,7 +148,7 @@ class Portfolio extends Component {
 
     componentDidMount() {
         this.setState({ currentProject: this.state.allProjects[0], currentList: this.state.allProjects[0].list })
-        // M.AutoInit();
+        M.AutoInit();
     }
 
     handleSelect = (event) => {

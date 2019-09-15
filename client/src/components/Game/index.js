@@ -469,6 +469,7 @@ class Game extends Component {
         newPlayer.special2 = special2A;
         newPlayer.special1Cost = special1CostA;
         newPlayer.special2Cost = special2CostA;
+        this.levelUpCheck(newPlayer);
 
         this.setState({
             player: newPlayer,
@@ -512,7 +513,7 @@ class Game extends Component {
         const index = event.target.getAttribute("data-index");
         const price = event.target.getAttribute("data-price");
         const name = event.target.value;
-        if (price < player.gold) {
+        if (price <= player.gold) {
             player.gold -= price
             this.transferItem(this.state.merchant, this.state.player.inventory, this.state.merchant[index])
             if (!this.state.merchant.length) {
@@ -1354,6 +1355,7 @@ class Game extends Component {
         newEnemy.maxMp = monsterArray[monNum].maxMp;
         newEnemy.mp = monsterArray[monNum].maxMp;
         newEnemy.strength = monsterArray[monNum].strength;
+        newEnemy.defense = monsterArray[monNum].defense;
         newEnemy.speed = monsterArray[monNum].speed;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp;
@@ -1418,6 +1420,7 @@ class Game extends Component {
         newEnemy.maxMp = monsterArray[monNum].maxMp;
         newEnemy.mp = monsterArray[monNum].maxMp;
         newEnemy.strength = monsterArray[monNum].strength;
+        newEnemy.defense = monsterArray[monNum].defense;
         newEnemy.speed = monsterArray[monNum].speed;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp;
@@ -1452,6 +1455,7 @@ class Game extends Component {
         newEnemy.maxMp = endBosses[bossIndex].maxMp;
         newEnemy.mp = endBosses[bossIndex].maxMp;
         newEnemy.strength = endBosses[bossIndex].strength;
+        newEnemy.defense = endBosses[bossIndex].defense;
         newEnemy.speed = endBosses[bossIndex].speed;
         newEnemy.luck = endBosses[bossIndex].luck;
         newEnemy.xp = endBosses[bossIndex].xp;
@@ -1514,6 +1518,7 @@ class Game extends Component {
         newEnemy.maxMp = monsterArray[monNum].maxMp + 5;
         newEnemy.mp = monsterArray[monNum].maxMp + 5;
         newEnemy.strength = monsterArray[monNum].strength + 3;
+        newEnemy.defense = monsterArray[monNum].defense + 3;
         newEnemy.speed = monsterArray[monNum].speed + 2;
         newEnemy.luck = monsterArray[monNum].luck;
         newEnemy.xp = monsterArray[monNum].xp + 10;
@@ -1577,6 +1582,7 @@ class Game extends Component {
         newEnemy.maxMp = monsterArray[monNum].maxMp + 10;
         newEnemy.mp = monsterArray[monNum].maxMp + 10;
         newEnemy.strength = monsterArray[monNum].strength + 5;
+        newEnemy.defense = monsterArray[monNum].defense + 5;
         newEnemy.speed = monsterArray[monNum].speed + 5;
         newEnemy.luck = monsterArray[monNum].luck + 5;
         newEnemy.xp = monsterArray[monNum].xp + 20;
@@ -1610,6 +1616,7 @@ class Game extends Component {
         newEnemy.maxMp = 10;
         newEnemy.mp = 10;
         newEnemy.strength = regionLevel * 2 + 2;
+        newEnemy.defense = regionLevel * 2;
         newEnemy.speed = regionLevel + 2;
         newEnemy.luck = regionLevel * 2 + 2;
         newEnemy.xp = regionLevel * 5 + 5;
@@ -1826,6 +1833,7 @@ class Game extends Component {
         console.log(attacker.name + " attacked " + defender.name)
         let attackMessage;
         let damage;
+        let defense = Math.floor(defender.defense / 3);
         let criticalCheck = this.randNum(1, 100);
         let luckCheck = (attacker.luck - defender.luck) + 10;
         if (luckCheck > 95) {
@@ -1835,7 +1843,10 @@ class Game extends Component {
         }
         console.log("rand/target: " + criticalCheck + "/" + luckCheck)
         if (criticalCheck >= luckCheck) {
-            damage = attacker.strength + berserkNum;
+            damage = attacker.strength + berserkNum - defense;
+            if (damage < 1) {
+                damage = 1;
+            }
             attackMessage = attacker.name + " did " + damage + " damage.";
         } else {
             damage = attacker.strength + Math.floor(attacker.strength * 0.25) + berserkNum;
@@ -1848,6 +1859,7 @@ class Game extends Component {
     special = function (attacker, defender, name, cost) {
         let attackMessage;
         let damage;
+        let defense = defender.defense;
         let criticalCheck;
         let luckCheck;
         let speedCheck;
@@ -1863,7 +1875,11 @@ class Game extends Component {
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
-                    damage = attacker.strength + Math.floor(attacker.strength * 0.25);
+                    defense = Math.floor(defense / 4);
+                    damage = attacker.strength + Math.floor(attacker.strength * 0.25) - defense;
+                    if (damage < 1) {
+                        damage = 1
+                    }
                     attackMessage = "Axe did " + damage + " damage.";
                 } else {
                     damage = attacker.strength + Math.floor(attacker.strength * 0.5);
@@ -1892,7 +1908,11 @@ class Game extends Component {
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
-                    damage = attacker.mana + Math.floor(attacker.mana * 0.25);
+                    defense = Math.floor(defense / 4);
+                    damage = attacker.mana + Math.floor(attacker.mana * 0.25) - defense;
+                    if (damage < 1) {
+                        damage = 1
+                    }
                     attackMessage = "Fire did " + damage + " damage.";
                 } else {
                     damage = attacker.mana + Math.floor(attacker.mana * 0.5);
@@ -1941,7 +1961,11 @@ class Game extends Component {
                 }
                 console.log("rand/target: " + criticalCheck + "/" + luckCheck)
                 if (criticalCheck >= luckCheck) {
-                    damage = attacker.strength + Math.floor(attacker.strength * 0.25);
+                    defense = Math.floor(defense / 4);
+                    damage = attacker.strength + Math.floor(attacker.strength * 0.25) - defense;
+                    if (damage < 1) {
+                        damage = 1
+                    }
                     attackMessage = "Dagger did " + damage + " damage.";
                 } else {
                     damage = attacker.mana + Math.floor(attacker.strength * 0.5);
@@ -2299,7 +2323,7 @@ class Game extends Component {
                                                 <p className="font1 center-align">- {this.state.region.name} | {this.state.location} -</p>
                                                 <h5>{this.state.message}</h5>
                                                 {this.state.task === "fight" ?
-                                                    <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength}</p>
+                                                    <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength} <span className="white-text"> | </span>DEF: {this.state.currentEnemy.defense}</p>
                                                     : null}
                                                 {this.state.location !== "title screen" ?
                                                     <div>
