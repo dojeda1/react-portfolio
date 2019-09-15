@@ -1832,17 +1832,27 @@ class Game extends Component {
 
         console.log(attacker.name + " attacked " + defender.name)
         let attackMessage;
-        let damage;
+        let damage = 0;
         let defense = Math.floor(defender.defense / 3);
         let criticalCheck = this.randNum(1, 100);
+        let missCheck = this.randNum(1, 100);
         let luckCheck = (attacker.luck - defender.luck) + 10;
         if (luckCheck > 95) {
             luckCheck = 95;
         } else if (luckCheck < 5) {
             luckCheck = 5;
         }
-        console.log("rand/target: " + criticalCheck + "/" + luckCheck)
-        if (criticalCheck >= luckCheck) {
+        let speedCheck = (defender.speed - attacker.speed + 5);
+        if (speedCheck > 95) {
+            speedCheck = 95;
+        } else if (speedCheck < 5) {
+            speedCheck = 5;
+        }
+        console.log("rand/CritCheck: " + criticalCheck + "/" + luckCheck);
+        console.log("rand/MissCheck: " + missCheck + "/" + speedCheck);
+        if (missCheck < speedCheck) {
+            attackMessage = attacker.name + " missed...";
+        } else if (criticalCheck >= luckCheck) {
             damage = attacker.strength + berserkNum - defense;
             if (damage < 1) {
                 damage = 1;
@@ -1860,21 +1870,28 @@ class Game extends Component {
         let attackMessage;
         let damage;
         let defense = defender.defense;
-        let criticalCheck;
-        let luckCheck;
-        let speedCheck;
+        let criticalCheck = this.randNum(1, 100);
+        let missCheck = this.randNum(1, 100);
+        let luckCheck = (attacker.luck - defender.luck) + 10;
+        if (luckCheck > 95) {
+            luckCheck = 95;
+        } else if (luckCheck < 5) {
+            luckCheck = 5;
+        };
+        let speedCheck = (defender.speed - attacker.speed + 2);
+        if (speedCheck > 95) {
+            speedCheck = 95;
+        } else if (speedCheck < 3) {
+            speedCheck = 3;
+        };
 
         switch (name) {
             case "Axe Strike":
-                criticalCheck = this.randNum(1, 100);
-                luckCheck = (attacker.luck - defender.luck) + 10;
-                if (luckCheck > 95) {
-                    luckCheck = 95;
-                } else if (luckCheck < 5) {
-                    luckCheck = 5;
-                }
-                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
-                if (criticalCheck >= luckCheck) {
+                console.log("rand/CritCheck: " + criticalCheck + "/" + luckCheck);
+                console.log("rand/MissCheck: " + missCheck + "/" + speedCheck);
+                if (missCheck < speedCheck) {
+                    attackMessage = "Axe missed...";
+                } else if (criticalCheck >= luckCheck) {
                     defense = Math.floor(defense / 4);
                     damage = attacker.strength + Math.floor(attacker.strength * 0.25) - defense;
                     if (damage < 1) {
@@ -1899,15 +1916,11 @@ class Game extends Component {
                 break;
 
             case "Fireball":
-                criticalCheck = this.randNum(1, 100);
-                luckCheck = (attacker.luck - defender.luck) + 10;
-                if (luckCheck > 95) {
-                    luckCheck = 95;
-                } else if (luckCheck < 5) {
-                    luckCheck = 5;
-                }
-                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
-                if (criticalCheck >= luckCheck) {
+                console.log("rand/CritCheck: " + criticalCheck + "/" + luckCheck);
+                console.log("rand/MissCheck: " + missCheck + "/" + speedCheck);
+                if (missCheck < speedCheck) {
+                    attackMessage = "Fire missed...";
+                } else if (criticalCheck >= luckCheck) {
                     defense = Math.floor(defense / 4);
                     damage = attacker.mana + Math.floor(attacker.mana * 0.25) - defense;
                     if (damage < 1) {
@@ -1926,20 +1939,19 @@ class Game extends Component {
                 break;
 
             case "Heal":
-                criticalCheck = this.randNum(1, 100);
-                luckCheck = (attacker.luck - defender.luck) + 10;
+                luckCheck = attacker.luck + 8;
                 if (luckCheck > 95) {
                     luckCheck = 95;
                 } else if (luckCheck < 5) {
                     luckCheck = 5;
                 }
-                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
+                console.log("rand/CritCheck: " + criticalCheck + "/" + luckCheck);
                 if (criticalCheck >= luckCheck) {
                     damage = Math.floor(attacker.maxHp * 0.75);
                     attackMessage = attacker.name + " recovered " + damage + " HP.";
                 } else {
                     damage = attacker.maxHp;
-                    attackMessage = "Wow! " + attacker.name + " recovered" + damage + " HP.";
+                    attackMessage = "Wow! " + attacker.name + " recovered max HP.";
                 }
                 attacker.hp += damage;
                 if (attacker.hp > attacker.maxHp) {
@@ -1952,15 +1964,11 @@ class Game extends Component {
                 break;
 
             case "Dagger Slash":
-                criticalCheck = this.randNum(1, 100);
-                luckCheck = (attacker.luck - defender.luck) + 10;
-                if (luckCheck > 95) {
-                    luckCheck = 95;
-                } else if (luckCheck < 5) {
-                    luckCheck = 5;
-                }
-                console.log("rand/target: " + criticalCheck + "/" + luckCheck)
-                if (criticalCheck >= luckCheck) {
+                console.log("rand/CritCheck: " + criticalCheck + "/" + luckCheck);
+                console.log("rand/MissCheck: " + missCheck + "/" + speedCheck);
+                if (missCheck < speedCheck) {
+                    attackMessage = "Dagger missed...";
+                } else if (criticalCheck >= luckCheck) {
                     defense = Math.floor(defense / 4);
                     damage = attacker.strength + Math.floor(attacker.strength * 0.25) - defense;
                     if (damage < 1) {
@@ -1979,13 +1987,13 @@ class Game extends Component {
                 break;
 
             case "Steal":
-                criticalCheck = this.randNum(1, 100);
                 speedCheck = (attacker.speed - defender.speed) + 60;
                 if (speedCheck > 95) {
                     speedCheck = 95;
                 } else if (speedCheck < 5) {
                     speedCheck = 5;
                 }
+                console.log("rand/CritCheck: " + criticalCheck + "/" + speedCheck);
                 if (criticalCheck <= speedCheck) {
                     const itemNum = this.randNum(0, defender.inventory.length);
                     const item = defender.inventory[itemNum];
