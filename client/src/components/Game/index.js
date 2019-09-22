@@ -28,7 +28,7 @@ class Game extends Component {
         messageSub: "",
         infoText: [],
         region: regions[0],
-        location: "title screen",
+        location: "Title Screen",
         task: "new or load",
         step: null,
         inputName: "",
@@ -2039,7 +2039,7 @@ class Game extends Component {
         }
     };
     selectReset = () => {
-        this.changePlayStates("title screen", "new or load");
+        this.changePlayStates("Title Screen", "new or load");
         this.setState({
             player: playerDefault,
             message: "Start again?"
@@ -2343,7 +2343,7 @@ class Game extends Component {
                                                 {this.state.task === "fight" ?
                                                     <p className={enemyStyle}><i className="material-icons left">adb</i>{this.state.currentEnemy.name}<span className="white-text"> | </span><span className={enemyHpStyle}>HP: {this.state.currentEnemy.hp}/{this.state.currentEnemy.maxHp}</span><span className="white-text"> | </span>ATK: {this.state.currentEnemy.strength} <span className="white-text"> | </span>DEF: {this.state.currentEnemy.defense}</p>
                                                     : null}
-                                                {this.state.location !== "title screen" ?
+                                                {this.state.location !== "Title Screen" ?
                                                     <div>
                                                         <p className={playerStyle}>
                                                             <i className="material-icons left">person</i>{this.state.player.name}<span className="white-text"> | </span>
@@ -2362,7 +2362,7 @@ class Game extends Component {
                                                         ))}
                                                     </div>
                                                     : null}
-                                                {this.state.location === "title screen" && this.state.task === "new or load" ?
+                                                {this.state.location === "Title Screen" && this.state.task === "new or load" ?
                                                     <div>
                                                         <button className="btn btn-flat game-blue-btn font2" type="button" onClick={this.newGame}>
                                                             New Game
@@ -2371,7 +2371,7 @@ class Game extends Component {
                                         Load Game
                                     </button> */}
                                                     </div>
-                                                    : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "name" ?
+                                                    : this.state.location === "Title Screen" && this.state.task === "create character" && this.state.step === "name" ?
                                                         <div>
                                                             <form id="game-form" onSubmit={this.handleName}>
                                                                 <div className="row">
@@ -2391,7 +2391,7 @@ class Game extends Component {
                                                             </form>
 
                                                         </div>
-                                                        : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "race" ?
+                                                        : this.state.location === "Title Screen" && this.state.task === "create character" && this.state.step === "race" ?
                                                             <div>
                                                                 <button className="btn btn-flat game-choice-btn font2" value="Human" onClick={this.selectRace}>
                                                                     Human
@@ -2403,7 +2403,7 @@ class Game extends Component {
                                                                     Dwarf
                                     </button>
                                                             </div>
-                                                            : this.state.location === "title screen" && this.state.task === "create character" && this.state.step === "class" ?
+                                                            : this.state.location === "Title Screen" && this.state.task === "create character" && this.state.step === "class" ?
                                                                 <div>
                                                                     <button className="btn btn-flat game-choice-btn font2" value="Warrior" onClick={this.selectClass}>
                                                                         Warrior
